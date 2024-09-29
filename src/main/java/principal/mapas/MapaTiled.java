@@ -4,8 +4,12 @@
  */
 package principal.mapas;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,6 +18,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
@@ -50,197 +55,149 @@ import principal.sprites.Sprite;
  */
 public class MapaTiled {
 
-    // Atributos del mapa
-    private int anchoMapaTiles; // Ancho del mapa en número de tiles
-    private int altoMapaTiles; // Alto del mapa en número de tiles
-    private String siguienteMapa; // Nombre del mapa al que se accede al salir de este mapa
-    private Point puntoInicial; // Punto de inicio del jugador en el mapa
-    public Rectangle recMapa; // Rectángulo que representa el área del mapa
-    public Tienda tiendaActiva; // Tienda activa en el mapa
-    private boolean reproducirMusica = false; // Indica si se debe reproducir música en el mapa
+    private int anchoMapaTiles;
+    private int altoMapaTiles;
+    private String siguienteMapa;
+    private Point puntoInicial;
+    public Rectangle recMapa;
+    public Tienda tiendaActiva;
+    private boolean reproducirMusica = false;
+    Gson gson = new Gson();
 
-    // Variables para el debounce (evitar múltiples acciones con un solo evento)
     long ultimoTiempoRecogida = 0;
-    long tiempoDebouncing = 50; // Tiempo de debounce en milisegundos
+    long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
 
-    // Zonas de salida del mapa
+    public Rectangle zonaSalida1;
+    public Rectangle zonaSalida2;
+    public Rectangle zonaSalida3;
+    public Rectangle zonaSalida4;
+    public Rectangle zonaSalida5;
+    public Rectangle zonaSalida6;
+    public Rectangle zonaSalida7;
+    public Rectangle zonaSalida8;
+    public Rectangle zonaSalida9;
     public ArrayList<Rectangle> zonasSalida;
 
-    // Capas de sprites del mapa
     private ArrayList<CapaSprites> capaSprites1;
     private ArrayList<CapaSprites> capaSprites2;
     private ArrayList<CapaSprites> capasprites3;
-
-    // Capa de colisiones del mapa
     private ArrayList<CapaColisiones> capaColisiones;
-
-    // Capa de transparencias del mapa
     private ArrayList<CapaTransparencias> capaTransparencias;
-
-    // Áreas de transparencia y colisión originales del mapa
     private ArrayList<Rectangle> areaTransparenciaOriginales;
     private ArrayList<Rectangle> areaColisionOriginales;
-
-    // Paletas de sprites del mapa
     private Sprite[] paletaSprites1;
     private Sprite[] paletaSprites2;
+    public ArrayList<Objeto> objetosTiendaMapa;
+    public ArrayList<Objeto> objetosTiendaActual;
+    private boolean contenedorAbierto = false;
 
-    // Listas de objetos de la tienda
-    public ArrayList<Objeto> objetosTiendaMapa; // Objetos disponibles en la tienda del mapa
-    public ArrayList<Objeto> objetosTiendaActual; // Objetos actualmente disponibles en la tienda
-    private boolean contenedorAbierto = false; // Indica si el contenedor de objetos está abierto
-
-    // Objeto Dijkstra para el cálculo de rutas
     private Dijkstra dijkstra;
 
-    // Listas de objetos y enemigos del mapa
     private ArrayList<ObjetoUnicoTiled> objetosMapa;
-    public ArrayList<Objeto> objetosTienda; // Objetos disponibles en la tienda
+    public ArrayList<Objeto> objetosTienda;
     private ArrayList<Enemigo> enemigosMapa;
-
-    // Listas de áreas de colisión y transparencia actualizadas
     public ArrayList<Rectangle> areasColisionActualizadas;
     public ArrayList<Rectangle> areasTransparenciaActualizadas;
-
-    // Lista de contenedores de objetos
     public ArrayList<ContenedorObjetos> listaContenedores;
-    private ContenedorObjetos contenedorActual; // Contenedor de objetos actualmente activo en el mapa
-
-    // Lista de tiendas del mapa
+    private ContenedorObjetos contenedorActual;
     public ArrayList<Tienda> tiendas;
 
-    // Ruta de la música del mapa
-    private String rutaMusica;
-
     public MapaTiled(final String ruta) {
-        // Inicialización de la lista de zonas de salida
+        zonaSalida1 = new Rectangle();
+        zonaSalida2 = new Rectangle();
+        zonaSalida3 = new Rectangle();
+        zonaSalida4 = new Rectangle();
+        zonaSalida5 = new Rectangle();
+        zonaSalida6 = new Rectangle();
+        zonaSalida7 = new Rectangle();
+        zonaSalida8 = new Rectangle();
+        zonaSalida9 = new Rectangle();
         zonasSalida = new ArrayList<>();
-        // Limpiar la lista de salidas del mapa anterior
+
         Salida.getSalidas().clear();
 
-        // Leer el contenido del archivo JSON del mapa
         String contenido = CargadorRecursos.leerArchivoTexto(ruta);
-        // Obtener el objeto JSON global del contenido
-        JsonNode globalJSON = getObjetoJson(contenido);
 
-        // Obtener información sobre el siguiente mapa
+        JsonObject globalJSON = getObjetoJson(contenido);
+
         obtenerInformacionSiguienteMapa(globalJSON);
-
-        // Inicializar atributos básicos del mapa
+        // Inicializar atributos básicos
         inicializarAtributosBasicos(globalJSON);
-
-        // Inicializar las capas del mapa
+        // Inicializar capas
         inicializarCapas(globalJSON);
-
-        // Combinar todas las colisiones en un solo ArrayList
+        // Combinar colisiones en un solo ArrayList
         combinarColisiones();
-
-        // Combinar todas las transparencias en un solo ArrayList
+        // Combinar transparencias en un solo ArrayList
         combinarTransparencias();
-
-        // Inicializar el algoritmo de Dijkstra para el cálculo de rutas
+        // Inicializar Dijkstra
         inicializarDijkstra();
-
-        // Inicializar la paleta de sprites del mapa
+        // Inicializar paleta de sprites
         inicializarPaletaSprites(globalJSON);
 
-        // Obtener los objetos del mapa
+        // Obtener objetos del mapa
         obtenerObjetosMapa(globalJSON);
-
-        // Obtener los enemigos del mapa
+        // Obtener enemigos del mapa
         obtenerEnemigosMapa(globalJSON);
 
-        // Obtener los contenedores de objetos del mapa
         obtenerContenedoresMapa(globalJSON);
 
-        // Obtener las tiendas del mapa
         obtenerTiendas(globalJSON);
-
-        // Obtener la ruta de la música del mapa
-        obtenerRutaMusica(globalJSON);
-        System.out.println("" + rutaMusica);
-
-        // Inicializar listas para áreas de colisión y transparencia actualizadas
         areasColisionActualizadas = new ArrayList<>();
         areasTransparenciaActualizadas = new ArrayList<>();
-
-        // Inicializar listas de objetos de la tienda
         objetosTiendaMapa = new ArrayList<>();
         objetosTiendaActual = new ArrayList<>();
-
-        // Inicializar la tienda activa
         tiendaActiva = new Tienda();
+
     }
 
     public void actualizar() {
-        // Actualizar la lógica de los enemigos en el mapa
         actualizarEnemigos();
-
-        // Actualizar las áreas de colisión del mapa
         actualizarAreasColision();
-
-        // Actualizar las áreas de transparencia del mapa
         actualizarAreasTransparencia();
-
-        // Actualizar la lógica de recogida de objetos en el mapa
         actualizarRecogidaObjeto();
-
-        // Actualizar la lógica de los ataques en el mapa
         actualizarAtaques();
-
-        // Actualizar la lógica de las zonas de salida del mapa
         actualizarZonaSalida();
-
-        // Actualizar la lógica de las tiendas en el mapa
         actualizarTiendas();
 
-        // Obtener la posición del jugador en el mapa
         Point punto = new Point(ElementosPrincipales.jugador.getPosicionXInt(),
                 ElementosPrincipales.jugador.getPosicionYInt());
 
-        // Obtener el nodo coincidente en la matriz de nodos del algoritmo de Dijkstra
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
-
-        // Reiniciar y evaluar el algoritmo de Dijkstra desde el nodo coincidente
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
-
-        // Mostrar los elementos del contenedor actual, si hay alguno
         mostrarElementoscontenedor();
 
-        // Si no se encuentra en la pantalla de título del juego
         if (!GestorPrincipal.pantallaTitulo) {
-            // Si aún no se ha reproducido la música del mapa
             if (!reproducirMusica) {
-                // Cambiar el archivo de música y reproducirlo
-                GestorPrincipal.musica.cambiarArchivo("" + rutaMusica);
+                GestorPrincipal.musica.cambiarArchivo("Lively Meadow");
                 GestorPrincipal.musica.repetir(0.7f);
-                // Marcar que la música se ha reproducido
                 reproducirMusica = true;
             }
+
         }
+
     }
 
     public void dibujar(Graphics2D g) {
-        // Dibujar sprites del mapa desde la primera capa
+
+        // Dibujar sprites del mapa
         int intentosDibujo = 0;
         for (int i = 0; i < capaSprites1.size(); i++) {
             int[] spritesCapa = capaSprites1.get(i).getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
                 for (int x = 0; x < anchoMapaTiles; x++) {
-                    // Obtener el ID del sprite actual en la capa
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
-                        // Calcular la posición del sprite en la pantalla relativa al jugador
-                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+                        int puntoX = x * Constantes.LADO_SPRITE
+                                - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
+                        int puntoY = y * Constantes.LADO_SPRITE
+                                - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
 
-                        // OPTIMIZACIÓN DIBUJADO: Evitar dibujar sprites que están fuera de la pantalla
+                        // OPTIMIZACION DIBUJADO
                         if (puntoX < 0 - Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
                                 || puntoY < 0 - Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
-                        // Dibujar el sprite en la pantalla
                         intentosDibujo++;
                         DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
@@ -248,59 +205,52 @@ public class MapaTiled {
             }
         }
 
-        // Dibujar objetos del mapa
         for (int i = 0; i < objetosMapa.size(); i++) {
             ObjetoUnicoTiled objetoActual = objetosMapa.get(i);
-            // Calcular la posición del objeto en la pantalla relativa al jugador
             int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
-            // Dibujar el objeto en la pantalla
             DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().getImagen(), puntoX, puntoY);
         }
 
-        // Dibujar contenedores de objetos del mapa
         for (int i = 0; i < listaContenedores.size(); i++) {
             ContenedorObjetos contenedorAct = listaContenedores.get(i);
-            // Calcular la posición del contenedor en la pantalla relativa al jugador
             int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
-            // Dibujar el contenedor en la pantalla
+
             contenedorAct.dibujar(g, puntoX, puntoY);
         }
 
-        // Dibujar enemigos del mapa
         for (int i = 0; i < enemigosMapa.size(); i++) {
             Enemigo enemigo = enemigosMapa.get(i);
-            // Calcular la posición del enemigo en la pantalla relativa al jugador
             int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
-            // Dibujar el enemigo en la pantalla
             enemigo.dibujar(g, puntoX, puntoY);
+
         }
+
     }
 
     public void dibujar2daCapa(Graphics2D g) {
 
-        // Dibujar sprites del mapa desde la segunda capa
+        // Dibujar sprites del mapa
         int intentosDibujo = 0;
         for (int i = 0; i < capaSprites2.size(); i++) {
             int[] spritesCapa = capaSprites2.get(i).getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
                 for (int x = 0; x < anchoMapaTiles; x++) {
-                    // Obtener el ID del sprite actual en la capa
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
-                        // Calcular la posición del sprite en la pantalla relativa al jugador
-                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+                        int puntoX = x * Constantes.LADO_SPRITE
+                                - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
+                        int puntoY = y * Constantes.LADO_SPRITE
+                                - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
 
-                        // OPTIMIZACIÓN DIBUJADO: Evitar dibujar sprites que están fuera de la pantalla
+                        // OPTIMIZACION DIBUJADO
                         if (puntoX < 0 - Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
                                 || puntoY < 0 - Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
-                        // Dibujar el sprite en la pantalla
                         intentosDibujo++;
                         DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
@@ -308,16 +258,21 @@ public class MapaTiled {
             }
         }
 
-        /*DibujoDebug.dibujarRectanguloContorno(g, zonaSalida1, Color.red);
+        /*for(Rectangle zonaSalida: zonasSalida){
+            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida,Color.RED);
+        }*/
+        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida1, Color.red);
         DibujoDebug.dibujarRectanguloContorno(g, zonaSalida2, Color.red);
         DibujoDebug.dibujarRectanguloContorno(g, zonaSalida3, Color.red);
         DibujoDebug.dibujarRectanguloContorno(g, zonaSalida4, Color.red);
         DibujoDebug.dibujarRectanguloContorno(g, zonaSalida5, Color.red);
         DibujoDebug.dibujarRectanguloContorno(g, zonaSalida6, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida7, Color.red);*/
-        // Dibujar áreas de las tiendas
+        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida7, Color.red);
+        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida8, Color.red);
+        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida9, Color.red);
         for (Tienda tiendaActual : tiendas) {
             DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
+
         }
 
         /*for (Rectangle rectagulo : areasColisionActualizadas) {
@@ -338,47 +293,40 @@ public class MapaTiled {
         DibujoDebug.dibujarString(g, zonaSalida7.toString(), 10, 150, Color.white);*/
     }
 
-    private void inicializarAtributosBasicos(JsonNode globalJSON) {
-        // Obtener el ancho y el alto del mapa desde el objeto JSON global
-        anchoMapaTiles = globalJSON.get("width").asInt();
-        altoMapaTiles = globalJSON.get("height").asInt();
+    private void inicializarAtributosBasicos(JsonObject globalJSON) {
+        anchoMapaTiles = globalJSON.get("width").getAsInt();
+        altoMapaTiles = globalJSON.get("height").getAsInt();
 
-        // Obtener el objeto JSON asociado con "start" (punto inicial del jugador)
-        JsonNode puntoInicialJSON = globalJSON.get("start");
+        // Obtener el objeto JSON asociado con "start"
+        JsonObject puntoInicialJSON = globalJSON.getAsJsonObject("start");
 
-        // Verificar si el nodo "start" existe en el JSON y es un objeto
-        if (puntoInicialJSON != null && puntoInicialJSON.isObject()) {
-            // Si existe, obtener las coordenadas x e y del nodo JSON de "start"
-            int x = puntoInicialJSON.get("x").asInt();
-            int y = puntoInicialJSON.get("y").asInt();
+        // Verificar si el objeto "start" existe en el JSON
+        if (puntoInicialJSON != null && !puntoInicialJSON.entrySet().isEmpty()) {
+            // Si existe, obtener las coordenadas x e y del objeto JSON de "start"
+            int x = puntoInicialJSON.get("x").getAsInt();
+            int y = puntoInicialJSON.get("y").getAsInt();
 
             // Actualizar el punto inicial de la instancia de Mapa
-            this.puntoInicial = new Point(x, y); // Ajusta el método según la estructura de tu clase Mapa
+            this.puntoInicial = new Point(x, y); // Ajusta según la estructura de tu clase Mapa
         }
         else {
             // Si no existe, asignar el punto inicial predeterminado
-            this.puntoInicial = Salida.puntoInicialSiguiente; // Ajusta esto según lo que necesites
+            this.puntoInicial = Salida.puntoInicialSiguiente; // Ajusta según tus necesidades
         }
     }
 
-    private void inicializarCapas(JsonNode globalJSON) {
-        // Obtener el nodo JSON que contiene las capas del mapa
-        JsonNode capas = globalJSON.get("layers");
-
-        // Inicializar las listas para las diferentes capas
+    private void inicializarCapas(JsonObject globalJSON) {
+        JsonArray capas = globalJSON.getAsJsonArray("layers");
         this.capaSprites1 = new ArrayList<>();
         this.capaSprites2 = new ArrayList<>();
         this.capaColisiones = new ArrayList<>();
         this.capaTransparencias = new ArrayList<>();
 
-        // Verificar si el nodo "layers" existe y es un array
-        if (capas != null && capas.isArray()) {
-            // Iterar sobre cada nodo de capa en el array
-            for (JsonNode capaNode : capas) {
-                // Obtener el tipo de capa (identificador)
-                String tipo = capaNode.get("id").asText();
+        if (capas != null) {
+            for (JsonElement capaElement : capas) {
+                JsonObject capaNode = capaElement.getAsJsonObject();
+                String tipo = capaNode.get("id").getAsString();
 
-                // Según el tipo de capa, inicializar la capa correspondiente
                 switch (tipo) {
                     case "1":
                     case "2":
@@ -391,12 +339,10 @@ public class MapaTiled {
                 }
             }
 
-            // Iterar nuevamente sobre cada nodo de capa
-            for (JsonNode capaNode : capas) {
-                // Obtener el tipo de capa (objectgroup para colisiones, objectgroup1 para transparencias)
-                String tipo = capaNode.get("type").asText();
+            for (JsonElement capaElement : capas) {
+                JsonObject capaNode = capaElement.getAsJsonObject();
+                String tipo = capaNode.get("type").getAsString();
 
-                // Según el tipo de capa, inicializar la capa correspondiente
                 switch (tipo) {
                     case "objectgroup":
                         inicializarCapaColisiones(capaNode);
@@ -408,88 +354,65 @@ public class MapaTiled {
             }
         }
         else {
-            // Si el nodo "layers" no está presente o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'layers' no está presente o no es un array en el JSON.");
         }
     }
 
-    // Método para combinar todas las áreas de colisión de las diferentes capas en un solo ArrayList
     private void combinarColisiones() {
-        // Se crea un ArrayList para almacenar las áreas de colisión originales
+        // Lógica para combinar colisiones en un solo ArrayList
         areaColisionOriginales = new ArrayList<>();
 
-        // Iterar sobre cada capa de colisiones
         for (int i = 0; i < capaColisiones.size(); i++) {
-            // Obtener los rectángulos de colisión de la capa actual
             Rectangle[] rectangulos = capaColisiones.get(i).getColisionables();
 
-            // Iterar sobre cada rectángulo de colisión y agregarlo al ArrayList de áreas de colisión originales
             for (int j = 0; j < rectangulos.length; j++) {
                 areaColisionOriginales.add(rectangulos[j]);
             }
         }
     }
 
-// Método para combinar todas las áreas de transparencia de las diferentes capas en un solo ArrayList
     private void combinarTransparencias() {
-        // Se crea un ArrayList para almacenar las áreas de transparencia originales
+        // Lógica para combinar colisiones en un solo ArrayList
         areaTransparenciaOriginales = new ArrayList<>();
 
-        // Iterar sobre cada capa de transparencias
         for (int i = 0; i < capaTransparencias.size(); i++) {
-            // Obtener los rectángulos de transparencia de la capa actual
             Rectangle[] rectangulos = capaTransparencias.get(i).getColisionables();
 
-            // Iterar sobre cada rectángulo de transparencia y agregarlo al ArrayList de áreas de transparencia originales
             for (int j = 0; j < rectangulos.length; j++) {
                 areaTransparenciaOriginales.add(rectangulos[j]);
             }
         }
     }
 
-// Método para inicializar el algoritmo de Dijkstra
     private void inicializarDijkstra() {
-        // Crear una nueva instancia de Dijkstra con un punto inicial, el ancho y alto del mapa, y las áreas de colisión originales
         dijkstra = new Dijkstra(new Point(10, 10), anchoMapaTiles, altoMapaTiles, areaColisionOriginales);
     }
 
-    // Método para inicializar la paleta de sprites del mapa
-    private void inicializarPaletaSprites(JsonNode globalJSON) {
-        // Obtener el objeto JSON asociado con "tilesets"
-        JsonNode coleccionSprites = globalJSON.get("tilesets");
-
-        // Verificar si existe y es un array
-        if (coleccionSprites != null && coleccionSprites.isArray()) {
-            // Inicializar variables para el total de sprites en la paleta
+    private void inicializarPaletaSprites(JsonObject globalJSON) {
+        // Lógica para inicializar la paleta de sprites
+        JsonArray coleccionSprites = globalJSON.getAsJsonArray("tilesets");
+        if (coleccionSprites != null) {
             int totalSprites = 0;
-
-            // Calcular el total de sprites sumando el "tilecount" de cada grupo de sprites
-            for (JsonNode datosGrupo : coleccionSprites) {
-                totalSprites += datosGrupo.get("tilecount").asInt();
+            for (JsonElement datosGrupo : coleccionSprites) {
+                JsonObject grupo = datosGrupo.getAsJsonObject();
+                totalSprites += grupo.get("tilecount").getAsInt();
             }
 
-            // Inicializar los arrays para las paletas de sprites
             paletaSprites1 = new Sprite[totalSprites];
             paletaSprites2 = new Sprite[totalSprites];
 
-            // Variable para llevar el índice del sprite actual
             int spriteIndex = 0;
+            for (JsonElement datosGrupo : coleccionSprites) {
+                JsonObject grupo = datosGrupo.getAsJsonObject();
+                String nombreImagen = grupo.get("image").getAsString();
+                int anchoTile = grupo.get("tilewidth").getAsInt();
+                int altoTile = grupo.get("tileheight").getAsInt();
 
-            // Iterar sobre cada grupo de sprites en "tilesets"
-            for (JsonNode datosGrupo : coleccionSprites) {
-                // Obtener información del grupo de sprites actual
-                String nombreImagen = datosGrupo.get("image").asText();
-                int anchoTile = datosGrupo.get("tilewidth").asInt();
-                int altoTile = datosGrupo.get("tileheight").asInt();
-
-                // Crear una hoja de sprites con la imagen del grupo
                 HojaSprites hoja = new HojaSprites("/mapas/" + nombreImagen, anchoTile, altoTile, false);
 
-                // Obtener el rango de IDs de los sprites en el grupo actual
-                int primerSpriteColeccion = datosGrupo.get("firstgid").asInt() - 1;
-                int ultimoSpriteColeccion = primerSpriteColeccion + datosGrupo.get("tilecount").asInt() - 1;
+                int primerSpriteColeccion = grupo.get("firstgid").getAsInt() - 1;
+                int ultimoSpriteColeccion = primerSpriteColeccion + grupo.get("tilecount").getAsInt() - 1;
 
-                // Crear un array de sprites para el grupo actual
                 Sprite[] sprites = new Sprite[ultimoSpriteColeccion - primerSpriteColeccion + 1];
                 for (int j = 0; j < sprites.length; j++) {
                     sprites[j] = hoja.getSprites(j);
@@ -524,209 +447,160 @@ public class MapaTiled {
                     }
                 }
 
-                // Actualizar el índice del sprite actual
                 spriteIndex += sprites.length;
             }
         }
         else {
-            // Si no se encuentra el objeto "tilesets" o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'tilesets' no está presente o no es un array en el JSON.");
         }
     }
 
-    // Método para obtener los objetos del mapa a partir del JSON proporcionado
-    private void obtenerObjetosMapa(JsonNode globalJSON) {
-        // Inicializar la lista de objetos del mapa
+    private void obtenerObjetosMapa(JsonObject globalJSON) {
         objetosMapa = new ArrayList<>();
+        JsonArray coleccionObjetos = globalJSON.getAsJsonArray("objetos");
 
-        // Obtener el objeto JSON asociado con "objetos"
-        JsonNode coleccionObjetos = globalJSON.get("objetos");
+        if (coleccionObjetos != null) {
+            for (JsonElement objetoElement : coleccionObjetos) {
+                JsonObject objetoNode = objetoElement.getAsJsonObject();
+                int idObjeto = objetoNode.get("id").getAsInt();
+                int cantidad = objetoNode.get("cantidad").getAsInt();
+                int xObjeto = objetoNode.get("x").getAsInt();
+                int yObjeto = objetoNode.get("y").getAsInt();
 
-        // Verificar si existe y es un array
-        if (coleccionObjetos != null && coleccionObjetos.isArray()) {
-            // Iterar sobre cada objeto del array
-            for (JsonNode objetoNode : coleccionObjetos) {
-                // Obtener los datos del objeto
-                int idObjeto = objetoNode.get("id").asInt();
-                int cantidad = objetoNode.get("cantidad").asInt();
-                int xObjeto = objetoNode.get("x").asInt();
-                int yObjeto = objetoNode.get("y").asInt();
-
-                // Crear un punto con la posición del objeto
                 Point posicionObjeto = new Point(xObjeto, yObjeto);
-
-                // Obtener el objeto correspondiente al ID del JSON
                 Objeto objeto = RegistroObjetos.obtenerObjeto(idObjeto);
-
-                // Establecer la cantidad del objeto
                 objeto.setCantidad(cantidad);
 
-                // Crear un objeto único a partir de los datos obtenidos y agregarlo a la lista de objetos del mapa
                 ObjetoUnicoTiled objetoUnico = new ObjetoUnicoTiled(posicionObjeto, objeto, objeto.getCantidad());
                 objetosMapa.add(objetoUnico);
             }
         }
         else {
-            // Si no se encuentra el objeto "objetos" o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'objetos' no está presente o no es un array en el JSON.");
         }
     }
 
-// Método para obtener los enemigos del mapa a partir del JSON proporcionado
-    private void obtenerEnemigosMapa(JsonNode globalJSON) {
-        // Inicializar la lista de enemigos del mapa
+    private void obtenerEnemigosMapa(JsonObject globalJSON) {
         enemigosMapa = new ArrayList<>();
+        JsonArray coleccionEnemigos = globalJSON.getAsJsonArray("enemigos");
 
-        // Obtener el objeto JSON asociado con "enemigos"
-        JsonNode coleccionEnemigos = globalJSON.get("enemigos");
+        if (coleccionEnemigos != null) {
+            for (JsonElement enemigoElement : coleccionEnemigos) {
+                JsonObject enemigoNode = enemigoElement.getAsJsonObject();
 
-        // Verificar si existe y es un array
-        if (coleccionEnemigos != null && coleccionEnemigos.isArray()) {
-            // Iterar sobre cada enemigo del array
-            for (JsonNode enemigoNode : coleccionEnemigos) {
-                // Obtener los datos del enemigo
+                // Obtener los valores de id, x, y
                 int idEnemigo = getIntJson(enemigoNode, "id");
                 int xEnemigo = getIntJson(enemigoNode, "x");
                 int yEnemigo = getIntJson(enemigoNode, "y");
 
-                // Verificar si los datos del enemigo no son nulos y son valores numéricos
-                if (idEnemigo != 0 && xEnemigo != 0 && yEnemigo != 0) {
-                    // Crear un punto con la posición del enemigo
+                if (idEnemigo != 0) {
                     Point posicionEnemigo = new Point(xEnemigo, yEnemigo);
-
-                    // Obtener el enemigo correspondiente al ID del JSON
                     Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(idEnemigo);
-
-                    // Establecer la posición del enemigo y agregarlo a la lista de enemigos del mapa
                     enemigo.setPosicion(posicionEnemigo.x, posicionEnemigo.y);
                     enemigosMapa.add(enemigo);
                 }
                 else {
-                    // Mostrar un mensaje de error si uno de los nodos de enemigos es nulo
-                    System.err.println("Uno de los nodos de enemigos es nulo.");
+                    System.err.println("El ID del enemigo es 0, se omitirá.");
                 }
             }
         }
         else {
-            // Si no se encuentra el objeto "enemigos" o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'enemigos' no está presente o no es un array en el JSON.");
         }
     }
 
-    // Método para obtener los contenedores del mapa a partir del JSON proporcionado
-    private void obtenerContenedoresMapa(JsonNode globalJSON) {
-        // Inicializar la lista de contenedores del mapa
+    private void obtenerContenedoresMapa(JsonObject globalJSON) {
         listaContenedores = new ArrayList<>();
+        JsonArray coleccionContenedores = globalJSON.getAsJsonArray("contenedores");
 
-        // Obtener el objeto JSON asociado con "contenedores"
-        JsonNode coleccionContenedores = globalJSON.get("contenedores");
+        if (coleccionContenedores != null) {
+            for (JsonElement contenedorElement : coleccionContenedores) {
+                JsonObject contenedorNode = contenedorElement.getAsJsonObject();
+                int idContenedor = getIntJson(contenedorNode, "idContenedor");
+                int xContenedor = getIntJson(contenedorNode, "x");
+                int yContenedor = getIntJson(contenedorNode, "y");
 
-        // Verificar si existe y es un array
-        if (coleccionContenedores != null && coleccionContenedores.isArray()) {
-            // Iterar sobre cada contenedor del array
-            for (JsonNode contenedorNode : coleccionContenedores) {
-                // Obtener los datos del contenedor
-                int idContenedor = contenedorNode.get("idContenedor").asInt();
-                int xContenedor = contenedorNode.get("x").asInt();
-                int yContenedor = contenedorNode.get("y").asInt();
-
-                // Crear un punto con la posición del contenedor
                 Point posicionContenedor = new Point(xContenedor, yContenedor);
+                Rectangle areaContenedor = new Rectangle(xContenedor, yContenedor, 32, 32);
+                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor, idContenedor, areaContenedor);
 
-                // Crear un área rectangular para el contenedor
-                Rectangle areacontenedor = new Rectangle(xContenedor, yContenedor, 32, 32);
+                JsonArray coleccionObjetos = contenedorNode.getAsJsonArray("objetos");
+                if (coleccionObjetos != null) {
+                    for (JsonElement objetoElement : coleccionObjetos) {
+                        JsonObject objetoNode = objetoElement.getAsJsonObject();
+                        int idObjeto = getIntJson(objetoNode, "idObjeto");
+                        int cantidadObjeto = getIntJson(objetoNode, "cantidad");
 
-                // Crear el contenedor de objetos con los datos obtenidos
-                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor, idContenedor, areacontenedor);
-
-                // Obtener la colección de objetos dentro del contenedor
-                JsonNode coleccionObjetos = contenedorNode.get("objetos");
-                if (coleccionObjetos != null && coleccionObjetos.isArray()) {
-                    // Iterar sobre cada objeto en la colección
-                    for (JsonNode objetoNode : coleccionObjetos) {
-                        // Obtener los datos del objeto dentro del contenedor
-                        int idObjeto = objetoNode.get("idObjeto").asInt();
-                        int cantidadObjeto = objetoNode.get("cantidad").asInt();
-
-                        // Obtener el objeto del registro de objetos y establecer su cantidad
                         Objeto objeto = RegistroObjetos.obtenerObjeto(idObjeto);
                         objeto.setCantidad(cantidadObjeto);
 
-                        // Agregar el objeto al contenedor
                         contenedor.getObjetos().add(objeto);
                     }
                 }
 
-                // Agregar el contenedor a la lista de contenedores y su área a las áreas de colisión originales
                 listaContenedores.add(contenedor);
                 areaColisionOriginales.add(contenedor.getArea());
             }
         }
         else {
-            // Si no se encuentra el objeto "contenedores" o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'contenedores' no está presente o no es un array en el JSON.");
         }
     }
 
-// Método para obtener las tiendas del mapa a partir del JSON proporcionado
-    private void obtenerTiendas(JsonNode globalJSON) {
-        // Inicializar la lista de tiendas del mapa
+    private void obtenerTiendas(JsonObject globalJSON) {
         tiendas = new ArrayList<>();
 
-        // Obtener el objeto JSON asociado con "tiendas"
-        JsonNode coleccionTiendas = globalJSON.get("tiendas");
-        if (coleccionTiendas != null && coleccionTiendas.isArray()) {
-            // Iterar sobre cada tienda del array
-            for (JsonNode tiendaNode : coleccionTiendas) {
-                // Obtener los datos de la tienda
+        JsonArray coleccionTiendas = globalJSON.getAsJsonArray("tiendas");
+        if (coleccionTiendas != null) {
+            for (JsonElement tiendaElement : coleccionTiendas) {
+                JsonObject tiendaNode = tiendaElement.getAsJsonObject();
                 int idTienda = getIntJson(tiendaNode, "id");
                 int xTienda = getIntJson(tiendaNode, "x");
                 int yTienda = getIntJson(tiendaNode, "y");
                 int tipo = getIntJson(tiendaNode, "tienda");
 
-                // Crear un punto con la posición de la tienda
                 Point posTienda = new Point(xTienda, yTienda);
-
-                // Crear una tienda con los datos obtenidos y agregarla a la lista de tiendas
                 Tienda tienda = new Tienda(idTienda, posTienda, tipo);
                 tiendas.add(tienda);
             }
         }
         else {
-            // Si no se encuentra el objeto "tiendas" o no es un array, mostrar un mensaje de error
             System.err.println("La clave 'tiendas' no está presente o no es un array en el JSON.");
         }
     }
 
-// Método para obtener la ruta de la música del mapa a partir del JSON proporcionado
-    private void obtenerRutaMusica(JsonNode globalJSON) {
-        // Obtener la ruta de la música del objeto JSON asociado con "ruta"
-        JsonNode ruta = globalJSON.get("ruta");
-        // Asignar la ruta de la música y eliminar las comillas dobles si existen
-        rutaMusica = ruta.toString().replaceAll("\"", "");
-    }
+    private void obtenerInformacionSiguienteMapa(JsonObject globalJSON) {
+        JsonArray salidasJSON = globalJSON.getAsJsonArray("salidas");
 
-    private void obtenerInformacionSiguienteMapa(JsonNode globalJSON) {
-        // Obtener el objeto JSON asociado con "salidas"
-        JsonNode salidasJSON = globalJSON.get("salidas");
+        if (salidasJSON != null && salidasJSON.size() > 0) {
+            for (JsonElement salidaElement : salidasJSON) {
+                JsonObject salidaJSON = salidaElement.getAsJsonObject();
 
-        // Verificar si existe y no está vacío
-        if (salidasJSON != null && !salidasJSON.isEmpty()) {
-            // Iterar sobre cada salida del array
-            for (JsonNode salidaJSON : salidasJSON) {
-                // Obtener las coordenadas de la salida en el mapa actual
-                int xSalidaMapa = salidaJSON.get("x").asInt();
-                int ySalidaMapa = salidaJSON.get("y").asInt();
+                // Comprobación de valores nulos
+                if (salidaJSON == null) {
+                    System.err.println("Salida JSON es nula.");
+                    continue; // Saltar a la siguiente salida
+                }
+
+                // Si no existe, agregar la nueva salida
+                int xSalidaMapa = salidaJSON.get("x").getAsInt();
+                int ySalidaMapa = salidaJSON.get("y").getAsInt();
                 Point puntoSalidaMapa = new Point(xSalidaMapa, ySalidaMapa);
 
-                // Obtener el nombre del siguiente mapa y las coordenadas de inicio en él
-                String siguienteMapa = salidaJSON.get("mapaDestino").asText();
-                JsonNode puntoInicialJSON = salidaJSON.get("punto inicial");
-                int xInicioSiguienteMapa = puntoInicialJSON.get("x").asInt();
-                int yInicioSiguienteMapa = puntoInicialJSON.get("y").asInt();
+                String siguienteMapa = salidaJSON.get("mapaDestino").getAsString();
+
+                // Obtener las coordenadas de inicio en el siguiente mapa desde salidaJSON
+                JsonObject puntoInicialJSON = salidaJSON.getAsJsonObject("punto inicial");
+
+                if (puntoInicialJSON == null) {
+                    System.err.println("El punto inicial no está presente en la salida JSON.");
+                    continue; // Saltar a la siguiente salida
+                }
+
+                int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
+                int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
                 Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
 
-                // Crear una nueva salida y su zona de salida correspondiente, y agregarlas a las listas respectivas
                 Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa);
                 Rectangle nuevaZonaSalida = new Rectangle(xSalidaMapa, ySalidaMapa, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
                 Salida.getSalidas().add(nuevaSalida);
@@ -734,101 +608,71 @@ public class MapaTiled {
             }
         }
         else {
-            System.err.println("La clave 'salida' no está presente o está vacía en el JSON.");
+            System.err.println("La clave 'salidas' no está presente o está vacía en el JSON.");
         }
     }
 
-    // Método para inicializar la capa de sprites 1 a partir de los datos proporcionados
-    private void inicializarCapaSprites1(JsonNode datosCapa) {
-        // Obtener el ancho, alto, posición x e y de la capa
-        int anchoCapa = datosCapa.get("width").asInt();
-        int altoCapa = datosCapa.get("height").asInt();
-        int xCapa = datosCapa.get("x").asInt();
-        int yCapa = datosCapa.get("y").asInt();
+    private void inicializarCapaSprites1(JsonObject datosCapa) {
+        int anchoCapa = datosCapa.get("width").getAsInt();
+        int altoCapa = datosCapa.get("height").getAsInt();
+        int xCapa = datosCapa.get("x").getAsInt();
+        int yCapa = datosCapa.get("y").getAsInt();
 
-        // Obtener los datos de los sprites de la capa
-        JsonNode spritesNode = datosCapa.get("data");
-
-        // Verificar si los datos de los sprites existen y son un array
-        if (spritesNode != null && spritesNode.isArray()) {
-            // Inicializar el arreglo para almacenar los sprites de la capa
+        JsonArray spritesNode = datosCapa.getAsJsonArray("data");
+        if (spritesNode != null) {
             int[] spriteCapa = new int[spritesNode.size()];
-
-            // Iterar sobre cada sprite en el array
             for (int j = 0; j < spritesNode.size(); j++) {
-                // Obtener el código del sprite y restar 1 (debido a la indexación base 1)
-                int codigoSprite = spritesNode.get(j).asInt();
+                int codigoSprite = spritesNode.get(j).getAsInt();
                 spriteCapa[j] = codigoSprite - 1;
             }
 
-            // Agregar la capa de sprites inicializada a la lista de capas de sprites 1
             this.capaSprites1.add(new CapaSprites(anchoCapa, altoCapa, xCapa, yCapa, spriteCapa));
         }
         else {
-            // Mostrar un mensaje de error si no se encontraron datos válidos en la capa de sprites 1
             System.err.println("No se encontraron datos válidos en la capa de sprites 1.");
         }
     }
 
-// Método para inicializar la capa de sprites 2 a partir de los datos proporcionados
-    private void inicializarCapaSprites2(JsonNode datosCapa) {
-        // Obtener el ancho, alto, posición x e y de la capa
-        int anchoCapa = datosCapa.get("width").asInt();
-        int altoCapa = datosCapa.get("height").asInt();
-        int xCapa = datosCapa.get("x").asInt();
-        int yCapa = datosCapa.get("y").asInt();
+    private void inicializarCapaSprites2(JsonObject datosCapa) {
+        int anchoCapa = datosCapa.get("width").getAsInt();
+        int altoCapa = datosCapa.get("height").getAsInt();
+        int xCapa = datosCapa.get("x").getAsInt();
+        int yCapa = datosCapa.get("y").getAsInt();
 
-        // Obtener los datos de los sprites de la capa
-        JsonNode spritesNode = datosCapa.get("data");
-
-        // Verificar si los datos de los sprites existen y son un array
-        if (spritesNode != null && spritesNode.isArray()) {
-            // Inicializar el arreglo para almacenar los sprites de la capa
+        JsonArray spritesNode = datosCapa.getAsJsonArray("data");
+        if (spritesNode != null) {
             int[] spriteCapa = new int[spritesNode.size()];
-
-            // Iterar sobre cada sprite en el array
             for (int j = 0; j < spritesNode.size(); j++) {
-                // Obtener el código del sprite y restar 1 (debido a la indexación base 1)
-                int codigoSprite = spritesNode.get(j).asInt();
+                int codigoSprite = spritesNode.get(j).getAsInt();
                 spriteCapa[j] = codigoSprite - 1;
             }
 
-            // Agregar la capa de sprites inicializada a la lista de capas de sprites 2
             this.capaSprites2.add(new CapaSprites(anchoCapa, altoCapa, xCapa, yCapa, spriteCapa));
         }
         else {
-            // Mostrar un mensaje de error si no se encontraron datos válidos en la capa de sprites 2
             System.err.println("No se encontraron datos válidos en la capa de sprites 2.");
         }
     }
 
-// Método para inicializar la capa de colisiones a partir de los datos proporcionados
-    private void inicializarCapaColisiones(JsonNode datosCapa) {
-        // Obtener el ancho, alto, posición x e y de la capa
+    private void inicializarCapaColisiones(JsonObject datosCapa) {
         int anchoCapa = getIntJson(datosCapa, "width");
         int altoCapa = getIntJson(datosCapa, "height");
         int xCapa = getIntJson(datosCapa, "x");
         int yCapa = getIntJson(datosCapa, "y");
 
-        // Obtener los datos de los rectángulos de colisión de la capa
-        JsonNode rectangulosNode = datosCapa.get("objects");
-
-        // Verificar si los datos de los rectángulos existen y son un array
-        if (rectangulosNode != null && rectangulosNode.isArray()) {
-            // Inicializar el arreglo para almacenar los rectángulos de colisión de la capa
+        JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
+        if (rectangulosNode != null) {
             Rectangle[] rectangulosCapa = new Rectangle[rectangulosNode.size()];
 
-            // Iterar sobre cada rectángulo en el array
             for (int j = 0; j < rectangulosNode.size(); j++) {
-                JsonNode datosRectangulo = rectangulosNode.get(j);
+                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
 
-                // Obtener las coordenadas y dimensiones del rectángulo
                 int x = getIntJson(datosRectangulo, "x");
                 int y = getIntJson(datosRectangulo, "y");
                 int ancho = getIntJson(datosRectangulo, "width");
                 int alto = getIntJson(datosRectangulo, "height");
 
-                // Ajustar las dimensiones mínimas a 1 si son 0
+                // Asegurar que los valores no sean cero
                 if (x == 0) {
                     x = 1;
                 }
@@ -842,47 +686,36 @@ public class MapaTiled {
                     alto = 1;
                 }
 
-                // Crear el rectángulo de colisión y agregarlo al arreglo
                 Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
                 rectangulosCapa[j] = rectangulo;
             }
 
-            // Agregar la capa de colisiones inicializada a la lista de capas de colisiones
             this.capaColisiones.add(new CapaColisiones(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
         }
         else {
-            // Mostrar un mensaje de error si no se encontraron datos válidos en la capa de colisiones
             System.err.println("No se encontraron datos válidos en la capa de colisiones.");
         }
     }
 
-    // Método para inicializar la capa de transparencia a partir de los datos proporcionados
-    private void inicializarCapaTransparencia(JsonNode datosCapa) {
-        // Obtener el ancho, alto, posición x e y de la capa de transparencia
+    private void inicializarCapaTransparencia(JsonObject datosCapa) {
         int anchoCapa = getIntJson(datosCapa, "width");
         int altoCapa = getIntJson(datosCapa, "height");
         int xCapa = getIntJson(datosCapa, "x");
         int yCapa = getIntJson(datosCapa, "y");
 
-        // Obtener los datos de los rectángulos de la capa de transparencia
-        JsonNode rectangulosNode = datosCapa.get("objects");
-
-        // Verificar si los datos de los rectángulos existen y son un array
-        if (rectangulosNode != null && rectangulosNode.isArray()) {
-            // Inicializar el arreglo para almacenar los rectángulos de la capa de transparencia
+        JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
+        if (rectangulosNode != null) {
             Rectangle[] rectangulosCapa = new Rectangle[rectangulosNode.size()];
 
-            // Iterar sobre cada rectángulo en el array
             for (int j = 0; j < rectangulosNode.size(); j++) {
-                JsonNode datosRectangulo = rectangulosNode.get(j);
+                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
 
-                // Obtener las coordenadas y dimensiones del rectángulo
                 int x = getIntJson(datosRectangulo, "x");
                 int y = getIntJson(datosRectangulo, "y");
                 int ancho = getIntJson(datosRectangulo, "width");
                 int alto = getIntJson(datosRectangulo, "height");
 
-                // Ajustar las dimensiones mínimas a 1 si son 0
+                // Asegurar que los valores no sean cero
                 if (x == 0) {
                     x = 1;
                 }
@@ -896,23 +729,18 @@ public class MapaTiled {
                     alto = 1;
                 }
 
-                // Crear el rectángulo de transparencia y agregarlo al arreglo
                 Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
                 rectangulosCapa[j] = rectangulo;
             }
 
-            // Agregar la capa de transparencia inicializada a la lista de capas de transparencia
             this.capaTransparencias.add(new CapaTransparencias(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
         }
         else {
-            // Mostrar un mensaje de error si no se encontraron datos válidos en la capa de transparencia
             System.err.println("No se encontraron datos válidos en la capa de transparencia.");
         }
     }
 
-// Método para actualizar los ataques del jugador
     private void actualizarAtaques() {
-        // Verificar si no hay enemigos en el mapa o si el alcance del jugador está vacío
         if (enemigosMapa.isEmpty() || ElementosPrincipales.jugador.getAlcanceActual().isEmpty()) {
             return;
         }
@@ -931,7 +759,6 @@ public class MapaTiled {
             return;
         }
 
-        // Verificar si el jugador está atacando
         if (ElementosPrincipales.jugador.atacando) {
             ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
             if (ElementosPrincipales.jugador.getAe().getArma1() != null && ElementosPrincipales.jugador.getAe().getArma1().isPenetrante()) {
@@ -974,66 +801,58 @@ public class MapaTiled {
                 }
                 enemigosAlcanzados.add(enemigoCercano);
             }
-
-            // Obtener el arma equipada por el jugador
             Arma arma = ElementosPrincipales.jugador.getAe().getArma1();
-
-            // Inicializar el atributo de ataque del jugador
             int atributo = 0;
 
-            // Calcular el atributo de ataque basado en el tipo de arma equipada por el jugador
-            if (arma != null) {
-                if (arma.getTipoObjeto() == TipoObjeto.ARCO) {
-                    atributo = ElementosPrincipales.jugador.getGa().getDestreza();
-                }
-                else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
-                    atributo = (int) (ElementosPrincipales.jugador.getGa().getFuerza() / 2
-                            + ElementosPrincipales.jugador.getGa().getDestreza() / 2);
-                }
-                else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza();
-                }
-                else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
-                    atributo = (int) (ElementosPrincipales.jugador.getGa().getFuerza()
-                            + ElementosPrincipales.jugador.getGa().getDestreza() / 2);
-                }
+            if (arma.getTipoObjeto() == TipoObjeto.ARCO) {
+                atributo = ElementosPrincipales.jugador.getGa().getDestreza();
 
-                // Realizar el ataque con el arma equipada y actualizar la lista de enemigos alcanzados
+            }
+            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
+                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza() / 2
+                        + (int) ElementosPrincipales.jugador.getGa().getDestreza() / 2;
+
+            }
+            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
+                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza();
+
+            }
+            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
+                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza()
+                        + (int) ElementosPrincipales.jugador.getGa().getDestreza() / 2;
+
+            }
+            if (arma != null) {
                 arma.atacar(enemigosAlcanzados, atributo);
             }
 
-            // Iterar sobre la lista de enemigos del mapa y eliminar los derrotados
-            Iterator<Enemigo> iterador = enemigosMapa.iterator();
-            while (iterador.hasNext()) {
-                Enemigo enemigo = iterador.next();
-                if (enemigo.getVidaActual() <= 0) {
-                    iterador.remove();
-                }
-            }
-
-            // Marcar el fin del ataque del jugador
-            ElementosPrincipales.jugador.atacando = false;
         }
+        Iterator<Enemigo> iterador = enemigosMapa.iterator();
+
+        while (iterador.hasNext()) {
+            Enemigo enemigo = iterador.next();
+            if (enemigo.getVidaActual() <= 0) {
+                iterador.remove();
+            }
+        }
+        ElementosPrincipales.jugador.atacando = false;
     }
 
-    // Método para actualizar la recogida de objetos por parte del jugador
     private void actualizarRecogidaObjeto() {
-        // Obtener el tiempo actual
+
         long tiempoActual = System.currentTimeMillis();
 
-        // Verificar si ha pasado suficiente tiempo desde la última recogida
+        // Verifica si ha pasado suficiente tiempo desde la última recogida
         if (tiempoActual - ultimoTiempoRecogida < tiempoDebouncing) {
-            return; // Ignorar la recogida si está dentro del tiempo de debouncing
+            return; // Ignora la recogida si está dentro del tiempo de debouncing
         }
 
-        // Actualizar el tiempo de la última recogida
+        // Actualiza el tiempo de la última recogida
         ultimoTiempoRecogida = tiempoActual;
-
-        // Obtener el área del jugador
+        Iterator<ObjetoUnicoTiled> iterador = objetosMapa.iterator();
+        Iterator<ContenedorObjetos> iterador2 = listaContenedores.iterator();
         Rectangle areaJugador = ElementosPrincipales.jugador.getArea();
 
-        // Iterar sobre los objetos en el mapa
-        Iterator<ObjetoUnicoTiled> iterador = objetosMapa.iterator();
         while (iterador.hasNext()) {
             ObjetoUnicoTiled objetoActual = iterador.next();
             Rectangle posicionObjetoActual = new Rectangle(
@@ -1042,241 +861,228 @@ public class MapaTiled {
                     Constantes.LADO_SPRITE,
                     Constantes.LADO_SPRITE);
 
-            // Verificar si el jugador intersecta con el objeto y está recogiendo
             if (areaJugador.intersects(posicionObjetoActual) && GestorPrincipal.sd.getRaton().isRecogiendo()) {
-                // Verificar si el jugador está sobrepeso
                 if (ElementosPrincipales.jugador.isSobrepeso()) {
                     return;
                 }
-                // Recoger el objeto y eliminarlo de la lista de objetos en el mapa
                 ElementosPrincipales.inventario.recogerObjetos(objetoActual);
                 iterador.remove();
                 break; // Salir del bucle después de recoger un objeto
             }
         }
 
-        // Iterar sobre los contenedores de objetos en el mapa
-        Iterator<ContenedorObjetos> iterador2 = listaContenedores.iterator();
         while (iterador2.hasNext()) {
             ContenedorObjetos contenedor = iterador2.next();
-            // Verificar si el contenedor está vacío y eliminarlo si es así
             if (contenedor.getObjetos().isEmpty()) {
                 iterador2.remove();
             }
             else if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
-                // Verificar si el jugador intersecta con el contenedor y está haciendo clic
                 abrirContenedor(contenedor);
             }
         }
     }
 
-// Método para abrir un contenedor de objetos
     private void abrirContenedor(ContenedorObjetos contenedor) {
         contenedorAbierto = true;
         contenedorActual = contenedor;
     }
 
-// Método para mostrar los elementos de un contenedor de objetos y permitir la recogida
     private void mostrarElementoscontenedor() {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
-        // Verificar si el contenedor está abierto y actual
         if (contenedorAbierto && contenedorActual != null) {
             int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle areaContenedor = new Rectangle(puntoX, puntoY, 32, 32);
             contenedorActual.setArea(areaContenedor);
 
-            // Verificar si el ratón intersecta con el área del contenedor y está haciendo clic
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(areaContenedor))
                     && GestorPrincipal.sd.getRaton().isClick()) {
                 recogerObjetosDelContenedor(contenedorActual);
             }
             else {
-                // Cerrar el contenedor si el ratón no está sobre él
                 contenedorActual = null;
                 contenedorAbierto = false;
             }
         }
     }
 
-    // Método para recoger objetos del contenedor y agregarlos al mapa como objetos únicos
     private void recogerObjetosDelContenedor(ContenedorObjetos contenedor) {
-        // Obtener la posición actual del jugador
         int x = ElementosPrincipales.jugador.getPosicionXInt();
         int y = ElementosPrincipales.jugador.getPosicionYInt();
 
-        // Recorrer todos los objetos en el contenedor y agregarlos al mapa como objetos únicos
         for (Objeto objetoActual : contenedor.getObjetos()) {
             ObjetoUnicoTiled objeto = new ObjetoUnicoTiled(new Point(x, y), objetoActual, objetoActual.getCantidad());
             objetosMapa.add(objeto);
         }
 
-        // Limpiar la lista de objetos en el contenedor después de recogerlos todos
         contenedor.getObjetos().clear();
     }
 
-// Método para actualizar el comportamiento de los enemigos en el mapa
     private void actualizarEnemigos() {
-        // Verificar si hay enemigos en el mapa
         if (!enemigosMapa.isEmpty()) {
-            // Iterar sobre todos los enemigos en el mapa
             for (Enemigo enemigo : enemigosMapa) {
-                // Actualizar el siguiente nodo para el enemigo utilizando el algoritmo de Dijkstra
                 enemigo.setSiguienteNodo(dijkstra.enconcontrarSiguienteNodoParaEnemigo(enemigo));
-                // Actualizar el enemigo en función de su comportamiento y la posición de otros enemigos
                 enemigo.actualizar(enemigosMapa);
             }
         }
     }
 
-    private JsonNode getObjetoJson(final String codigoJson) {
-        ObjectMapper mapper = new ObjectMapper();
+    private JsonObject getObjetoJson(final String codigoJson) {
+        JsonParser parser = new JsonParser();
         try {
-            JsonNode objetoJson = mapper.readTree(codigoJson);
+            JsonObject objetoJson = parser.parse(codigoJson).getAsJsonObject();
             return objetoJson;
         }
-        catch (IOException e) {
+        catch (JsonSyntaxException e) {
             System.err.println("Error al analizar el JSON: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
 
-    private int getIntJson(JsonNode objSon, String clave) {
-        JsonNode valorNode = objSon.get(clave);
-
+    private int getIntJson(JsonObject objJson, String clave) {
+        JsonElement valorElement = objJson.get(clave);
         int valor = 0;
-        if (valorNode != null) {
-            if (valorNode.isNumber()) {
-                valor = valorNode.intValue(); // Convertir el valor del nodo a un entero
-            }
-            else if (valorNode.isTextual()) {
-                // Intenta convertir el valor del nodo a un entero
-                try {
-                    valor = Integer.parseInt(valorNode.asText());
+
+        if (valorElement != null) {
+            if (valorElement.isJsonPrimitive()) {
+                // Si es un número, se convierte directamente
+                if (valorElement.getAsJsonPrimitive().isNumber()) {
+                    valor = valorElement.getAsInt();
                 }
-                catch (NumberFormatException e) {
-                    System.err.println("No se pudo convertir el valor del nodo a un entero: " + e.getMessage());
+                // Si es un texto, intenta convertirlo a número
+                else if (valorElement.getAsJsonPrimitive().isString()) {
+                    try {
+                        valor = Integer.parseInt(valorElement.getAsString());
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("No se pudo convertir el valor del nodo a un entero: " + e.getMessage());
+                    }
                 }
             }
         }
         return valor;
     }
 
-    public static JsonNode getNodeFromJsonObject(JsonNode jsonObject, String key) {
-        // Verificar si el JSON contiene la clave
-        if (jsonObject.has(key)) {
-            return jsonObject.get(key);
-        }
-        else {
-            // Manejar el caso en el que la clave no está presente en el JSON
-            System.out.println("La clave '" + key + "' no está presente en el JSON.");
-            // Devolver null u otro valor predeterminado según tus necesidades
-            return null;
-        }
-    }
-
-    // Método para actualizar las zonas de salida en relación con la posición del jugador
     public void actualizarZonaSalida() {
-        for (Rectangle zonaSalida : zonasSalida) {
-            // Calcula las coordenadas relativas de la zona de salida en relación con el jugador
-            int puntoX = zonaSalida.x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = zonaSalida.y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
 
-            // Actualiza la zona de salida con las nuevas coordenadas
-            zonaSalida = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+        for (int i = 0; i < zonasSalida.size(); i++) {
+            int puntoX = zonasSalida.get(i).x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = zonasSalida.get(i).y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            switch (i) {
+                case 0:
+                    zonaSalida1 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 1:
+                    zonaSalida2 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 2:
+                    zonaSalida3 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 3:
+                    zonaSalida4 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 4:
+                    zonaSalida5 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 5:
+                    zonaSalida6 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 6:
+                    zonaSalida7 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 7:
+                    zonaSalida8 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                    break;
+                case 8:
+                    zonaSalida9 = new Rectangle(puntoX - 40, puntoY, Constantes.LADO_SPRITE * 3, Constantes.LADO_SPRITE);
+                    break;
+
+            }
         }
     }
 
-// Método para actualizar las áreas de las tiendas en relación con la posición del jugador
     private void actualizarTiendas() {
         for (Tienda tiendaActual : tiendas) {
-            // Calcula las coordenadas relativas de la tienda en relación con el jugador
+
             int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
 
-            // Crea un nuevo rectángulo que representa el área de la tienda con las nuevas coordenadas
             Rectangle nuevaAreaTienda = new Rectangle(puntoX - 18, puntoY, 16, 16);
             tiendaActual.setAreaTienda(nuevaAreaTienda);
 
-            // Verifica si el jugador ha hecho clic en la tienda para interactuar con ella
             if (ElementosPrincipales.jugador.getLIMITE_ABAJO().intersects(tiendaActual.getAreaTienda())
                     && GestorPrincipal.sd.getRaton().isClick2()) {
-                // Establece la tienda activa y realiza las acciones correspondientes
                 tiendaActiva = tiendaActual;
                 System.out.println("Tipo: " + tiendaActiva.getTipo());
                 obtenerObjetosMapa(tiendas.get(0).getIdTienda());
                 objetosTiendaActual = verificarTipoTienda(tiendaActiva);
+
                 GestorControles.teclado.tiendaActiva = true;
             }
         }
     }
 
-// Método para actualizar las áreas de colisión en relación con la posición del jugador
     private void actualizarAreasColision() {
-        // Borra las áreas de colisión previamente actualizadas si las hay
         if (!areasColisionActualizadas.isEmpty()) {
             areasColisionActualizadas.clear();
         }
 
-        // Itera sobre todas las áreas de colisión originales y las actualiza en función de la posición del jugador
         for (int i = 0; i < areaColisionOriginales.size(); i++) {
             Rectangle rInicial = areaColisionOriginales.get(i);
+
             int puntoX = rInicial.x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = rInicial.y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasColisionActualizadas.add(rFinal);
         }
     }
 
-// Método para actualizar las áreas de transparencia en relación con la posición del jugador
     private void actualizarAreasTransparencia() {
-        // Borra las áreas de transparencia previamente actualizadas si las hay
         if (!areasTransparenciaActualizadas.isEmpty()) {
             areasTransparenciaActualizadas.clear();
         }
 
-        // Itera sobre todas las áreas de transparencia originales y las actualiza en función de la posición del jugador
         for (int i = 0; i < areaTransparenciaOriginales.size(); i++) {
             Rectangle rInicial = areaTransparenciaOriginales.get(i);
+
             int puntoX = rInicial.x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = rInicial.y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasTransparenciaActualizadas.add(rFinal);
         }
     }
 
-// Método para obtener los límites del área del mapa en relación con la posición del jugador
     public Rectangle getBordes(final int posicionX, final int posicionY) {
         int x = Constantes.MARGEN_X - posicionX + ElementosPrincipales.jugador.getANCHO_JUGADOR();
         int y = Constantes.MARGEN_Y - posicionY + ElementosPrincipales.jugador.getALTO_JUGADOR();
+
         int ancho = this.anchoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getANCHO_JUGADOR() * 2;
         int alto = this.altoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getALTO_JUGADOR() * 2;
+
         return new Rectangle(x, y, ancho, alto);
     }
 
-    // Método para dibujar tooltips de objetos en el mapa cuando el ratón se superpone a ellos
     private void dibujarTooltipObjetosMapa(final Graphics g, final SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
-        // Itera sobre los objetos en el mapa y verifica si el ratón está sobre ellos para mostrar el tooltip
         for (ObjetoUnicoTiled objeto : objetosMapa) {
             int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle nuevaArea = new Rectangle(puntoX, puntoY, 32, 32);
 
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(nuevaArea))) {
-                // Si el ratón está sobre el objeto, dibuja un rectángulo contorno y muestra el tooltip del objeto
                 DibujoDebug.dibujarRectanguloContorno(g, nuevaArea, Color.DARK_GRAY);
                 dibujarTooltipObjeto(g, sd, objeto.getObjeto());
             }
         }
     }
 
-// Método para dibujar el tooltip de un objeto en el mapa
     private void dibujarTooltipObjeto(Graphics g, SuperficieDibujo sd, Object objeto) {
-        // Dibuja el tooltip personalizado según el tipo de objeto
+        // Aquí puedes personalizar la apariencia del tooltip según tus necesidades
         if (objeto instanceof Consumible) {
             Consumible consumible = (Consumible) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, consumible.getNombre() + "\nPESO: " + consumible.getPeso() + " oz.");
@@ -1299,22 +1105,18 @@ public class MapaTiled {
         }
     }
 
-// Método para obtener los objetos de una tienda en el mapa
     private void obtenerObjetosMapa(int idMapa) {
         objetosTiendaMapa.clear();
         ArrayList<String> listaObjetos = RegistroTiendas.obtenerTienda(idMapa);
-        // Itera sobre los IDs de los objetos en la tienda y los añade a la lista de objetos de la tienda en el mapa
         for (String idObjeto : listaObjetos) {
             Objeto objeto = RegistroObjetos.obtenerObjeto(Integer.parseInt(idObjeto));
             objetosTiendaMapa.add(objeto);
         }
     }
 
-// Método para filtrar los objetos de la tienda actual según su tipo
     private ArrayList<Objeto> verificarTipoTienda(Tienda tienda) {
         objetosTiendaActual.clear();
 
-        // Filtra los objetos de la tienda actual según el tipo de tienda
         switch (tienda.getTipo()) {
             case 1:
                 for (Objeto objetoMapa : objetosTiendaMapa) {
@@ -1348,32 +1150,26 @@ public class MapaTiled {
         return objetosTiendaActual;
     }
 
-    // Método para obtener el punto inicial del mapa
     public Point getPuntoInicial() {
         return puntoInicial;
     }
 
-    // Método para obtener el nombre del siguiente mapa
     public String getSiguienteMapa() {
         return siguienteMapa;
     }
 
-    // Método para establecer el nombre del siguiente mapa
     public void setSiguienteMapa(String siguienteMapa) {
         this.siguienteMapa = siguienteMapa;
     }
 
-    // Método para establecer el punto inicial del mapa
     public void setPuntoInicial(Point puntoInicial) {
         this.puntoInicial = puntoInicial;
     }
 
-    // Método para obtener la lista de enemigos del mapa
     public ArrayList<Enemigo> getEnemigosMapa() {
         return enemigosMapa;
     }
 
-    // Método para obtener la lista de nodos del mapa utilizada por el algoritmo Dijkstra
     public ArrayList<Nodo> getNodosMapa() {
         return dijkstra.getNodosMapa();
     }

@@ -4,8 +4,12 @@
  */
 package principal.mapas;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,6 +18,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
@@ -57,6 +62,7 @@ public class MapaTiled2 {
     public Rectangle recMapa;
     public Tienda tiendaActiva;
     private boolean reproducirMusica = false;
+    Gson gson = new Gson();
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
@@ -112,7 +118,7 @@ public class MapaTiled2 {
 
         String contenido = CargadorRecursos.leerArchivoTexto(ruta);
 
-        JsonNode globalJSON = getObjetoJson(contenido);
+        JsonObject globalJSON = getObjetoJson(contenido);
 
         obtenerInformacionSiguienteMapa(globalJSON);
         // Inicializar atributos básicos
@@ -287,38 +293,39 @@ public class MapaTiled2 {
         DibujoDebug.dibujarString(g, zonaSalida7.toString(), 10, 150, Color.white);*/
     }
 
-    private void inicializarAtributosBasicos(JsonNode globalJSON) {
-        anchoMapaTiles = globalJSON.get("width").asInt();
-        altoMapaTiles = globalJSON.get("height").asInt();
+    private void inicializarAtributosBasicos(JsonObject globalJSON) {
+        anchoMapaTiles = globalJSON.get("width").getAsInt();
+        altoMapaTiles = globalJSON.get("height").getAsInt();
 
         // Obtener el objeto JSON asociado con "start"
-        JsonNode puntoInicialJSON = globalJSON.get("start");
+        JsonObject puntoInicialJSON = globalJSON.getAsJsonObject("start");
 
-        // Verificar si el nodo "start" existe en el JSON
-        if (puntoInicialJSON != null && puntoInicialJSON.isObject()) {
-            // Si existe, obtener las coordenadas x e y del nodo JSON de "start"
-            int x = puntoInicialJSON.get("x").asInt();
-            int y = puntoInicialJSON.get("y").asInt();
+        // Verificar si el objeto "start" existe en el JSON
+        if (puntoInicialJSON != null && !puntoInicialJSON.entrySet().isEmpty()) {
+            // Si existe, obtener las coordenadas x e y del objeto JSON de "start"
+            int x = puntoInicialJSON.get("x").getAsInt();
+            int y = puntoInicialJSON.get("y").getAsInt();
 
             // Actualizar el punto inicial de la instancia de Mapa
-            this.puntoInicial = new Point(x, y); // Ajusta el método según la estructura de tu clase Mapa
+            this.puntoInicial = new Point(x, y); // Ajusta según la estructura de tu clase Mapa
         }
         else {
             // Si no existe, asignar el punto inicial predeterminado
-            this.puntoInicial = Salida.puntoInicialSiguiente; // Ajusta esto según lo que necesites
+            this.puntoInicial = Salida.puntoInicialSiguiente; // Ajusta según tus necesidades
         }
     }
 
-    private void inicializarCapas(JsonNode globalJSON) {
-        JsonNode capas = globalJSON.get("layers");
+    private void inicializarCapas(JsonObject globalJSON) {
+        JsonArray capas = globalJSON.getAsJsonArray("layers");
         this.capaSprites1 = new ArrayList<>();
         this.capaSprites2 = new ArrayList<>();
         this.capaColisiones = new ArrayList<>();
         this.capaTransparencias = new ArrayList<>();
 
-        if (capas != null && capas.isArray()) {
-            for (JsonNode capaNode : capas) {
-                String tipo = capaNode.get("id").asText();
+        if (capas != null) {
+            for (JsonElement capaElement : capas) {
+                JsonObject capaNode = capaElement.getAsJsonObject();
+                String tipo = capaNode.get("id").getAsString();
 
                 switch (tipo) {
                     case "1":
@@ -332,8 +339,9 @@ public class MapaTiled2 {
                 }
             }
 
-            for (JsonNode capaNode : capas) {
-                String tipo = capaNode.get("type").asText();
+            for (JsonElement capaElement : capas) {
+                JsonObject capaNode = capaElement.getAsJsonObject();
+                String tipo = capaNode.get("type").getAsString();
 
                 switch (tipo) {
                     case "objectgroup":
@@ -380,28 +388,30 @@ public class MapaTiled2 {
         dijkstra = new Dijkstra(new Point(10, 10), anchoMapaTiles, altoMapaTiles, areaColisionOriginales);
     }
 
-    private void inicializarPaletaSprites(JsonNode globalJSON) {
+    private void inicializarPaletaSprites(JsonObject globalJSON) {
         // Lógica para inicializar la paleta de sprites
-        JsonNode coleccionSprites = globalJSON.get("tilesets");
-        if (coleccionSprites != null && coleccionSprites.isArray()) {
+        JsonArray coleccionSprites = globalJSON.getAsJsonArray("tilesets");
+        if (coleccionSprites != null) {
             int totalSprites = 0;
-            for (JsonNode datosGrupo : coleccionSprites) {
-                totalSprites += datosGrupo.get("tilecount").asInt();
+            for (JsonElement datosGrupo : coleccionSprites) {
+                JsonObject grupo = datosGrupo.getAsJsonObject();
+                totalSprites += grupo.get("tilecount").getAsInt();
             }
 
             paletaSprites1 = new Sprite[totalSprites];
             paletaSprites2 = new Sprite[totalSprites];
 
             int spriteIndex = 0;
-            for (JsonNode datosGrupo : coleccionSprites) {
-                String nombreImagen = datosGrupo.get("image").asText();
-                int anchoTile = datosGrupo.get("tilewidth").asInt();
-                int altoTile = datosGrupo.get("tileheight").asInt();
+            for (JsonElement datosGrupo : coleccionSprites) {
+                JsonObject grupo = datosGrupo.getAsJsonObject();
+                String nombreImagen = grupo.get("image").getAsString();
+                int anchoTile = grupo.get("tilewidth").getAsInt();
+                int altoTile = grupo.get("tileheight").getAsInt();
 
                 HojaSprites hoja = new HojaSprites("/mapas/" + nombreImagen, anchoTile, altoTile, false);
 
-                int primerSpriteColeccion = datosGrupo.get("firstgid").asInt() - 1;
-                int ultimoSpriteColeccion = primerSpriteColeccion + datosGrupo.get("tilecount").asInt() - 1;
+                int primerSpriteColeccion = grupo.get("firstgid").getAsInt() - 1;
+                int ultimoSpriteColeccion = primerSpriteColeccion + grupo.get("tilecount").getAsInt() - 1;
 
                 Sprite[] sprites = new Sprite[ultimoSpriteColeccion - primerSpriteColeccion + 1];
                 for (int j = 0; j < sprites.length; j++) {
@@ -445,16 +455,17 @@ public class MapaTiled2 {
         }
     }
 
-    private void obtenerObjetosMapa(JsonNode globalJSON) {
+    private void obtenerObjetosMapa(JsonObject globalJSON) {
         objetosMapa = new ArrayList<>();
-        JsonNode coleccionObjetos = globalJSON.get("objetos");
+        JsonArray coleccionObjetos = globalJSON.getAsJsonArray("objetos");
 
-        if (coleccionObjetos != null && coleccionObjetos.isArray()) {
-            for (JsonNode objetoNode : coleccionObjetos) {
-                int idObjeto = objetoNode.get("id").asInt();
-                int cantidad = objetoNode.get("cantidad").asInt();
-                int xObjeto = objetoNode.get("x").asInt();
-                int yObjeto = objetoNode.get("y").asInt();
+        if (coleccionObjetos != null) {
+            for (JsonElement objetoElement : coleccionObjetos) {
+                JsonObject objetoNode = objetoElement.getAsJsonObject();
+                int idObjeto = objetoNode.get("id").getAsInt();
+                int cantidad = objetoNode.get("cantidad").getAsInt();
+                int xObjeto = objetoNode.get("x").getAsInt();
+                int yObjeto = objetoNode.get("y").getAsInt();
 
                 Point posicionObjeto = new Point(xObjeto, yObjeto);
                 Objeto objeto = RegistroObjetos.obtenerObjeto(idObjeto);
@@ -469,31 +480,27 @@ public class MapaTiled2 {
         }
     }
 
-    private void obtenerEnemigosMapa(JsonNode globalJSON) {
+    private void obtenerEnemigosMapa(JsonObject globalJSON) {
         enemigosMapa = new ArrayList<>();
-        JsonNode coleccionEnemigos = globalJSON.get("enemigos");
+        JsonArray coleccionEnemigos = globalJSON.getAsJsonArray("enemigos");
 
-        if (coleccionEnemigos != null && coleccionEnemigos.isArray()) {
-            for (JsonNode enemigoNode : coleccionEnemigos) {
-                JsonNode idNode = enemigoNode.get("id");
-                JsonNode xNode = enemigoNode.get("x");
-                JsonNode yNode = enemigoNode.get("y");
+        if (coleccionEnemigos != null) {
+            for (JsonElement enemigoElement : coleccionEnemigos) {
+                JsonObject enemigoNode = enemigoElement.getAsJsonObject();
 
-                // Verificar si los nodos no son nulos y son valores numéricos
-                if (idNode != null && xNode != null && yNode != null) {
-                    int idEnemigo = getIntJson(enemigoNode, "id");
-                    int xEnemigo = getIntJson(enemigoNode, "x");
-                    int yEnemigo = getIntJson(enemigoNode, "y");
+                // Obtener los valores de id, x, y
+                int idEnemigo = getIntJson(enemigoNode, "id");
+                int xEnemigo = getIntJson(enemigoNode, "x");
+                int yEnemigo = getIntJson(enemigoNode, "y");
 
-                    if (idEnemigo != 0) {
-                        Point posicionEnemigo = new Point(xEnemigo, yEnemigo);
-                        Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(idEnemigo);
-                        enemigo.setPosicion(posicionEnemigo.x, posicionEnemigo.y);
-                        enemigosMapa.add(enemigo);
-                    }
+                if (idEnemigo != 0) {
+                    Point posicionEnemigo = new Point(xEnemigo, yEnemigo);
+                    Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(idEnemigo);
+                    enemigo.setPosicion(posicionEnemigo.x, posicionEnemigo.y);
+                    enemigosMapa.add(enemigo);
                 }
                 else {
-                    System.err.println("Uno de los nodos de enemigos es nulo.");
+                    System.err.println("El ID del enemigo es 0, se omitirá.");
                 }
             }
         }
@@ -502,25 +509,27 @@ public class MapaTiled2 {
         }
     }
 
-    private void obtenerContenedoresMapa(JsonNode globalJSON) {
+    private void obtenerContenedoresMapa(JsonObject globalJSON) {
         listaContenedores = new ArrayList<>();
-        JsonNode coleccionContenedores = globalJSON.get("contenedores");
+        JsonArray coleccionContenedores = globalJSON.getAsJsonArray("contenedores");
 
-        if (coleccionContenedores != null && coleccionContenedores.isArray()) {
-            for (JsonNode contenedorNode : coleccionContenedores) {
-                int idContenedor = contenedorNode.get("idContenedor").asInt();
-                int xContenedor = contenedorNode.get("x").asInt();
-                int yContenedor = contenedorNode.get("y").asInt();
+        if (coleccionContenedores != null) {
+            for (JsonElement contenedorElement : coleccionContenedores) {
+                JsonObject contenedorNode = contenedorElement.getAsJsonObject();
+                int idContenedor = getIntJson(contenedorNode, "idContenedor");
+                int xContenedor = getIntJson(contenedorNode, "x");
+                int yContenedor = getIntJson(contenedorNode, "y");
 
                 Point posicionContenedor = new Point(xContenedor, yContenedor);
-                Rectangle areacontenedor = new Rectangle(xContenedor, yContenedor, 32, 32);
-                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor, idContenedor, areacontenedor);
+                Rectangle areaContenedor = new Rectangle(xContenedor, yContenedor, 32, 32);
+                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor, idContenedor, areaContenedor);
 
-                JsonNode coleccionObjetos = contenedorNode.get("objetos");
-                if (coleccionObjetos != null && coleccionObjetos.isArray()) {
-                    for (JsonNode objetoNode : coleccionObjetos) {
-                        int idObjeto = objetoNode.get("idObjeto").asInt();
-                        int cantidadObjeto = objetoNode.get("cantidad").asInt();
+                JsonArray coleccionObjetos = contenedorNode.getAsJsonArray("objetos");
+                if (coleccionObjetos != null) {
+                    for (JsonElement objetoElement : coleccionObjetos) {
+                        JsonObject objetoNode = objetoElement.getAsJsonObject();
+                        int idObjeto = getIntJson(objetoNode, "idObjeto");
+                        int cantidadObjeto = getIntJson(objetoNode, "cantidad");
 
                         Objeto objeto = RegistroObjetos.obtenerObjeto(idObjeto);
                         objeto.setCantidad(cantidadObjeto);
@@ -538,12 +547,13 @@ public class MapaTiled2 {
         }
     }
 
-    private void obtenerTiendas(JsonNode globalJSON) {
+    private void obtenerTiendas(JsonObject globalJSON) {
         tiendas = new ArrayList<>();
 
-        JsonNode coleccionTiendas = globalJSON.get("tiendas");
-        if (coleccionTiendas != null && coleccionTiendas.isArray()) {
-            for (JsonNode tiendaNode : coleccionTiendas) {
+        JsonArray coleccionTiendas = globalJSON.getAsJsonArray("tiendas");
+        if (coleccionTiendas != null) {
+            for (JsonElement tiendaElement : coleccionTiendas) {
+                JsonObject tiendaNode = tiendaElement.getAsJsonObject();
                 int idTienda = getIntJson(tiendaNode, "id");
                 int xTienda = getIntJson(tiendaNode, "x");
                 int yTienda = getIntJson(tiendaNode, "y");
@@ -559,22 +569,36 @@ public class MapaTiled2 {
         }
     }
 
-    private void obtenerInformacionSiguienteMapa(JsonNode globalJSON) {
-        JsonNode salidasJSON = globalJSON.get("salidas");
+    private void obtenerInformacionSiguienteMapa(JsonObject globalJSON) {
+        JsonArray salidasJSON = globalJSON.getAsJsonArray("salidas");
 
-        if (salidasJSON != null && !salidasJSON.isEmpty()) {
-            for (JsonNode salidaJSON : salidasJSON) {
+        if (salidasJSON != null && salidasJSON.size() > 0) {
+            for (JsonElement salidaElement : salidasJSON) {
+                JsonObject salidaJSON = salidaElement.getAsJsonObject();
+
+                // Comprobación de valores nulos
+                if (salidaJSON == null) {
+                    System.err.println("Salida JSON es nula.");
+                    continue; // Saltar a la siguiente salida
+                }
+
                 // Si no existe, agregar la nueva salida
-                int xSalidaMapa = salidaJSON.get("x").asInt();
-                int ySalidaMapa = salidaJSON.get("y").asInt();
+                int xSalidaMapa = salidaJSON.get("x").getAsInt();
+                int ySalidaMapa = salidaJSON.get("y").getAsInt();
                 Point puntoSalidaMapa = new Point(xSalidaMapa, ySalidaMapa);
 
-                String siguienteMapa = salidaJSON.get("mapaDestino").asText();
+                String siguienteMapa = salidaJSON.get("mapaDestino").getAsString();
 
                 // Obtener las coordenadas de inicio en el siguiente mapa desde salidaJSON
-                JsonNode puntoInicialJSON = salidaJSON.get("punto inicial");
-                int xInicioSiguienteMapa = puntoInicialJSON.get("x").asInt();
-                int yInicioSiguienteMapa = puntoInicialJSON.get("y").asInt();
+                JsonObject puntoInicialJSON = salidaJSON.getAsJsonObject("punto inicial");
+
+                if (puntoInicialJSON == null) {
+                    System.err.println("El punto inicial no está presente en la salida JSON.");
+                    continue; // Saltar a la siguiente salida
+                }
+
+                int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
+                int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
                 Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
 
                 Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa);
@@ -588,17 +612,17 @@ public class MapaTiled2 {
         }
     }
 
-    private void inicializarCapaSprites1(JsonNode datosCapa) {
-        int anchoCapa = datosCapa.get("width").asInt();
-        int altoCapa = datosCapa.get("height").asInt();
-        int xCapa = datosCapa.get("x").asInt();
-        int yCapa = datosCapa.get("y").asInt();
+    private void inicializarCapaSprites1(JsonObject datosCapa) {
+        int anchoCapa = datosCapa.get("width").getAsInt();
+        int altoCapa = datosCapa.get("height").getAsInt();
+        int xCapa = datosCapa.get("x").getAsInt();
+        int yCapa = datosCapa.get("y").getAsInt();
 
-        JsonNode spritesNode = datosCapa.get("data");
-        if (spritesNode != null && spritesNode.isArray()) {
+        JsonArray spritesNode = datosCapa.getAsJsonArray("data");
+        if (spritesNode != null) {
             int[] spriteCapa = new int[spritesNode.size()];
             for (int j = 0; j < spritesNode.size(); j++) {
-                int codigoSprite = spritesNode.get(j).asInt();
+                int codigoSprite = spritesNode.get(j).getAsInt();
                 spriteCapa[j] = codigoSprite - 1;
             }
 
@@ -609,17 +633,17 @@ public class MapaTiled2 {
         }
     }
 
-    private void inicializarCapaSprites2(JsonNode datosCapa) {
-        int anchoCapa = datosCapa.get("width").asInt();
-        int altoCapa = datosCapa.get("height").asInt();
-        int xCapa = datosCapa.get("x").asInt();
-        int yCapa = datosCapa.get("y").asInt();
+    private void inicializarCapaSprites2(JsonObject datosCapa) {
+        int anchoCapa = datosCapa.get("width").getAsInt();
+        int altoCapa = datosCapa.get("height").getAsInt();
+        int xCapa = datosCapa.get("x").getAsInt();
+        int yCapa = datosCapa.get("y").getAsInt();
 
-        JsonNode spritesNode = datosCapa.get("data");
-        if (spritesNode != null && spritesNode.isArray()) {
+        JsonArray spritesNode = datosCapa.getAsJsonArray("data");
+        if (spritesNode != null) {
             int[] spriteCapa = new int[spritesNode.size()];
             for (int j = 0; j < spritesNode.size(); j++) {
-                int codigoSprite = spritesNode.get(j).asInt();
+                int codigoSprite = spritesNode.get(j).getAsInt();
                 spriteCapa[j] = codigoSprite - 1;
             }
 
@@ -630,24 +654,25 @@ public class MapaTiled2 {
         }
     }
 
-    private void inicializarCapaColisiones(JsonNode datosCapa) {
+    private void inicializarCapaColisiones(JsonObject datosCapa) {
         int anchoCapa = getIntJson(datosCapa, "width");
         int altoCapa = getIntJson(datosCapa, "height");
         int xCapa = getIntJson(datosCapa, "x");
         int yCapa = getIntJson(datosCapa, "y");
 
-        JsonNode rectangulosNode = datosCapa.get("objects");
-        if (rectangulosNode != null && rectangulosNode.isArray()) {
+        JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
+        if (rectangulosNode != null) {
             Rectangle[] rectangulosCapa = new Rectangle[rectangulosNode.size()];
 
             for (int j = 0; j < rectangulosNode.size(); j++) {
-                JsonNode datosRectangulo = rectangulosNode.get(j);
+                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
 
                 int x = getIntJson(datosRectangulo, "x");
                 int y = getIntJson(datosRectangulo, "y");
                 int ancho = getIntJson(datosRectangulo, "width");
                 int alto = getIntJson(datosRectangulo, "height");
 
+                // Asegurar que los valores no sean cero
                 if (x == 0) {
                     x = 1;
                 }
@@ -672,24 +697,25 @@ public class MapaTiled2 {
         }
     }
 
-    private void inicializarCapaTransparencia(JsonNode datosCapa) {
+    private void inicializarCapaTransparencia(JsonObject datosCapa) {
         int anchoCapa = getIntJson(datosCapa, "width");
         int altoCapa = getIntJson(datosCapa, "height");
         int xCapa = getIntJson(datosCapa, "x");
         int yCapa = getIntJson(datosCapa, "y");
 
-        JsonNode rectangulosNode = datosCapa.get("objects");
-        if (rectangulosNode != null && rectangulosNode.isArray()) {
+        JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
+        if (rectangulosNode != null) {
             Rectangle[] rectangulosCapa = new Rectangle[rectangulosNode.size()];
 
             for (int j = 0; j < rectangulosNode.size(); j++) {
-                JsonNode datosRectangulo = rectangulosNode.get(j);
+                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
 
                 int x = getIntJson(datosRectangulo, "x");
                 int y = getIntJson(datosRectangulo, "y");
                 int ancho = getIntJson(datosRectangulo, "width");
                 int alto = getIntJson(datosRectangulo, "height");
 
+                // Asegurar que los valores no sean cero
                 if (x == 0) {
                     x = 1;
                 }
@@ -902,34 +928,37 @@ public class MapaTiled2 {
         }
     }
 
-    private JsonNode getObjetoJson(final String codigoJson) {
-        ObjectMapper mapper = new ObjectMapper();
+    private JsonObject getObjetoJson(final String codigoJson) {
+        JsonParser parser = new JsonParser();
         try {
-            JsonNode objetoJson = mapper.readTree(codigoJson);
+            JsonObject objetoJson = parser.parse(codigoJson).getAsJsonObject();
             return objetoJson;
         }
-        catch (IOException e) {
+        catch (JsonSyntaxException e) {
             System.err.println("Error al analizar el JSON: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
 
-    private int getIntJson(JsonNode objSon, String clave) {
-        JsonNode valorNode = objSon.get(clave);
-
+    private int getIntJson(JsonObject objJson, String clave) {
+        JsonElement valorElement = objJson.get(clave);
         int valor = 0;
-        if (valorNode != null) {
-            if (valorNode.isNumber()) {
-                valor = valorNode.intValue(); // Convertir el valor del nodo a un entero
-            }
-            else if (valorNode.isTextual()) {
-                // Intenta convertir el valor del nodo a un entero
-                try {
-                    valor = Integer.parseInt(valorNode.asText());
+
+        if (valorElement != null) {
+            if (valorElement.isJsonPrimitive()) {
+                // Si es un número, se convierte directamente
+                if (valorElement.getAsJsonPrimitive().isNumber()) {
+                    valor = valorElement.getAsInt();
                 }
-                catch (NumberFormatException e) {
-                    System.err.println("No se pudo convertir el valor del nodo a un entero: " + e.getMessage());
+                // Si es un texto, intenta convertirlo a número
+                else if (valorElement.getAsJsonPrimitive().isString()) {
+                    try {
+                        valor = Integer.parseInt(valorElement.getAsString());
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println("No se pudo convertir el valor del nodo a un entero: " + e.getMessage());
+                    }
                 }
             }
         }
@@ -967,7 +996,7 @@ public class MapaTiled2 {
                     zonaSalida8 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
                     break;
                 case 8:
-                    zonaSalida9 = new Rectangle(puntoX - 40, puntoY, Constantes.LADO_SPRITE*3, Constantes.LADO_SPRITE);
+                    zonaSalida9 = new Rectangle(puntoX - 40, puntoY, Constantes.LADO_SPRITE * 3, Constantes.LADO_SPRITE);
                     break;
 
             }
@@ -1035,19 +1064,6 @@ public class MapaTiled2 {
         int alto = this.altoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getALTO_JUGADOR() * 2;
 
         return new Rectangle(x, y, ancho, alto);
-    }
-
-    public static JsonNode getNodeFromJsonObject(JsonNode jsonObject, String key) {
-        // Verificar si el JSON contiene la clave
-        if (jsonObject.has(key)) {
-            return jsonObject.get(key);
-        }
-        else {
-            // Manejar el caso en el que la clave no está presente en el JSON
-            System.out.println("La clave '" + key + "' no está presente en el JSON.");
-            // Devolver null u otro valor predeterminado según tus necesidades
-            return null;
-        }
     }
 
     private void dibujarTooltipObjetosMapa(final Graphics g, final SuperficieDibujo sd) {
