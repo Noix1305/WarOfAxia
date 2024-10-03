@@ -131,7 +131,7 @@ public class Jugador implements EntidadCurable {
         ga = new GestorAtributos(1, 6, 6, 6, 6, 6, 80, 100);
         hs = new HojaSprites(Constantes.RUTA_PERSONAJE, 32, 32, false);
         ht = new HojaSprites(Constantes.RUTA_PERSONAJE_TRANSPARENTE, Constantes.LADO_SPRITE, false);
-        hCuracion = new HojaSprites("/personajes/enemigos/animacionesJugador/brilloCuracion.png", 32, 32, false);
+        hCuracion = new HojaSprites(Constantes.RUTA_CURACION, 32, 32, false);
         animacion = 0;
         estado = 1;
         imagenActual = hs.getSprites(estado, direccion).getImagen();
@@ -146,7 +146,7 @@ public class Jugador implements EntidadCurable {
         ga.setVida(ga.getVidaMaxima());
         ga.setMana(ga.getManaMaximo());
         ga.setResistencia(ga.getResistenciaMaxima());
-        habilidad = CargadorRecursos.cargarImagenCompatibleTranslucida("/icons/habilidad1.png");
+        habilidad = CargadorRecursos.cargarImagenCompatibleTranslucida("/icons/Habilidad1.png");
         sonidoCaminar1 = new SoundThread("Step_Grass");
         sonidoCaminar2 = new SoundThread("Step_Grass_2");
     }
@@ -341,10 +341,10 @@ public class Jugador implements EntidadCurable {
             // Determina qué imagen mostrar según el índice
             HojaSprites hojaHabilidad;
             if (indiceImagen % 2 == 0) {
-                hojaHabilidad = new HojaSprites("/icons/habilidad1.png", 640, 360, false);
+                hojaHabilidad = new HojaSprites("/icons/Habilidad1.png", 640, 360, false);
             }
             else {
-                hojaHabilidad = new HojaSprites("/icons/habilidad2.png", 640, 360, false);
+                hojaHabilidad = new HojaSprites("/icons/Habilidad2.png", 640, 360, false);
             }
 
             // Obtiene la imagen correspondiente y la dibuja

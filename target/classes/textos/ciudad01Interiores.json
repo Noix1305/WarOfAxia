@@ -1075,7 +1075,7 @@
         {
             "x": 82,
             "y": 680,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 64,
@@ -1085,7 +1085,7 @@
         {
             "x": 785,
             "y": 170,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 770,
@@ -1095,7 +1095,7 @@
         {
             "x": 720,
             "y": 580,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 705,
@@ -1105,7 +1105,7 @@
         {
             "x": 720,
             "y": 870,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 705,
@@ -1115,7 +1115,7 @@
         {
             "x": 1235,
             "y": 550,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 1150,
@@ -1125,7 +1125,7 @@
         {
             "x": 1230,
             "y": 870,
-            "mapaDestino": "ciudad01.json",
+            "mapaDestino": "Ciudad01.json",
             "punto inicial":
                     {
                         "x": 1150,

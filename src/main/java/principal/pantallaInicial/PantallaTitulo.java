@@ -27,8 +27,8 @@ public class PantallaTitulo {
     private final Timer timer;
 
     public PantallaTitulo() {
-        s1 = new HojaSprites("/fondos/start1.png", 79, 46, false);
-        s2 = new HojaSprites("/fondos/start2.png", 79, 46, false);
+        s1 = new HojaSprites("/fondos/Start1.png", 79, 46, false);
+        s2 = new HojaSprites("/fondos/Start2.png", 79, 46, false);
         ht = new HojaSprites("/fondos/titulo.png", 639, 353, true);
         titulo = ht.getSprites(0).getImagen();
         start = s1.getSprites(0).getImagen();

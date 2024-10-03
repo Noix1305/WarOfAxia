@@ -59,7 +59,7 @@ public class MenuInferior {
         areaInventario = new Rectangle(0, Constantes.ALTO_JUEGO/*360*/ - altoMenu/*64*/,
                 Constantes.ANCHO_JUEGO/*720*/, altoMenu/*64*/);
         hojaMenuInferior = new HojaSprites("/fondos/bordeMenuInferior.png", 720, 64, true);
-        bordesRanuras = new HojaSprites("/fondos/bordeSkills.png", 39, true);
+        bordesRanuras = new HojaSprites("/fondos/BordeSkills.png", 39, true);
         areaInvent = hojaMenuInferior.getSprites(0).getImagen();
         bordeAreaInventario = new Rectangle(areaInventario.x, areaInventario.y - 1, areaInventario.width, 1);
         tiempoReutilizacionCuracion = 0;

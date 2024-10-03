@@ -1868,7 +1868,7 @@
             "codigo referencia": 10,
             "x": 600,
             "y": 1257,
-            "mapaDestino": "ciudad1.json",
+            "mapaDestino": "Ciudad1.json",
             "punto inicial":
                     {
                         "x": 64,
@@ -1879,7 +1879,7 @@
             "codigo referencia": 20,
             "x": 600,
             "y": 1200,
-            "mapaDestino": "ciudad1.json",
+            "mapaDestino": "Ciudad1.json",
             "punto inicial":
                     {
                         "x": 600,
