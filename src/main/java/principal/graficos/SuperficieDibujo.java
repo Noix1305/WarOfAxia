@@ -120,7 +120,7 @@ public class SuperficieDibujo extends Canvas {
             Toolkit.getDefaultToolkit().sync();
 
             // Si el jugador está muerto, mostrar transición de pantalla de muerte
-            if (!ElementosPrincipales.jugador.estaVivo) {
+            if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
                 efectosVisuales.dibujarTransicionNegro(g, getWidth(), getHeight());
                 g.setColor(Color.WHITE);
                 g.setFont(new Font("Arial", Font.BOLD, 30));
@@ -131,7 +131,7 @@ public class SuperficieDibujo extends Canvas {
                 g.drawString(mensajeMuerte, xTexto, yTexto);
 
                 // Recargar el juego y volver a la pantalla de título al presionar una tecla
-                ElementosPrincipales.jugador.getGa().setVida(ElementosPrincipales.jugador.getGa().getVidaMaxima());
+                ElementosPrincipales.jugador.getGestorAt().setVida(ElementosPrincipales.jugador.getGestorAt().getVidaMaxima());
                 GestorJuego.recargar = true;
                 GestorPrincipal.pantallaTitulo = true;
             }

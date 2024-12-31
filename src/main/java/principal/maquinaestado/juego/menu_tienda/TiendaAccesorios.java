@@ -342,7 +342,7 @@ public class TiendaAccesorios extends SeccionTienda {
         if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelObjetosComprados))
                 && objetoSeleccionadoCompra != null && GestorPrincipal.sd.getRaton().isClick()) {
             // Verificar si el jugador excedería su peso máximo al agregar más objetos
-            if (ElementosPrincipales.jugador.isSobrepeso()) {
+            if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
                 return;
             }
             // Crear las áreas para la ventana de cantidad y botones
@@ -722,10 +722,10 @@ public class TiendaAccesorios extends SeccionTienda {
         }
 
         // Verificar si el peso futuro excede el límite de peso del jugador
-        if (pesoFuturo > ElementosPrincipales.jugador.getGa().getLimitePeso() && !canastaCompra.isEmpty()) {
+        if (pesoFuturo > ElementosPrincipales.jugador.getGestorAt().getLimitePeso() && !canastaCompra.isEmpty()) {
             excederiaPeso = true;
         }
-        else if (pesoFuturo < ElementosPrincipales.jugador.getGa().getLimitePeso()) {
+        else if (pesoFuturo < ElementosPrincipales.jugador.getGestorAt().getLimitePeso()) {
             excederiaPeso = false;
         }
     }
@@ -803,13 +803,14 @@ public class TiendaAccesorios extends SeccionTienda {
 
         // Determinar el color del texto de acuerdo con las condiciones de compra
         Color colorTexto = Color.WHITE;
-        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra || ElementosPrincipales.jugador.isSobrepeso()
+        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra ||
+                ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()
                 || excederiaPeso) {
             colorTexto = Color.RED;
         }
 
         // Mostrar mensajes de error si hay condiciones de compra incorrectas
-        if (ElementosPrincipales.jugador.isSobrepeso()) {
+        if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
             DibujoDebug.dibujarString(g, "No puedes llevar más objetos...", comprar.x, comprar.y - 4, colorTexto);
         }
 
@@ -987,8 +988,8 @@ public class TiendaAccesorios extends SeccionTienda {
 
 // Método para dibujar el tooltip del peso del jugador
     public void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);

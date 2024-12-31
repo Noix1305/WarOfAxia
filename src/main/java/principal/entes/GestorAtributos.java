@@ -38,22 +38,33 @@ public class GestorAtributos {
     private double limitePeso;
     private double pesoActual;
     private int puntosAtributos;
+    private int vidaMaximaEnemigo; // Vida máxima del enemigo
+    private float vidaEnemigo; // Vida actual del enemigo
+    private int ataqueEnemigo;// Poder de ataque del enemigo
+    private int idEnemigo;
+    private String nombre;
 
     // Constructor
-    public GestorAtributos(int nivel, int fuerza, int destreza, int constitucion, int inteligencia, int suerte, int experiencia, int experienciaMaxima) {
+    public GestorAtributos(int idEnemigo, String nombreEnemigo, int vidaMaxima, int ataque, int experiencia) {
+        this.idEnemigo = idEnemigo;
+        this.nombre = nombreEnemigo;
+        this.vidaMaximaEnemigo = vidaMaxima;
+        this.vidaEnemigo = vidaMaximaEnemigo;
+        this.ataqueEnemigo = ataque;
+        this.experiencia = experiencia;
+    }
+
+    public GestorAtributos(int nivel, int fuerza, int destreza, int constitutcion,
+                           int inteligencia, int suerte, int experiencia, int experienciaMaxima, int puntosAtributos) {
         this.nivel = nivel;
         this.fuerza = fuerza;
         this.destreza = destreza;
-        this.constitucion = constitucion;
+        this.constitucion = constitutcion;
         this.inteligencia = inteligencia;
         this.suerte = suerte;
         this.experiencia = experiencia;
         this.experienciaMaxima = experienciaMaxima;
-        this.puntosAtributos = 0;
-    }
-
-    // Constructor vacío
-    public GestorAtributos() {
+        this.puntosAtributos = puntosAtributos;
     }
 
     // Métodos getters y setters para cada atributo
@@ -258,4 +269,47 @@ public class GestorAtributos {
         this.puntosAtributos = puntosAtributos;
     }
 
+    public int getVidaMaximaEnemigo() {
+        return vidaMaximaEnemigo;
+    }
+
+    public void setVidaMaximaEnemigo(int vidaMaximaEnemigo) {
+        this.vidaMaximaEnemigo = vidaMaximaEnemigo;
+    }
+
+    public float getVidaEnemigo() {
+        return vidaEnemigo;
+    }
+
+    public void setVidaEnemigo(float vidaEnemigo) {
+        this.vidaEnemigo = vidaEnemigo;
+    }
+
+    public int getAtaqueEnemigo() {
+        return ataqueEnemigo;
+    }
+
+    public void setAtaqueEnemigo(int ataqueEnemigo) {
+        this.ataqueEnemigo = ataqueEnemigo;
+    }
+
+    public int getIdEnemigo() {
+        return idEnemigo;
+    }
+
+    public void setIdEnemigo(int idEnemigo) {
+        this.idEnemigo = idEnemigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getVidaActual() {
+        return vida;
+    }
 }

@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.List;
 import principal.Constantes;
 import principal.ElementosPrincipales;
@@ -295,8 +294,8 @@ public class MenuCrecimiento extends SeccionMenu{
     }
 
     private void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);

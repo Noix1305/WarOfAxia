@@ -15,7 +15,7 @@ import principal.graficos.EfectosVisuales;
 import principal.herramientas.CargadorRecursos;
 import principal.herramientas.DibujoDebug;
 import principal.interfaz_usuario.MenuInferior;
-import principal.mapas.MapaTiled2;
+import principal.mapas.MapaTiled;
 import principal.mapas.Salida;
 import principal.maquinaestado.EstadoJuego;
 
@@ -47,11 +47,11 @@ public class GestorJuego implements EstadoJuego {
 
     public void recargarJuego() {
         if (recargar) {
-            ElementosPrincipales.mapa = new MapaTiled2("textos/" + ElementosPrincipales.mapa.getSiguienteMapa());
+            ElementosPrincipales.mapa = new MapaTiled("textos/" + ElementosPrincipales.mapa.getSiguienteMapa());
 
             // Establecer la posición del jugador en el nuevo mapa
-            ElementosPrincipales.jugador.setPosicionX(ElementosPrincipales.mapa.getPuntoInicial().x);
-            ElementosPrincipales.jugador.setPosicionY(ElementosPrincipales.mapa.getPuntoInicial().y);
+            ElementosPrincipales.jugador.getAccionesJugador().setPosicionX(ElementosPrincipales.mapa.getPuntoInicial().x);
+            ElementosPrincipales.jugador.getAccionesJugador().setPosicionY(ElementosPrincipales.mapa.getPuntoInicial().y);
             recargar = false;
         }
 
@@ -65,8 +65,8 @@ public class GestorJuego implements EstadoJuego {
         ElementosPrincipales.mapa.dibujar2daCapa(g);
         menuInferior.dibujar(g);
         DibujoDebug.dibujarImagen(g, logo, Constantes.ANCHO_JUEGO - logo.getWidth(), 0);
-        if (ElementosPrincipales.jugador.dibujarHabilidad) {
-            ElementosPrincipales.jugador.dibujarHabilidad(g);
+        if (ElementosPrincipales.jugador.getAnimacionJugador().dibujarHabilidad) {
+            ElementosPrincipales.jugador.getAnimacionJugador().dibujarHabilidad(g);
         }
         //g.fillRect((int) ElementosPrincipales.mapa.getZonaSalida().getX(), (int) ElementosPrincipales.mapa.getZonaSalida().getY(), (int) ElementosPrincipales.mapa.getZonaSalida().getWidth(), (int) ElementosPrincipales.mapa.getZonaSalida().getHeight());
     }
@@ -77,7 +77,7 @@ public class GestorJuego implements EstadoJuego {
         for (int i = 0; i < salidas.size(); i++) {
             Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalida.get(i);
 
-            if (ElementosPrincipales.jugador.getArea().intersects(zonaSalida)) {
+            if (ElementosPrincipales.jugador.getAccionesJugador().getArea().intersects(zonaSalida)) {
                 Salida salidaActual = salidas.get(i);
 
                 Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();

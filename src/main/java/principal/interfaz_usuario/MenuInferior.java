@@ -91,7 +91,8 @@ public class MenuInferior {
     private void dibujarBarraVitalidad(final Graphics g) {
         final int medidadVertical = 4;
         final int anchoTotal = 100;
-        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getVidaActual() / ElementosPrincipales.jugador.getVidaMaxima();
+        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.gestorAtributos.getVida()
+                / ElementosPrincipales.jugador.gestorAtributos.getVidaMaxima();
 
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidadVertical * 3,
                 anchoInteractivo, medidadVertical, rojoclaro);
@@ -100,13 +101,14 @@ public class MenuInferior {
         g.setColor(Color.WHITE);
 
         DibujoDebug.dibujarString(g, "VIT: ", areaInventario.x + 10, areaInventario.y + medidadVertical * 5 - 1);
-        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getVidaActual(), anchoTotal + 45, areaInventario.y + medidadVertical * 5 - 1);
+        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.gestorAtributos.getVida(),
+                anchoTotal + 45, areaInventario.y + medidadVertical * 5 - 1);
     }
 
     public void dibujarBarraMana(final Graphics g) {
         final int medidaVertical = 4;
         final int anchoTotal = 100;
-        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getMana() / ElementosPrincipales.jugador.getManaMaximo();
+        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.gestorAtributos.getMana() / ElementosPrincipales.jugador.getGestorAt().getManaMaximo();
 
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 6,
                 anchoInteractivo, medidaVertical, azulClaro);
@@ -114,14 +116,14 @@ public class MenuInferior {
                 anchoInteractivo, medidaVertical, azulOscuro);
         g.setColor(Color.WHITE);
         DibujoDebug.dibujarString(g, "MNA: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 8 - 1);
-        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getMana(), anchoTotal + 45, areaInventario.y + medidaVertical * 8 - 1);
+        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.gestorAtributos.getMana(), anchoTotal + 45, areaInventario.y + medidaVertical * 8 - 1);
     }
 
     public void dibujarBarraResistencia(Graphics g) {
         final int medidaVertical = 4;
         final int anchoTotal = 100;
-        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGa().getResistencia()
-                / ElementosPrincipales.jugador.getGa().getResistenciaMaxima();
+        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGestorAt().getResistencia()
+                / ElementosPrincipales.jugador.getGestorAt().getResistenciaMaxima();
 
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 9,
                 anchoInteractivo, medidaVertical, verdeClaro);
@@ -129,7 +131,7 @@ public class MenuInferior {
                 anchoInteractivo, medidaVertical, verdeOscuro);
         g.setColor(Color.WHITE);
         DibujoDebug.dibujarString(g, "RES: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 11 - 1);
-        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGa().getResistencia(), anchoTotal + 45, areaInventario.y + medidaVertical * 11 - 1);
+        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGestorAt().getResistencia(), anchoTotal + 45, areaInventario.y + medidaVertical * 11 - 1);
     }
 
     public void dibujarBarraExperiencia(final Graphics g) {
@@ -137,10 +139,10 @@ public class MenuInferior {
         final int anchoTotal = 100;
 
         // Asegurar que la experiencia máxima sea mayor que cero para evitar divisiones entre cero
-        int experienciaMaxima = Math.max(1, ElementosPrincipales.jugador.getGa().getExperienciaMaxima());
+        int experienciaMaxima = Math.max(1, ElementosPrincipales.jugador.getGestorAt().getExperienciaMaxima());
 
         // Calcular el ancho de la barra en función de la experiencia actual y máxima
-        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGa().getExperiencia() / experienciaMaxima;
+        final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGestorAt().getExperiencia() / experienciaMaxima;
 
         // Dibujar la barra de experiencia
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 12,
@@ -151,8 +153,8 @@ public class MenuInferior {
         // Dibujar etiquetas y porcentaje
         g.setColor(Color.WHITE);
         DibujoDebug.dibujarString(g, "EXP: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 14 - 1);
-        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGa().getExperiencia() * 100
-                / ElementosPrincipales.jugador.getGa().getExperienciaMaxima()
+        DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGestorAt().getExperiencia() * 100
+                / ElementosPrincipales.jugador.getGestorAt().getExperienciaMaxima()
                 + "%", anchoTotal + 45, areaInventario.y + medidaVertical * 14 - 1);
     }
 
@@ -171,8 +173,8 @@ public class MenuInferior {
             }
             i++;
         }
-        for (int j = 0; j < ElementosPrincipales.jugador.getAr().getAccesosEquipados().length; j++) {
-            Object objeto = ElementosPrincipales.jugador.getAr().getAccesoEquipado(j);
+        for (int j = 0; j < ElementosPrincipales.jugador.getAccesoRapido().getAccesosEquipados().length; j++) {
+            Object objeto = ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(j);
             if (objeto != null && (objeto instanceof Consumible)) {
                 Consumible consumible = (Consumible) objeto;
                 Rectangle ranura = ranuraObjetos.get(j); // Obtener la ranura correspondiente

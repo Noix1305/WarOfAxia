@@ -4,10 +4,6 @@
  */
 package principal.inventario.armas;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import principal.Constantes;
-import principal.entes.Jugador;
 import principal.inventario.TipoObjeto;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -25,43 +21,6 @@ public class SinArma extends Arma {
                 tipoObjeto, automatica, penetrante, ataquesXSegundo, rutaSonido, rutaPersonaje, precioCompra,  precioVenta);
     }
 
-    @Override
-    public ArrayList<Rectangle> getAlcance(final Jugador jugador) {
-        final ArrayList<Rectangle> alcance = new ArrayList<>();
-
-        final Rectangle alcance1 = new Rectangle();
-        // 0 = abajo, 1 = izquierda, 2 = derecha, 3 = arriba
-        if (jugador.getDireccion() == 3 || jugador.getDireccion() == 0) {
-            alcance1.width = alcanceLateral;
-            alcance1.height = alcanceFrontal * Constantes.LADO_SPRITE;
-
-            alcance1.x = Constantes.CENTRO_VENTANA_X;
-            if (jugador.getDireccion() == 0) {
-                alcance1.y = Constantes.CENTRO_VENTANA_Y - 9;
-            }
-            else {
-                alcance1.y = Constantes.CENTRO_VENTANA_Y - 9 - alcance1.height;
-            }
-
-        }
-        else {
-            alcance1.height = alcanceLateral;
-            alcance1.width = alcanceFrontal * Constantes.LADO_SPRITE;
-
-            alcance1.y = Constantes.CENTRO_VENTANA_Y - 3;
-
-            if (jugador.getDireccion() == 1) {
-                alcance1.x = Constantes.CENTRO_VENTANA_X - alcance1.width;
-            }
-            else {
-                alcance1.x = Constantes.CENTRO_VENTANA_X;
-            }
-        }
-
-        alcance.add(alcance1);
-
-        return alcance;
-    }
 
     public  HojaSprites getHojaArmas() {
         return hojaArmas;

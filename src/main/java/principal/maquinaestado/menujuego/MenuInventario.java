@@ -5,7 +5,6 @@
 package principal.maquinaestado.menujuego;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -188,7 +187,7 @@ public class MenuInventario extends SeccionMenu {
     private void dibujarAccesosRapidos(Graphics g) {
         for (int i = 0; i < rectangulosAccesoRapido.size(); i++) {
             Rectangle rectangulo = rectangulosAccesoRapido.get(i);
-            Object objeto = ElementosPrincipales.jugador.getAr().accesosEquipados[i];
+            Object objeto = ElementosPrincipales.jugador.getAccesoRapido().accesosEquipados[i];
 
             // Verificar si el objeto en este índice no es nulo y luego dibujarlo
             if (objeto != null) {
@@ -326,8 +325,8 @@ public class MenuInventario extends SeccionMenu {
      * @param sd SuperficieDibujo que contiene información sobre la posición del ratón.
      */
     public void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
@@ -362,7 +361,7 @@ public class MenuInventario extends SeccionMenu {
                 Rectangle rectangulo = rectangulosAccesoRapido.get(i);
 
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(rectangulo))) {
-                    Object objeto = ElementosPrincipales.jugador.getAr().getAccesoEquipado(i);
+                    Object objeto = ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(i);
 
                     if (objeto != null) {
                         dibujarTooltipObjetosAccRapido(g, sd, objeto);
@@ -450,8 +449,8 @@ public class MenuInventario extends SeccionMenu {
                 Rectangle rectangulo = rectangulosAccesoRapido.get(i);
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(rectangulo))) {
                     // Eliminar el objeto en el índice i
-                    ElementosPrincipales.jugador.getAr().accesosEquipados[i] = objetoSeleccionado;
-                    System.out.println(ElementosPrincipales.jugador.getAr().getAccesoEquipado(i));
+                    ElementosPrincipales.jugador.getAccesoRapido().accesosEquipados[i] = objetoSeleccionado;
+                    System.out.println(ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(i));
                     objetoSeleccionado = null; // Limpiar el objeto seleccionado después de asignarlo
                     break; // Salir del bucle después de realizar la asignación
                 }

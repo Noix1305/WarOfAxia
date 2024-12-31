@@ -8,7 +8,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import principal.Constantes;
-import principal.entes.Enemigo;
+import principal.entes.enemigo.Enemigo;
 
 /**
  * Implementación del algoritmo de Dijkstra para encontrar el camino más corto en un mapa. Este código implementa el

@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.util.ArrayList;
 import java.util.List;
-import principal.entes.Enemigo;
+import principal.entes.enemigo.Enemigo;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -115,7 +115,7 @@ public class MenuBestiario extends SeccionMenu {
         int idEnemigo = 0;
 
         if (enemigoSeleccionado != null) {
-            idEnemigo = enemigoSeleccionado.getIdEnemigo();
+            idEnemigo = enemigoSeleccionado.gestorAtributos.getIdEnemigo();
         }
 
         for (int i = 0; i < enemigos.size(); i++) {
@@ -150,12 +150,12 @@ public class MenuBestiario extends SeccionMenu {
         int x = barraPeso.x - 35;
 
         // Calcular el porcentaje de peso actual en relación con el límite de peso
-        double porcentajePeso = (ElementosPrincipales.jugador.getGa().getPesoActual() * 100)
-                / ElementosPrincipales.jugador.getGa().getLimitePeso();
+        double porcentajePeso = (ElementosPrincipales.jugador.getGestorAt().getPesoActual() * 100)
+                / ElementosPrincipales.jugador.getGestorAt().getLimitePeso();
 
         // Calcular la longitud de la parte coloreada de la barra
         int longitudColoreada = (int) ((porcentajePeso / 100) * (barraPeso.width - 2));
-        if (ElementosPrincipales.jugador.isSobrepeso()) {
+        if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
             longitudColoreada = 100;
         }
 
@@ -183,7 +183,7 @@ public class MenuBestiario extends SeccionMenu {
 
     private void mostrarDescripcion(Graphics g) {
         if (enemigoSeleccionado != null) {
-            String nombreEnemigo = enemigoSeleccionado.getNombre();
+            String nombreEnemigo = enemigoSeleccionado.gestorAtributos.getNombre();
             String descripcion = enemigoSeleccionado.getDescripcion();
             String[] lineas = descripcion.split("\n");
 

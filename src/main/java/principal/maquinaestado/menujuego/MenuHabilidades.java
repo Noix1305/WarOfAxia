@@ -306,8 +306,8 @@ public class MenuHabilidades extends SeccionMenu {
                 Rectangle rectangulo = rectangulosAccesosRapidos.get(i);
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(rectangulo))) {
                     // Eliminar el objeto en el índice i
-                    ElementosPrincipales.jugador.getAr().accesosEquipados[i] = habilidadSeleccionada;
-                    System.out.println(ElementosPrincipales.jugador.getAr().getAccesoEquipado(i));
+                    ElementosPrincipales.jugador.getAccesoRapido().accesosEquipados[i] = habilidadSeleccionada;
+                    System.out.println(ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(i));
                     habilidadSeleccionada = null; // Limpiar el objeto seleccionado después de asignarlo
                     break; // Salir del bucle después de realizar la asignación
                 }
@@ -360,7 +360,7 @@ public class MenuHabilidades extends SeccionMenu {
     private void dibujarAccesosRapidos(Graphics g) {
         for (int i = 0; i < rectangulosAccesosRapidos.size(); i++) {
             Rectangle rectangulo = rectangulosAccesosRapidos.get(i);
-            Object objeto = ElementosPrincipales.jugador.getAr().accesosEquipados[i];
+            Object objeto = ElementosPrincipales.jugador.getAccesoRapido().accesosEquipados[i];
 
             // Verificar si el objeto en este índice no es nulo y luego dibujarlo
             if (objeto != null) {
@@ -402,8 +402,8 @@ public class MenuHabilidades extends SeccionMenu {
     }
 
     private void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
@@ -439,7 +439,7 @@ public class MenuHabilidades extends SeccionMenu {
                 Rectangle rectangulo = rectangulosAccesosRapidos.get(i);
 
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(rectangulo))) {
-                    Object objeto = ElementosPrincipales.jugador.getAr().getAccesoEquipado(i);
+                    Object objeto = ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(i);
 
                     if (objeto != null) {
                         dibujarTooltipObjetosAccRapido(g, sd, objeto);

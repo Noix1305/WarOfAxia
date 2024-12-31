@@ -295,7 +295,7 @@ public class TiendaComida extends SeccionTienda {
         // Verifica si ha pasado suficiente tiempo desde la última recogida
         if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelObjetosComprados))
                 && objetoSeleccionadoCompra != null && GestorPrincipal.sd.getRaton().isClick()) {
-            if (ElementosPrincipales.jugador.isSobrepeso()) {
+            if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
                 return;
             }
             ventanaCantidad = new Rectangle(panelObjetosComprados.x, panelObjetosComprados.height / 2, 42, 40);
@@ -665,10 +665,10 @@ public class TiendaComida extends SeccionTienda {
             pesoFuturo += objetoCanasta.getPeso() * objetoCanasta.getCantidadCompra();
         }
 
-        if (pesoFuturo > ElementosPrincipales.jugador.getGa().getLimitePeso() && !canastaCompra.isEmpty()) {
+        if (pesoFuturo > ElementosPrincipales.jugador.getGestorAt().getLimitePeso() && !canastaCompra.isEmpty()) {
             excederiaPeso = true;
         }
-        else if (pesoFuturo < ElementosPrincipales.jugador.getGa().getLimitePeso()) {
+        else if (pesoFuturo < ElementosPrincipales.jugador.getGestorAt().getLimitePeso()) {
             excederiaPeso = false;
         }
     }
@@ -735,12 +735,13 @@ public class TiendaComida extends SeccionTienda {
         DibujoDebug.dibujarString(g, "CANCELAR", cancelarCompra.x + 2, cancelarCompra.y + cancelarCompra.height - 4);
 
         Color colorTexto = new Color(255, 255, 255);
-        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra || ElementosPrincipales.jugador.isSobrepeso()
+        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra ||
+                ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()
                 || excederiaPeso) {
             colorTexto = new Color(255, 0, 0);
         }
 
-        if (ElementosPrincipales.jugador.isSobrepeso()) {
+        if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
             DibujoDebug.dibujarString(g, "No puedes llevar mas objetos...", comprar.x, comprar.y - 4, colorTexto);
         }
 
@@ -809,9 +810,7 @@ public class TiendaComida extends SeccionTienda {
             return;
         }
 
-        for (int i = 0; i < objetos.size(); i++) {
-            Objeto objetoActual = objetos.get(i);
-
+        for (Objeto objetoActual : objetos) {
             if (objetoActual instanceof Consumible) {
 
                 Rectangle posicionMenu = objetoActual.getPosicionMochila();
@@ -819,8 +818,7 @@ public class TiendaComida extends SeccionTienda {
                 String texto = "";
                 if (objetoActual.getCantidad() < 10) {
                     texto = "0" + objetoActual.getCantidad();
-                }
-                else {
+                } else {
                     texto = "" + objetoActual.getCantidad();
                 }
 
@@ -845,8 +843,7 @@ public class TiendaComida extends SeccionTienda {
             return;
         }
 
-        for (int i = 0; i < objetos.size(); i++) {
-            Objeto objetoActual = objetos.get(i);
+        for (Objeto objetoActual : objetos) {
             if (!(objetoActual instanceof Consumible)) {
                 return;
 
@@ -861,8 +858,7 @@ public class TiendaComida extends SeccionTienda {
             String texto = "";
             if (objetoActual.getCantidadCompra() < 10) {
                 texto = "0" + objetoActual.getCantidadCompra();
-            }
-            else {
+            } else {
                 texto = "" + objetoActual.getCantidadCompra();
             }
 
@@ -890,8 +886,7 @@ public class TiendaComida extends SeccionTienda {
             return;
         }
 
-        for (int i = 0; i < objetos.size(); i++) {
-            Objeto objetoActual = objetos.get(i);
+        for (Objeto objetoActual : objetos) {
             if (!(objetoActual instanceof Consumible)) {
                 return;
 
@@ -903,8 +898,7 @@ public class TiendaComida extends SeccionTienda {
             String texto = "";
             if (objetoActual.getCantidadVenta() < 10) {
                 texto = "0" + objetoActual.getCantidadVenta();
-            }
-            else {
+            } else {
                 texto = "" + objetoActual.getCantidadVenta();
             }
 
@@ -922,11 +916,8 @@ public class TiendaComida extends SeccionTienda {
     }
 
     private void dibujarElementosInventario(final Graphics g) {
-        List<Objeto> objetos = new ArrayList<>();
 
-        for (Objeto objetoInventario : ElementosPrincipales.inventario.getConsumibles()) {
-            objetos.add(objetoInventario);
-        }
+        List<Objeto> objetos = new ArrayList<>(ElementosPrincipales.inventario.getConsumibles());
         int lado = Constantes.LADO_SPRITE;
 
         dibujarElementosEnPanelInventario(g, objetos, lado);
@@ -961,8 +952,8 @@ public class TiendaComida extends SeccionTienda {
     }
 
     public void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
@@ -984,8 +975,10 @@ public class TiendaComida extends SeccionTienda {
             DibujoDebug.dibujarString(g, "-1", bajarUnidad.x + 4, bajarUnidad.y + bajarUnidad.height - 6, Color.WHITE);
             DibujoDebug.dibujarString(g, "+10", subirDecena.x + 3, subirUnidad.y + subirDecena.height - 6, Color.WHITE);
             DibujoDebug.dibujarString(g, "-10", bajarDecena.x + 3, bajarUnidad.y + bajarDecena.height - 6, Color.WHITE);
-            DibujoDebug.dibujarString(g, "ACEPTAR", aceptarOperacion.x + 3, aceptarOperacion.y + aceptarOperacion.height - 6, Color.BLACK);
-            DibujoDebug.dibujarString(g, "" + cantidadObjetos, aceptarOperacion.x, aceptarOperacion.y + aceptarOperacion.height + 10);
+            DibujoDebug.dibujarString(g, "ACEPTAR", aceptarOperacion.x + 3, aceptarOperacion.y +
+                    aceptarOperacion.height - 6, Color.BLACK);
+            DibujoDebug.dibujarString(g, "" + cantidadObjetos, aceptarOperacion.x, aceptarOperacion.y +
+                    aceptarOperacion.height + 10);
 
         }
     }
@@ -1003,8 +996,10 @@ public class TiendaComida extends SeccionTienda {
             DibujoDebug.dibujarString(g, "-1", bajarUnidad.x + 4, bajarUnidad.y + bajarUnidad.height - 6, Color.WHITE);
             DibujoDebug.dibujarString(g, "+10", subirDecena.x + 3, subirUnidad.y + subirDecena.height - 6, Color.WHITE);
             DibujoDebug.dibujarString(g, "-10", bajarDecena.x + 3, bajarUnidad.y + bajarDecena.height - 6, Color.WHITE);
-            DibujoDebug.dibujarString(g, "ACEPTAR", aceptarOperacion.x + 3, aceptarOperacion.y + aceptarOperacion.height - 6, Color.BLACK);
-            DibujoDebug.dibujarString(g, "" + cantidadObjetos, aceptarOperacion.x, aceptarOperacion.y + aceptarOperacion.height + 10);
+            DibujoDebug.dibujarString(g, "ACEPTAR", aceptarOperacion.x + 3, aceptarOperacion.y +
+                    aceptarOperacion.height - 6, Color.BLACK);
+            DibujoDebug.dibujarString(g, "" + cantidadObjetos, aceptarOperacion.x, aceptarOperacion.y +
+                    aceptarOperacion.height + 10);
 
         }
     }

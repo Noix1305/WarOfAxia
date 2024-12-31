@@ -1,7 +1,9 @@
 package principal.habilidades;
 
 import principal.ElementosPrincipales;
-import principal.entes.EntidadCurable;
+import principal.entes.Entidad;
+import principal.entes.enemigo.Enemigo;
+import principal.entes.jugador.Jugador;
 import principal.inventario.TipoObjeto;
 import principal.sonido.SoundThread;
 
@@ -19,82 +21,74 @@ public class Curacion extends Habilidad {
     /**
      * Constructor de la habilidad de curación.
      *
-     * @param nombre El nombre de la habilidad.
-     * @param duracion La duración de la habilidad.
-     * @param tiempoCarga El tiempo de carga de la habilidad.
-     * @param objetivo El objetivo de la habilidad.
-     * @param manaUtilizado La cantidad de maná utilizada por la habilidad.
-     * @param vidaUtilizada La cantidad de vida utilizada por la habilidad.
-     * @param cantidadCuracionBase La cantidad base de curación.
+     * @param nombre                        El nombre de la habilidad.
+     * @param duracion                      La duración de la habilidad.
+     * @param tiempoCarga                   El tiempo de carga de la habilidad.
+     * @param objetivo                      El objetivo de la habilidad.
+     * @param manaUtilizado                 La cantidad de maná utilizada por la habilidad.
+     * @param vidaUtilizada                 La cantidad de vida utilizada por la habilidad.
+     * @param cantidadCuracionBase          La cantidad base de curación.
      * @param montoAdicionalPorInteligencia El monto adicional de curación por inteligencia.
-     * @param indiceSprite El índice del sprite de la habilidad.
-     * @param activaPasiva El tipo de activación de la habilidad.
-     * @param tipoHabilidad El tipo de habilidad.
+     * @param indiceSprite                  El índice del sprite de la habilidad.
+     * @param activaPasiva                  El tipo de activación de la habilidad.
+     * @param tipoHabilidad                 El tipo de habilidad.
      */
     public Curacion(String nombre, int duracion, int tiempoCarga,
-            Object objetivo, int manaUtilizado, int vidaUtilizada,
-            int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
-            TipoObjeto tipoHabilidad) {
-        super(nombre, duracion, objetivo, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad);
+                    Object objetivo, int manaUtilizado, int vidaUtilizada,
+                    int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
+                    TipoObjeto tipoHabilidad, double alcance) {
+        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, 0);
         this.cantidadCuracionBase = cantidadCuracionBase;
         this.montoAdicionalPorInteligencia = montoAdicionalPorInteligencia;
         super.setTiempoReutilizacion(0);
         this.tiempoCarga = tiempoCarga;
         super.setDescripcion("Restaura 30 pts de VIT + \nun adicional basado en\nla INT del conjurador");
-        sonido = new SoundThread("Heal"); // Inicializar el sonido de la habilidad
+        sonido = new SoundThread("Heal");
+
     }
 
     /**
      * Método para aplicar el efecto de la habilidad de curación.
      *
-     * @param object El objeto sobre el cual se aplica la curación.
      * @param tipoCuracion El tipo de curación (no utilizado en este caso).
      */
     @Override
-    public void aplicarEfecto(Object object, TipoObjeto tipoCuracion) {
-        curacionAutomatica(object); // Aplicar curación automática
+    public void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoCuracion) {
+        curacionAutomatica(objetivo); // Aplicar curación automática
     }
 
     /**
      * Método para aplicar la curación automáticamente.
      *
-     * @param object El objeto sobre el cual se aplica la curación.
+     * @param entidad El objeto sobre el cual se aplica la curación.
      */
-    private void curacionAutomatica(Object object) {
-        // Verificar si ha pasado el tiempo de recarga de la habilidad
+    private void curacionAutomatica(Entidad entidad) {
         if (cronometro.obtenerTiempoTranscurrido() / 1000 >= getTiempoReutilizacion()) {
-            // Verificar si el objetivo es una entidad curable
-            if (object instanceof EntidadCurable) {
-                EntidadCurable entidadCurable = (EntidadCurable) object;
+            if (entidad.gestorAtributos.getVidaActual() < entidad.gestorAtributos.getVidaMaxima() &&
+                    entidad.gestorAtributos.getMana() >= getManaUtilizado()) {
+                ElementosPrincipales.jugador.getCronometro().reiniciar();
 
-                // Verificar si la entidad necesita curación y tiene suficiente maná
-                if (entidadCurable.getVidaActual() < entidadCurable.getVidaMaxima() && entidadCurable.getMana() >= getManaUtilizado()) {
-                    ElementosPrincipales.jugador.getCronometro().reiniciar();
+                int cantidadTotalCuracion = cantidadCuracionBase + calcularMontoAdicionalPorInteligencia(entidad);
+                super.setMontoTotal(cantidadTotalCuracion);
 
-                    // Calcular la cantidad total de curación (base + adicional por inteligencia)
-                    int cantidadTotalCuracion = cantidadCuracionBase + calcularMontoAdicionalPorInteligencia(entidadCurable);
-                    super.setMontoTotal(cantidadTotalCuracion);
+                // Verificar si la entidad es curable
+                if (entidad instanceof Jugador jugador) {
+                    System.out.println("Mana Jugador: " + jugador.gestorAtributos.getMana());
+                    System.out.println("Mana Habilidad: " + getManaUtilizado());
+                    jugador.curarVida(cantidadTotalCuracion);
+                    jugador.gestorAtributos.setMana(jugador.gestorAtributos.getMana() - getManaUtilizado());
 
-                    // Aplicar la curación y actualizar el maná
-                    entidadCurable.curarVida(cantidadTotalCuracion);
-                    entidadCurable.setMana(entidadCurable.getMana() - getManaUtilizado());
 
-                    // Actualizar el tiempo de recarga de la habilidad y reproducir el sonido
-                    super.setTiempoReutilizacion(tiempoCarga);
-                    sonido.reproducir(0.7f);
-                    cronometro.reiniciar();
                 }
+
+                super.setTiempoReutilizacion(tiempoCarga);
+                sonido.reproducir(0.7f);
+                cronometro.reiniciar();
             }
         }
     }
 
-    /**
-     * Método para calcular el monto adicional de curación basado en la inteligencia.
-     *
-     * @param entidadCurable La entidad sobre la cual se aplica la curación.
-     * @return El monto adicional de curación.
-     */
-    private int calcularMontoAdicionalPorInteligencia(EntidadCurable entidadCurable) {
-        return (int) (entidadCurable.getInteligencia() * montoAdicionalPorInteligencia);
+    private int calcularMontoAdicionalPorInteligencia(Entidad entidad) {
+        return (int) (entidad.gestorAtributos.getInteligencia() * montoAdicionalPorInteligencia);
     }
 }

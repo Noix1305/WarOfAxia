@@ -666,10 +666,10 @@ public class TiendaArmaduras extends SeccionTienda {
             pesoFuturo += objetoCanasta.getPeso() * objetoCanasta.getCantidadCompra();
         }
 
-        if (pesoFuturo > ElementosPrincipales.jugador.getGa().getLimitePeso() && !canastaCompra.isEmpty()) {
+        if (pesoFuturo > ElementosPrincipales.jugador.getGestorAt().getLimitePeso() && !canastaCompra.isEmpty()) {
             excederiaPeso = true;
         }
-        else if (pesoFuturo < ElementosPrincipales.jugador.getGa().getLimitePeso()) {
+        else if (pesoFuturo < ElementosPrincipales.jugador.getGestorAt().getLimitePeso()) {
             excederiaPeso = false;
         }
     }
@@ -735,12 +735,13 @@ public class TiendaArmaduras extends SeccionTienda {
         DibujoDebug.dibujarString(g, "COMPRAR", comprar.x + 6, comprar.y + comprar.height - 4);
         DibujoDebug.dibujarString(g, "CANCELAR", cancelarCompra.x + 2, cancelarCompra.y + cancelarCompra.height - 4);
         Color colorTexto = new Color(255, 255, 255);
-        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra || ElementosPrincipales.jugador.isSobrepeso()
+        if (ElementosPrincipales.inventario.dinero < totalTransaccionCompra ||
+                ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()
                 || excederiaPeso) {
             colorTexto = new Color(255, 0, 0);
         }
 
-        if (ElementosPrincipales.jugador.isSobrepeso()) {
+        if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
             DibujoDebug.dibujarString(g, "No puedes llevar mas objetos...", comprar.x, comprar.y - 4, colorTexto);
         }
 
@@ -958,8 +959,8 @@ public class TiendaArmaduras extends SeccionTienda {
     }
 
     public void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGa().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGa().getLimitePeso());
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
         String textoFinal = textoCarga + "/" + textoCargaTotal;
         if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
             GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);

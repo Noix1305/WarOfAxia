@@ -7,7 +7,10 @@ import principal.control.GestorControles; // Importa la clase GestorControles de
 import principal.graficos.SuperficieDibujo; // Importa la clase SuperficieDibujo del paquete principal.graficos
 import principal.graficos.Ventana; // Importa la clase Ventana del paquete principal.graficos
 import principal.maquinaestado.GestorEstados; // Importa la clase GestorEstados del paquete principal.maquinaestado
+import principal.sonido.ReproductorSonido;
 import principal.sonido.SoundThread; // Importa la clase SoundThread del paquete principal.sonido
+
+import static principal.ElementosPrincipales.reproductor;
 
 /**
  * Clase que gestiona el funcionamiento principal del juego.
@@ -25,8 +28,6 @@ public class GestorPrincipal {
     private Ventana ventana; // Ventana del juego
     private GestorEstados ge; // Gestor de estados del juego
 
-    public static SoundThread musica = new SoundThread("Ala Flair"); // Reproductor de música del juego
-
     private static int fps = 0; // FPS (cuadros por segundo) del juego
     private static int aps = 0; // APS (actualizaciones por segundo) del juego
 
@@ -40,7 +41,8 @@ public class GestorPrincipal {
     // Método principal del programa
     public static void main(String[] args) throws InterruptedException {
 
-        System.setProperty("sun.java2d.opengl", "true"); // Configuración de OpenGL
+        System.setProperty("javafx.animation.fullspeed", "true");
+        // Configuración de OpenGL
         GestorPrincipal gp = new GestorPrincipal("Juego", Constantes.ANCHO_PANTALLA_COMPLETA,
                 Constantes.ALTO_PANTALLA_COMPLETA); // Creación de una instancia del gestor principal
 
@@ -52,7 +54,7 @@ public class GestorPrincipal {
     private void iniciarJuego() {
         enFuncionamiento = true; // Establece que el juego está en funcionamiento
         inicializar(); // Inicializa los componentes del juego
-        musica.repetir(0.7f); // Reproduce la música del juego
+        reproductor.musica.repetir(0.7f); // Reproduce la música del juego
     }
 
     // Método para inicializar los componentes del juego
@@ -70,7 +72,7 @@ public class GestorPrincipal {
 
         final int NS_POR_SEGUNDO = 1000000000;
         final int APS_OBJETIVO = 60;
-        final double NS_POR_ACTUALIZACION = NS_POR_SEGUNDO / APS_OBJETIVO;
+        final double NS_POR_ACTUALIZACION = (double) NS_POR_SEGUNDO / APS_OBJETIVO;
 
         long referenciaActualizacion = System.nanoTime();
         long referenciaContador = System.nanoTime();

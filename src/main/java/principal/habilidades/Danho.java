@@ -4,48 +4,59 @@
  */
 package principal.habilidades;
 
+import principal.Constantes;
 import principal.ElementosPrincipales;
+import principal.entes.Entidad;
 import principal.entes.EntidadCurable;
+import principal.entes.enemigo.Enemigo;
+import principal.entes.jugador.Jugador;
 import principal.inventario.TipoObjeto;
 
+import java.awt.*;
+import java.util.ArrayList;
+
 /**
- *
  * @author GAMER ARRAX
  */
 public class Danho extends Habilidad {
 
     private final double montoAdicionalPorInteligencia;
     private int danhoBase;
+    private int alcanceLateral;
+    private int alcanceFrontal;
 
-    public Danho(String nombre, int duracion, int tiempoReutilizacion, Object objetivo, int manaUtilizado, int vidaUtilizada,
-            double montoAdicionalPorInt, int danhoBase, int indiceSprite, TipoObjeto activaPasiva, TipoObjeto tipoHabilidad) {
-        super(nombre, duracion, objetivo, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad);
-        
-        montoAdicionalPorInteligencia =montoAdicionalPorInt;
+    public Danho(String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,
+                 double montoAdicionalPorInt, int danhoBase, int indiceSprite, TipoObjeto activaPasiva, TipoObjeto tipoHabilidad, double alcance) {
+        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, alcance);
+
+        montoAdicionalPorInteligencia = montoAdicionalPorInt;
         this.danhoBase = danhoBase;
     }
+
 
     /*public void aplicarEfecto(Object object, TipoObjeto tipoHabilidad) {
         if(ElementosPrincipales.jugador.getArea()))
         danhar(object, tipoHabilidad);
     }*/
 
-    private void danhar(Object object, TipoObjeto tipoHabilidad) {
-        
-        if (cronometro.obtenerTiempoTranscurrido() / 1000 >= getTiempoReutilizacion()) {
-            if (object instanceof EntidadCurable) {
-                EntidadCurable entidadCurable = (EntidadCurable) object;
+    private void danhar(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad) {
 
-                if (entidadCurable.getVidaActual() < entidadCurable.getVidaMaxima() && entidadCurable.getMana() >= getManaUtilizado()) {
-                    ElementosPrincipales.jugador.getCronometro().reiniciar();
+        if (cronometro.obtenerTiempoTranscurrido() / 1000 >= getTiempoReutilizacion()) {
+            if (objetivo instanceof Enemigo enemigo && atacante instanceof Jugador jugador) {
+                System.out.println("Vida enemigo en Dañar: " + enemigo.gestorAtributos.getVidaEnemigo());
+
+                if (enemigo.gestorAtributos.getVidaEnemigo() > 0 &&
+                        atacante.gestorAtributos.getMana() >= getManaUtilizado()) {
+
                     //ElementosPrincipales.jugador.dibujarHabilidad = true;
                     // Calcular la cantidad total de curación (base + adicional por inteligencia)
-                    int cantidadTotalDanho = danhoBase + calcularMontoAdicionalPorInteligencia(entidadCurable);
+                    int cantidadTotalDanho = danhoBase + calcularMontoAdicionalPorInteligencia(jugador);
                     super.setMontoTotal(cantidadTotalDanho);
+                    System.out.println("Daño realizado: " + super.getMontoTotal());
 
-                    entidadCurable.recibirDanho(cantidadTotalDanho,tipoHabilidad);
+                    enemigo.recibirDanho(cantidadTotalDanho, tipoHabilidad);
 
-                    ElementosPrincipales.jugador.setMana(ElementosPrincipales.jugador.getMana() - getManaUtilizado());
+                    ElementosPrincipales.jugador.gestorAtributos.setMana(jugador.gestorAtributos.getMana() - getManaUtilizado());
                     setTiempoReutilizacion(super.getTiempoReutilizacion());
 
                     cronometro.reiniciar();
@@ -56,14 +67,28 @@ public class Danho extends Habilidad {
         }
     }
 
-    private int calcularMontoAdicionalPorInteligencia(EntidadCurable entidadCurable) {
-
-        return (int) (entidadCurable.getInteligencia() * montoAdicionalPorInteligencia);
+    private int calcularMontoAdicionalPorInteligencia(Entidad entidad) {
+        if (entidad instanceof Jugador jugador) {
+            return (int) (entidad.gestorAtributos.getInteligencia() * montoAdicionalPorInteligencia);
+        }
+        return 0;
     }
+
 
     @Override
-    public void aplicarEfecto(Object object, TipoObjeto tipoHabilidad) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad) {
+        danhar(atacante, objetivo, tipoHabilidad);
     }
 
+    public double getMontoAdicionalPorInteligencia() {
+        return montoAdicionalPorInteligencia;
+    }
+
+    public int getDanhoBase() {
+        return danhoBase;
+    }
+
+    public void setDanhoBase(int danhoBase) {
+        this.danhoBase = danhoBase;
+    }
 }

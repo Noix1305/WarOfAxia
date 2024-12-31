@@ -7,9 +7,11 @@ package principal.inventario.armas;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Random;
+
+import principal.Constantes;
 import principal.ElementosPrincipales;
-import principal.entes.Enemigo;
-import principal.entes.Jugador;
+import principal.entes.enemigo.Enemigo;
+import principal.entes.jugador.Jugador;
 import principal.inventario.Objeto;
 import principal.inventario.TipoObjeto;
 import principal.sonido.SoundThread;
@@ -49,14 +51,47 @@ public abstract class Arma extends Objeto {
     }
 
     // Método abstracto para obtener el alcance del arma
-    public abstract ArrayList<Rectangle> getAlcance(final Jugador jugador);
+    public ArrayList<Rectangle> getAlcance(final Jugador jugador) {
+        final ArrayList<Rectangle> alcance = new ArrayList<>();
+
+        final Rectangle alcance1 = new Rectangle();
+        // 0 = abajo, 1 = izquierda, 2 = derecha, 3 = arriba
+        if (jugador.getAnimacionJugador().getDireccion() == 3 || jugador.getAnimacionJugador().getDireccion() == 0) {
+            alcance1.width = alcanceLateral;
+            alcance1.height = alcanceFrontal * Constantes.LADO_SPRITE;
+
+            alcance1.x = Constantes.CENTRO_VENTANA_X;
+            if (jugador.getAnimacionJugador().getDireccion() == 0) {
+                alcance1.y = Constantes.CENTRO_VENTANA_Y - 9;
+            }
+            else {
+                alcance1.y = Constantes.CENTRO_VENTANA_Y - 9 - alcance1.height;
+            }
+
+        }
+        else {
+            alcance1.height = alcanceLateral;
+            alcance1.width = alcanceFrontal * Constantes.LADO_SPRITE;
+
+            alcance1.y = Constantes.CENTRO_VENTANA_Y - 3;
+
+            if (jugador.getAnimacionJugador().getDireccion() == 1) {
+                alcance1.x = Constantes.CENTRO_VENTANA_X - alcance1.width;
+            }
+            else {
+                alcance1.x = Constantes.CENTRO_VENTANA_X;
+            }
+        }
+
+        alcance.add(alcance1);
+
+        return alcance;
+    }
 
     // Método para actualizar el arma
     public void actualizar() {
-        if (this != null) {
-            if (actualizacionesParaSgteAtaque > 0) {
-                actualizacionesParaSgteAtaque--;
-            }
+        if (actualizacionesParaSgteAtaque > 0) {
+            actualizacionesParaSgteAtaque--;
         }
     }
 
@@ -70,11 +105,11 @@ public abstract class Arma extends Objeto {
             disparo.reproducir(0.8f);
 
             ElementosPrincipales.jugador.getCronometro().reiniciar();
-            ElementosPrincipales.jugador.preparado = true;
+            ElementosPrincipales.jugador.getAccionesJugador().setPreparado(true);
 
             double numeroAleatorio = new Random().nextDouble(100) + 1;
             int multiplicadorCritico = 1;
-            boolean esCritico = numeroAleatorio <= ElementosPrincipales.jugador.getGa().getCritico();
+            boolean esCritico = numeroAleatorio <= ElementosPrincipales.jugador.getGestorAt().getCritico();
             int rango = this.getAtaqueMax() - this.getAtaqueMin() + 1;
             int ataqueAleatorio = new Random().nextInt(rango) + this.getAtaqueMin();
             int danioBase = ataqueAleatorio + atributo;
@@ -118,12 +153,7 @@ public abstract class Arma extends Objeto {
     }
 
     public int getAtaque() {
-        if (this != null) {
-            return (int) (ataqueMin + ataqueMax) / 2;
-        }
-        else {
-            return 0;
-        }
+        return (int) (ataqueMin + ataqueMax) / 2;
     }
 
     public int getAlcanceInt() {

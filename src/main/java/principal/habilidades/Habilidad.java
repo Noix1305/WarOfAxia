@@ -2,8 +2,11 @@ package principal.habilidades;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import principal.Constantes;
+import principal.entes.Entidad;
+import principal.entes.jugador.Jugador;
 import principal.herramientas.Cronometro;
 import principal.inventario.TipoObjeto;
 import principal.sprites.HojaSprites;
@@ -27,27 +30,23 @@ public abstract class Habilidad {
     private int tiempoReutilizacion; // Tiempo de reutilización de la habilidad
     private int manaUtilizado; // Cantidad de maná utilizado por la habilidad
     private int vidaUtilizada; // Cantidad de vida utilizada por la habilidad
-    private final Object objetivo; // Objetivo de la habilidad
-    private int montoTotal; // Monto total de la habilidad
+    private int montoTotal;
+    private double alcance;// Monto total de la habilidad
 
     /**
      * Constructor de la clase Habilidad.
      *
-     * @param nombre El nombre de la habilidad.
-     * @param duracion La duración de la habilidad.
-     * @param objetivo El objetivo de la habilidad.
+     * @param nombre        El nombre de la habilidad.
      * @param manaUtilizado La cantidad de maná utilizado por la habilidad.
      * @param vidaUtilizada La cantidad de vida utilizada por la habilidad.
-     * @param indiceSprite El índice del sprite de la habilidad.
-     * @param activaPasiva El tipo de activación de la habilidad.
+     * @param indiceSprite  El índice del sprite de la habilidad.
+     * @param activaPasiva  El tipo de activación de la habilidad.
      * @param tipoHabilidad El tipo de habilidad.
      */
-    public Habilidad(String nombre, int duracion,
-            Object objetivo, int manaUtilizado, int vidaUtilizada, int indiceSprite, TipoObjeto activaPasiva,
-            TipoObjeto tipoHabilidad) {
+    public Habilidad(String nombre, int duracion, int manaUtilizado, int vidaUtilizada, int indiceSprite, TipoObjeto activaPasiva,
+                     TipoObjeto tipoHabilidad, double alcance) {
         this.nombre = nombre;
         this.duracion = duracion;
-        this.objetivo = objetivo;
         this.manaUtilizado = manaUtilizado;
         this.vidaUtilizada = vidaUtilizada;
         hojaHabilidad = new HojaSprites(Constantes.RUTA_HOJA_HABILIDADES, 32, true);
@@ -58,10 +57,49 @@ public abstract class Habilidad {
         posicionFlotante = new Rectangle(0, 0, 0, 0);
         cronometro = new Cronometro();
         efectoActivado = false;
+        this.alcance = alcance;
     }
 
     // Método abstracto que debe ser implementado por las subclases
-    public abstract void aplicarEfecto(Object object, TipoObjeto tipoHabilidad);
+    public abstract void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad);
+
+    public ArrayList<Rectangle> getAlcanceHabilidad(final Jugador jugador, final Habilidad habilidad) {
+        final ArrayList<Rectangle> alcance = new ArrayList<>();
+
+        final Rectangle alcanceHabilidad = new Rectangle();
+
+        // Usar alcance de la habilidad
+        double alcanceFrontal = habilidad.getAlcance() * Constantes.LADO_SPRITE;
+        double alcanceLateral = alcanceFrontal / 2; // O algún valor derivado del alcance
+
+        // Considerar la dirección del jugador (similar al arma)
+        if (jugador.getAnimacionJugador().getDireccion() == 3 || jugador.getAnimacionJugador().getDireccion() == 0) {
+            alcanceHabilidad.width = (int) alcanceLateral;
+            alcanceHabilidad.height = (int) alcanceFrontal;
+
+            alcanceHabilidad.x = Constantes.CENTRO_VENTANA_X;
+            if (jugador.getAnimacionJugador().getDireccion() == 0) {
+                alcanceHabilidad.y = Constantes.CENTRO_VENTANA_Y - 9;
+            } else {
+                alcanceHabilidad.y = Constantes.CENTRO_VENTANA_Y - 9 - alcanceHabilidad.height;
+            }
+
+        } else {
+            alcanceHabilidad.height = (int) alcanceLateral;
+            alcanceHabilidad.width = (int) alcanceFrontal;
+
+            alcanceHabilidad.y = Constantes.CENTRO_VENTANA_Y - 3;
+
+            if (jugador.getAnimacionJugador().getDireccion() == 1) {
+                alcanceHabilidad.x = Constantes.CENTRO_VENTANA_X - alcanceHabilidad.width;
+            } else {
+                alcanceHabilidad.x = Constantes.CENTRO_VENTANA_X;
+            }
+        }
+
+        alcance.add(alcanceHabilidad);
+        return alcance;
+    }
 
     public String getNombre() {
         return nombre;
@@ -109,10 +147,6 @@ public abstract class Habilidad {
 
     public void setVidaUtilizada(int vidaUtilizada) {
         this.vidaUtilizada = vidaUtilizada;
-    }
-
-    public Object getObjetivo() {
-        return objetivo;
     }
 
     public HojaSprites getHojaHabilidad() {
@@ -183,4 +217,11 @@ public abstract class Habilidad {
         this.activaPasiva = activaPasiva;
     }
 
+    public double getAlcance() {
+        return alcance;
+    }
+
+    public void setAlcance(double alcance) {
+        this.alcance = alcance;
+    }
 }

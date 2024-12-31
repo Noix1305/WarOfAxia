@@ -96,7 +96,7 @@ public class Teclado implements KeyListener {
                 derecha.teclaPulsada();
                 break;
             case KeyEvent.VK_SHIFT:
-                if (!ElementosPrincipales.jugador.isSobrepeso()) {
+                if (!ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
                     corriendo = true;
                 }
                 break;
@@ -118,20 +118,44 @@ public class Teclado implements KeyListener {
                 tiendaActiva = !tiendaActiva;
                 break;
             case KeyEvent.VK_SPACE:
-                ElementosPrincipales.jugador.atacando = true;
-                System.out.println("Atacando: "+ElementosPrincipales.jugador.atacando);
+                ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
+                System.out.println("Atacando: "+ElementosPrincipales.jugador.getAccionesJugador().isAtacando());
                 break;
             case KeyEvent.VK_F12:
                 MenuEquipo.mostrarTooltip = !MenuEquipo.mostrarTooltip;
                 break;
             case KeyEvent.VK_1:
-                GestorHabilidades.usarHabilidad(0);
+                ElementosPrincipales.jugador.habilidadSlot(0);
                 break;
             case KeyEvent.VK_2:
-                GestorHabilidades.usarHabilidad(1);
+                ElementosPrincipales.jugador.habilidadSlot(1);
+                break;
+            case KeyEvent.VK_3:
+                ElementosPrincipales.jugador.habilidadSlot(2);
+                break;
+            case KeyEvent.VK_4:
+                ElementosPrincipales.jugador.habilidadSlot(3);
+                break;
+            case KeyEvent.VK_5:
+                ElementosPrincipales.jugador.habilidadSlot(4);
+                break;
+            case KeyEvent.VK_6:
+                ElementosPrincipales.jugador.habilidadSlot(5);
+                break;
+            case KeyEvent.VK_7:
+                ElementosPrincipales.jugador.habilidadSlot(6);
+                break;
+            case KeyEvent.VK_8:
+                ElementosPrincipales.jugador.habilidadSlot(7);
+                break;
+            case KeyEvent.VK_9:
+                ElementosPrincipales.jugador.habilidadSlot(8);
+                break;
+            case KeyEvent.VK_0:
+                ElementosPrincipales.jugador.habilidadSlot(9);
                 break;
             case KeyEvent.VK_F5:
-                Habilidad habilidad = gh.obtenerHabilidadPorNombre("Curacion Basica");
+                Habilidad habilidad = gh.obtenerHabilidadPorNombre("Ataque Básico");
                 ElementosPrincipales.inventario.habilidades.add(habilidad);
                 break;
         }
@@ -160,7 +184,7 @@ public class Teclado implements KeyListener {
                 corriendo = false;
                 break;
             case KeyEvent.VK_SPACE:
-                ElementosPrincipales.jugador.atacando = false;
+                ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
                 break;
             case KeyEvent.VK_UP:
                 aumentar.teclaLiberada();

@@ -31,6 +31,6 @@ public enum TipoObjeto {
     ESPADA_PESADA,
     ESPADA_MEDIA,
     ESPADA_LIGERA,
-    
-    NINGUNO // Puedes agregar un tipo 'NINGUNO' para representar la ausencia de selección
+
+    CURACION, NINGUNO // Puedes agregar un tipo 'NINGUNO' para representar la ausencia de selección
 }

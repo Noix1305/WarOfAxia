@@ -98,12 +98,12 @@ public abstract class SeccionMenu {
         int x = barraPeso.x - 35;
 
         // Calcular el porcentaje de peso actual en relación con el límite de peso
-        double porcentajePeso = (ElementosPrincipales.jugador.getGa().getPesoActual() * 100)
-                / ElementosPrincipales.jugador.getGa().getLimitePeso();
+        double porcentajePeso = (ElementosPrincipales.jugador.getGestorAt().getPesoActual() * 100)
+                / ElementosPrincipales.jugador.getGestorAt().getLimitePeso();
 
         // Calcular la longitud de la parte coloreada de la barra
         int longitudColoreada = (int) ((porcentajePeso / 100) * (barraPeso.width - 2));
-        if (ElementosPrincipales.jugador.isSobrepeso()) {
+        if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
             longitudColoreada = 100;
         }
 

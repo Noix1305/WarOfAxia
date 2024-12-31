@@ -10,24 +10,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
+
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
 import principal.control.GestorControles;
 import principal.dijkstra.Dijkstra;
 import principal.dijkstra.Nodo;
-import principal.entes.Enemigo;
-import principal.entes.RegistroEnemigos;
+import principal.entes.enemigo.Enemigo;
+import principal.entes.enemigo.RegistroEnemigos;
 import principal.graficos.SuperficieDibujo;
+import principal.habilidades.Habilidad;
 import principal.herramientas.CalculadoraDistancia;
 import principal.herramientas.CargadorRecursos;
 import principal.herramientas.DibujoDebug;
@@ -49,8 +51,10 @@ import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
 
+import static principal.ElementosPrincipales.jugador;
+import static principal.ElementosPrincipales.reproductor;
+
 /**
- *
  * @author GAMER ARRAX
  */
 public class MapaTiled {
@@ -66,6 +70,7 @@ public class MapaTiled {
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
+    private Habilidad habilidad = null;
 
     public Rectangle zonaSalida1;
     public Rectangle zonaSalida2;
@@ -159,8 +164,8 @@ public class MapaTiled {
         actualizarZonaSalida();
         actualizarTiendas();
 
-        Point punto = new Point(ElementosPrincipales.jugador.getPosicionXInt(),
-                ElementosPrincipales.jugador.getPosicionYInt());
+        Point punto = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(),
+                ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
 
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
@@ -168,8 +173,8 @@ public class MapaTiled {
 
         if (!GestorPrincipal.pantallaTitulo) {
             if (!reproducirMusica) {
-                GestorPrincipal.musica.cambiarArchivo("Lively Meadow");
-                GestorPrincipal.musica.repetir(0.7f);
+                reproductor.musica.cambiarArchivo("FF-I-OST-Main-theme-_aJbbAPMvqrA_");
+                reproductor.musica.repetir(0.7f);
                 reproducirMusica = true;
             }
 
@@ -188,13 +193,13 @@ public class MapaTiled {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
                         int puntoX = x * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
+                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
                         int puntoY = y * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
                         // OPTIMIZACION DIBUJADO
-                        if (puntoX < 0 - Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
-                                || puntoY < 0 - Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
+                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
+                                || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
@@ -205,25 +210,28 @@ public class MapaTiled {
             }
         }
 
-        for (int i = 0; i < objetosMapa.size(); i++) {
-            ObjetoUnicoTiled objetoActual = objetosMapa.get(i);
-            int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+        for (ObjetoUnicoTiled objetoActual : objetosMapa) {
+            int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().getImagen(), puntoX, puntoY);
         }
 
-        for (int i = 0; i < listaContenedores.size(); i++) {
-            ContenedorObjetos contenedorAct = listaContenedores.get(i);
-            int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+        for (ContenedorObjetos contenedorAct : listaContenedores) {
+            int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             contenedorAct.dibujar(g, puntoX, puntoY);
         }
 
-        for (int i = 0; i < enemigosMapa.size(); i++) {
-            Enemigo enemigo = enemigosMapa.get(i);
-            int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+        for (Enemigo enemigo : enemigosMapa) {
+            int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             enemigo.dibujar(g, puntoX, puntoY);
 
         }
@@ -241,13 +249,13 @@ public class MapaTiled {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
                         int puntoX = x * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
+                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
                         int puntoY = y * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
                         // OPTIMIZACION DIBUJADO
-                        if (puntoX < 0 - Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
-                                || puntoY < 0 - Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
+                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
+                                || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
@@ -273,6 +281,10 @@ public class MapaTiled {
         for (Tienda tiendaActual : tiendas) {
             DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
 
+        }
+        if (habilidad != null) {
+            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32),
+                    jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
         }
 
         /*for (Rectangle rectagulo : areasColisionActualizadas) {
@@ -308,8 +320,7 @@ public class MapaTiled {
 
             // Actualizar el punto inicial de la instancia de Mapa
             this.puntoInicial = new Point(x, y); // Ajusta según la estructura de tu clase Mapa
-        }
-        else {
+        } else {
             // Si no existe, asignar el punto inicial predeterminado
             this.puntoInicial = Salida.puntoInicialSiguiente; // Ajusta según tus necesidades
         }
@@ -352,8 +363,7 @@ public class MapaTiled {
                         break;
                 }
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'layers' no está presente o no es un array en el JSON.");
         }
     }
@@ -375,12 +385,10 @@ public class MapaTiled {
         // Lógica para combinar colisiones en un solo ArrayList
         areaTransparenciaOriginales = new ArrayList<>();
 
-        for (int i = 0; i < capaTransparencias.size(); i++) {
-            Rectangle[] rectangulos = capaTransparencias.get(i).getColisionables();
+        for (CapaTransparencias capaTransparencia : capaTransparencias) {
+            Rectangle[] rectangulos = capaTransparencia.getColisionables();
 
-            for (int j = 0; j < rectangulos.length; j++) {
-                areaTransparenciaOriginales.add(rectangulos[j]);
-            }
+            Collections.addAll(areaTransparenciaOriginales, rectangulos);
         }
     }
 
@@ -433,12 +441,10 @@ public class MapaTiled {
                     }
                 }
 
-                for (int i = 0; i < this.capaSprites2.size(); i++) {
-                    CapaSprites capaActual = this.capaSprites2.get(i);
+                for (CapaSprites capaActual : this.capaSprites2) {
                     int[] spritesCapa = capaActual.getSprites();
 
-                    for (int j = 0; j < spritesCapa.length; j++) {
-                        int idSpriteActual = spritesCapa[j];
+                    for (int idSpriteActual : spritesCapa) {
                         if (idSpriteActual >= primerSpriteColeccion && idSpriteActual <= ultimoSpriteColeccion) {
                             if (paletaSprites2[idSpriteActual] == null) {
                                 paletaSprites2[idSpriteActual] = sprites[idSpriteActual - primerSpriteColeccion];
@@ -449,8 +455,7 @@ public class MapaTiled {
 
                 spriteIndex += sprites.length;
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'tilesets' no está presente o no es un array en el JSON.");
         }
     }
@@ -474,8 +479,7 @@ public class MapaTiled {
                 ObjetoUnicoTiled objetoUnico = new ObjetoUnicoTiled(posicionObjeto, objeto, objeto.getCantidad());
                 objetosMapa.add(objetoUnico);
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'objetos' no está presente o no es un array en el JSON.");
         }
     }
@@ -498,13 +502,11 @@ public class MapaTiled {
                     Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(idEnemigo);
                     enemigo.setPosicion(posicionEnemigo.x, posicionEnemigo.y);
                     enemigosMapa.add(enemigo);
-                }
-                else {
+                } else {
                     System.err.println("El ID del enemigo es 0, se omitirá.");
                 }
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'enemigos' no está presente o no es un array en el JSON.");
         }
     }
@@ -541,8 +543,7 @@ public class MapaTiled {
                 listaContenedores.add(contenedor);
                 areaColisionOriginales.add(contenedor.getArea());
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'contenedores' no está presente o no es un array en el JSON.");
         }
     }
@@ -563,8 +564,7 @@ public class MapaTiled {
                 Tienda tienda = new Tienda(idTienda, posTienda, tipo);
                 tiendas.add(tienda);
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'tiendas' no está presente o no es un array en el JSON.");
         }
     }
@@ -606,8 +606,7 @@ public class MapaTiled {
                 Salida.getSalidas().add(nuevaSalida);
                 zonasSalida.add(nuevaZonaSalida);
             }
-        }
-        else {
+        } else {
             System.err.println("La clave 'salidas' no está presente o está vacía en el JSON.");
         }
     }
@@ -627,8 +626,7 @@ public class MapaTiled {
             }
 
             this.capaSprites1.add(new CapaSprites(anchoCapa, altoCapa, xCapa, yCapa, spriteCapa));
-        }
-        else {
+        } else {
             System.err.println("No se encontraron datos válidos en la capa de sprites 1.");
         }
     }
@@ -648,8 +646,7 @@ public class MapaTiled {
             }
 
             this.capaSprites2.add(new CapaSprites(anchoCapa, altoCapa, xCapa, yCapa, spriteCapa));
-        }
-        else {
+        } else {
             System.err.println("No se encontraron datos válidos en la capa de sprites 2.");
         }
     }
@@ -691,8 +688,7 @@ public class MapaTiled {
             }
 
             this.capaColisiones.add(new CapaColisiones(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
-        }
-        else {
+        } else {
             System.err.println("No se encontraron datos válidos en la capa de colisiones.");
         }
     }
@@ -734,108 +730,132 @@ public class MapaTiled {
             }
 
             this.capaTransparencias.add(new CapaTransparencias(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
-        }
-        else {
+        } else {
             System.err.println("No se encontraron datos válidos en la capa de transparencia.");
         }
     }
 
     private void actualizarAtaques() {
-        if (enemigosMapa.isEmpty() || ElementosPrincipales.jugador.getAlcanceActual().isEmpty()) {
+        if (enemigosMapa.isEmpty() || ElementosPrincipales.jugador.getAlcanceActual().isEmpty() &&
+                ElementosPrincipales.jugador.getHabilidadActual() == null) {
             return;
         }
 
-        // Verificar si hay enemigos dentro del alcance del jugador
-        boolean hayEnemigosEnAlcance = false;
-        for (Enemigo enemigo : enemigosMapa) {
-            if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
-                hayEnemigosEnAlcance = true;
-                break;
-            }
-        }
-
-        // Si no hay enemigos en el alcance del jugador, salir del método
-        if (!hayEnemigosEnAlcance) {
-            return;
-        }
-
-        if (ElementosPrincipales.jugador.atacando) {
-            ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
-            if (ElementosPrincipales.jugador.getAe().getArma1() != null && ElementosPrincipales.jugador.getAe().getArma1().isPenetrante()) {
-                for (Enemigo enemigo : enemigosMapa) {
-                    if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
-                        enemigosAlcanzados.add(enemigo);
-                    }
+        if (!enemigosMapa.isEmpty() && !ElementosPrincipales.jugador.getAlcanceActual().isEmpty()) {
+            // Verificar si hay enemigos dentro del alcance del jugador
+            boolean hayEnemigosEnAlcance = false;
+            for (Enemigo enemigo : enemigosMapa) {
+                if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
+                    hayEnemigosEnAlcance = true;
+                    break;
                 }
             }
-            else {
+
+            // Si no hay enemigos en el alcance del jugador, salir del método
+            if (!hayEnemigosEnAlcance) {
+                return;
+            }
+
+            if (ElementosPrincipales.jugador.getAccionesJugador().isAtacando()) {
+                ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
+                if (ElementosPrincipales.jugador.getAlmacenEquipo().getArma1() != null && ElementosPrincipales.jugador.getAlmacenEquipo().getArma1().isPenetrante()) {
+                    for (Enemigo enemigo : enemigosMapa) {
+                        if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
+                            enemigosAlcanzados.add(enemigo);
+                        }
+                    }
+                } else {
                 /*
                 Este fragmento de código se encarga de realizar el proceso de ataque del jugador.
                 Primero, encuentra el enemigo más cercano dentro del alcance del jugador,
                 luego calcula el atributo de ataque del jugador y realiza el ataque con el arma equipada.
                 Finalmente, elimina los enemigos derrotados y marca el fin del ataque.
                  */
-                Enemigo enemigoCercano = null;
-                Double distanciaCercana = null;
+                    Enemigo enemigoCercano = null;
+                    Double distanciaCercana = null;
 
-                for (Enemigo enemigo : enemigosMapa) {
-                    if (ElementosPrincipales.jugador.getAlcanceActual().get(0)
-                            .intersects(enemigo.getArea())) {
-                        Point puntoJugador = new Point(ElementosPrincipales.jugador.getPosicionXInt() / 32,
-                                ElementosPrincipales.jugador.getPosicionYInt() / 32);
+                    for (Enemigo enemigo : enemigosMapa) {
+                        if (ElementosPrincipales.jugador.getAlcanceActual().get(0)
+                                .intersects(enemigo.getArea())) {
+                            Point puntoJugador = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() / 32,
+                                    ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() / 32);
 
-                        Point puntoEnemigo = new Point(
-                                (int) enemigo.getPosicionX() / 32,
-                                (int) enemigo.getPosicionY());
-                        Double distanciaActual = CalculadoraDistancia.getDistanciaEntrePuntos(puntoJugador, puntoEnemigo);
+                            Point puntoEnemigo = new Point(
+                                    (int) enemigo.getPosicionX() / 32,
+                                    (int) enemigo.getPosicionY());
+                            Double distanciaActual = CalculadoraDistancia.getDistanciaEntrePuntos(puntoJugador, puntoEnemigo);
 
-                        if (enemigoCercano == null) {
-                            enemigoCercano = enemigo;
-                            distanciaCercana = distanciaActual;
-                        }
-                        else if (distanciaActual > distanciaCercana) {
-                            enemigoCercano = enemigo;
-                            distanciaCercana = distanciaActual;
+                            if (enemigoCercano == null) {
+                                enemigoCercano = enemigo;
+                                distanciaCercana = distanciaActual;
+                            } else if (distanciaActual > distanciaCercana) {
+                                enemigoCercano = enemigo;
+                                distanciaCercana = distanciaActual;
+                            }
                         }
                     }
+                    enemigosAlcanzados.add(enemigoCercano);
                 }
-                enemigosAlcanzados.add(enemigoCercano);
-            }
-            Arma arma = ElementosPrincipales.jugador.getAe().getArma1();
-            int atributo = 0;
+                Arma arma = ElementosPrincipales.jugador.getAlmacenEquipo().getArma1();
+                int atributo = 0;
 
-            if (arma.getTipoObjeto() == TipoObjeto.ARCO) {
-                atributo = ElementosPrincipales.jugador.getGa().getDestreza();
+                if (arma.getTipoObjeto() == TipoObjeto.ARCO) {
+                    atributo = ElementosPrincipales.jugador.getGestorAt().getDestreza();
 
-            }
-            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
-                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza() / 2
-                        + (int) ElementosPrincipales.jugador.getGa().getDestreza() / 2;
+                } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
+                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() / 2
+                            + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
-            }
-            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
-                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza();
+                } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
+                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza();
 
-            }
-            else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
-                atributo = (int) ElementosPrincipales.jugador.getGa().getFuerza()
-                        + (int) ElementosPrincipales.jugador.getGa().getDestreza() / 2;
+                } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
+                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza()
+                            + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
-            }
-            if (arma != null) {
+                }
                 arma.atacar(enemigosAlcanzados, atributo);
-            }
 
-        }
-        Iterator<Enemigo> iterador = enemigosMapa.iterator();
-
-        while (iterador.hasNext()) {
-            Enemigo enemigo = iterador.next();
-            if (enemigo.getVidaActual() <= 0) {
-                iterador.remove();
             }
         }
-        ElementosPrincipales.jugador.atacando = false;
+
+        if (ElementosPrincipales.jugador.getAccionesJugador().isUsandoSkill()) {
+            Habilidad habilidad = ElementosPrincipales.jugador.getHabilidadActual();
+            System.out.println("Habilidad en mapa: " + habilidad.getNombre());
+            // Obtener el alcance de la habilidad basado en la posición y dirección del jugador
+            ArrayList<Rectangle> alcanceHabilidad = habilidad.getAlcanceHabilidad(ElementosPrincipales.jugador, habilidad);
+            System.out.println("Alcance Habilidad: " + alcanceHabilidad);
+
+            ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
+            for (Enemigo enemigo : enemigosMapa) {
+                // Verificar si el área de la habilidad intersecta el área del enemigo
+                for (Rectangle area : alcanceHabilidad) {
+                    if (area.intersects(enemigo.getArea())) {
+                        enemigosAlcanzados.add(enemigo);
+
+                    }
+                }
+            }
+
+            // Aplicar el efecto de la habilidad a los enemigos alcanzados
+            if (!enemigosAlcanzados.isEmpty()) {
+                for (Enemigo enemigo : enemigosAlcanzados) {
+                    System.out.println("Enemigo alcanzado: " + enemigo.gestorAtributos.getNombre() + "Vida enemigo: " + enemigo.gestorAtributos.getVidaEnemigo());
+
+                    habilidad.aplicarEfecto(
+                            ElementosPrincipales.jugador,
+                            enemigo,
+                            habilidad.getTipoHabilidad()
+                    );
+                    System.out.println("Vida enemigo: " + enemigo.gestorAtributos.getVida());
+                }
+            }
+            ElementosPrincipales.jugador.getAccionesJugador().setUsandoSkill(false);
+
+        }
+
+        enemigosMapa.removeIf(enemigo -> enemigo.gestorAtributos.getVidaEnemigo() <= 0);
+        ElementosPrincipales.jugador.getAccionesJugador().setAtacando(false);
     }
 
     private void actualizarRecogidaObjeto() {
@@ -851,7 +871,7 @@ public class MapaTiled {
         ultimoTiempoRecogida = tiempoActual;
         Iterator<ObjetoUnicoTiled> iterador = objetosMapa.iterator();
         Iterator<ContenedorObjetos> iterador2 = listaContenedores.iterator();
-        Rectangle areaJugador = ElementosPrincipales.jugador.getArea();
+        Rectangle areaJugador = ElementosPrincipales.jugador.getAccionesJugador().getArea();
 
         while (iterador.hasNext()) {
             ObjetoUnicoTiled objetoActual = iterador.next();
@@ -862,7 +882,7 @@ public class MapaTiled {
                     Constantes.LADO_SPRITE);
 
             if (areaJugador.intersects(posicionObjetoActual) && GestorPrincipal.sd.getRaton().isRecogiendo()) {
-                if (ElementosPrincipales.jugador.isSobrepeso()) {
+                if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
                     return;
                 }
                 ElementosPrincipales.inventario.recogerObjetos(objetoActual);
@@ -875,8 +895,7 @@ public class MapaTiled {
             ContenedorObjetos contenedor = iterador2.next();
             if (contenedor.getObjetos().isEmpty()) {
                 iterador2.remove();
-            }
-            else if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
+            } else if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
                 abrirContenedor(contenedor);
             }
         }
@@ -891,16 +910,17 @@ public class MapaTiled {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
         if (contenedorAbierto && contenedorActual != null) {
-            int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle areaContenedor = new Rectangle(puntoX, puntoY, 32, 32);
             contenedorActual.setArea(areaContenedor);
 
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(areaContenedor))
                     && GestorPrincipal.sd.getRaton().isClick()) {
                 recogerObjetosDelContenedor(contenedorActual);
-            }
-            else {
+            } else {
                 contenedorActual = null;
                 contenedorAbierto = false;
             }
@@ -908,8 +928,8 @@ public class MapaTiled {
     }
 
     private void recogerObjetosDelContenedor(ContenedorObjetos contenedor) {
-        int x = ElementosPrincipales.jugador.getPosicionXInt();
-        int y = ElementosPrincipales.jugador.getPosicionYInt();
+        int x = ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt();
+        int y = ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt();
 
         for (Objeto objetoActual : contenedor.getObjetos()) {
             ObjetoUnicoTiled objeto = new ObjetoUnicoTiled(new Point(x, y), objetoActual, objetoActual.getCantidad());
@@ -933,8 +953,7 @@ public class MapaTiled {
         try {
             JsonObject objetoJson = parser.parse(codigoJson).getAsJsonObject();
             return objetoJson;
-        }
-        catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException e) {
             System.err.println("Error al analizar el JSON: " + e.getMessage());
             e.printStackTrace();
             return null;
@@ -955,8 +974,7 @@ public class MapaTiled {
                 else if (valorElement.getAsJsonPrimitive().isString()) {
                     try {
                         valor = Integer.parseInt(valorElement.getAsString());
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         System.err.println("No se pudo convertir el valor del nodo a un entero: " + e.getMessage());
                     }
                 }
@@ -968,8 +986,10 @@ public class MapaTiled {
     public void actualizarZonaSalida() {
 
         for (int i = 0; i < zonasSalida.size(); i++) {
-            int puntoX = zonasSalida.get(i).x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = zonasSalida.get(i).y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = zonasSalida.get(i).x - ElementosPrincipales.jugador.getAccionesJugador().
+                    getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = zonasSalida.get(i).y - ElementosPrincipales.jugador.getAccionesJugador().
+                    getPosicionYInt() + Constantes.MARGEN_Y;
             switch (i) {
                 case 0:
                     zonaSalida1 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
@@ -1006,13 +1026,15 @@ public class MapaTiled {
     private void actualizarTiendas() {
         for (Tienda tiendaActual : tiendas) {
 
-            int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             Rectangle nuevaAreaTienda = new Rectangle(puntoX - 18, puntoY, 16, 16);
             tiendaActual.setAreaTienda(nuevaAreaTienda);
 
-            if (ElementosPrincipales.jugador.getLIMITE_ABAJO().intersects(tiendaActual.getAreaTienda())
+            if (ElementosPrincipales.jugador.getAccionesJugador().getLIMITE_ABAJO().intersects(tiendaActual.getAreaTienda())
                     && GestorPrincipal.sd.getRaton().isClick2()) {
                 tiendaActiva = tiendaActual;
                 System.out.println("Tipo: " + tiendaActiva.getTipo());
@@ -1032,8 +1054,10 @@ public class MapaTiled {
         for (int i = 0; i < areaColisionOriginales.size(); i++) {
             Rectangle rInicial = areaColisionOriginales.get(i);
 
-            int puntoX = rInicial.x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = rInicial.y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = rInicial.x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = rInicial.y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasColisionActualizadas.add(rFinal);
@@ -1048,8 +1072,8 @@ public class MapaTiled {
         for (int i = 0; i < areaTransparenciaOriginales.size(); i++) {
             Rectangle rInicial = areaTransparenciaOriginales.get(i);
 
-            int puntoX = rInicial.x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = rInicial.y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = rInicial.x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = rInicial.y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasTransparenciaActualizadas.add(rFinal);
@@ -1057,11 +1081,13 @@ public class MapaTiled {
     }
 
     public Rectangle getBordes(final int posicionX, final int posicionY) {
-        int x = Constantes.MARGEN_X - posicionX + ElementosPrincipales.jugador.getANCHO_JUGADOR();
-        int y = Constantes.MARGEN_Y - posicionY + ElementosPrincipales.jugador.getALTO_JUGADOR();
+        int x = Constantes.MARGEN_X - posicionX + ElementosPrincipales.jugador.getAccionesJugador().getANCHO_JUGADOR();
+        int y = Constantes.MARGEN_Y - posicionY + ElementosPrincipales.jugador.getAccionesJugador().getALTO_JUGADOR();
 
-        int ancho = this.anchoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getANCHO_JUGADOR() * 2;
-        int alto = this.altoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getALTO_JUGADOR() * 2;
+        int ancho = this.anchoMapaTiles * Constantes.LADO_SPRITE -
+                ElementosPrincipales.jugador.getAccionesJugador().getANCHO_JUGADOR() * 2;
+        int alto = this.altoMapaTiles * Constantes.LADO_SPRITE -
+                ElementosPrincipales.jugador.getAccionesJugador().getALTO_JUGADOR() * 2;
 
         return new Rectangle(x, y, ancho, alto);
     }
@@ -1070,8 +1096,10 @@ public class MapaTiled {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
         for (ObjetoUnicoTiled objeto : objetosMapa) {
-            int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.
+                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle nuevaArea = new Rectangle(puntoX, puntoY, 32, 32);
 
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(nuevaArea))) {
@@ -1086,20 +1114,16 @@ public class MapaTiled {
         if (objeto instanceof Consumible) {
             Consumible consumible = (Consumible) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, consumible.getNombre() + "\nPESO: " + consumible.getPeso() + " oz.");
-        }
-        else if (objeto instanceof Arma) {
+        } else if (objeto instanceof Arma) {
             Arma arma = (Arma) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, arma.getNombre() + "\nPESO: " + arma.getPeso() + " oz.");
-        }
-        else if (objeto instanceof Armadura) {
+        } else if (objeto instanceof Armadura) {
             Armadura armadura = (Armadura) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, armadura.getNombre() + "\nPESO: " + armadura.getPeso() + " oz.");
-        }
-        else if (objeto instanceof Joya) {
+        } else if (objeto instanceof Joya) {
             Joya joya = (Joya) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, joya.getNombre() + "\nPESO: " + joya.getPeso() + " oz.");
-        }
-        else if (objeto instanceof Claves) {
+        } else if (objeto instanceof Claves) {
             Claves claves = (Claves) objeto;
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, claves.getNombre() + "\nPESO: " + claves.getPeso() + " oz.");
         }

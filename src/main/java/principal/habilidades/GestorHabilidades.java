@@ -2,7 +2,9 @@ package principal.habilidades;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import principal.ElementosPrincipales;
+import principal.entes.Entidad;
 import principal.inventario.TipoObjeto;
 
 /**
@@ -27,42 +29,53 @@ public class GestorHabilidades {
         // Agrega las habilidades disponibles a la lista
         habilidades.add(crearCuracion("Curacion Basica", 1, 10,
                 ElementosPrincipales.jugador, 10, 0, 30,
-                1, 0, TipoObjeto.ACTIVA, TipoObjeto.ATM));
+                1, 0, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
         habilidades.add(crearCuracion("Curacion Media", 1, 15,
                 ElementosPrincipales.jugador, 15, 0, 40,
-                1, 1, TipoObjeto.ACTIVA, TipoObjeto.ATM));
+                1, 1, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
         habilidades.add(crearCuracion("Curacion Avanzada", 1, 30,
                 ElementosPrincipales.jugador, 30, 0, 50,
-                2, 2, TipoObjeto.ACTIVA, TipoObjeto.ATM));
+                2, 2, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
+        habilidades.add(crearDanho("Ataque Básico",
+                0, 10, 10, 0, 1,
+                2, 2, TipoObjeto.ACTIVA, TipoObjeto.AOT, 3));
         // Agrega más habilidades según sea necesario
     }
 
     /**
      * Método privado para crear una habilidad de curación.
      *
-     * @param nombre El nombre de la habilidad.
-     * @param duracion La duración de la habilidad.
-     * @param tiempoReutilizacion El tiempo de reutilización de la habilidad.
-     * @param objetivo El objetivo de la habilidad.
-     * @param manaUtilizado La cantidad de maná utilizado por la habilidad.
-     * @param vidaUtilizada La cantidad de vida utilizada por la habilidad.
-     * @param cantidadCuracionBase La cantidad base de curación.
+     * @param nombre                        El nombre de la habilidad.
+     * @param duracion                      La duración de la habilidad.
+     * @param tiempoReutilizacion           El tiempo de reutilización de la habilidad.
+     * @param objetivo                      El objetivo de la habilidad.
+     * @param manaUtilizado                 La cantidad de maná utilizado por la habilidad.
+     * @param vidaUtilizada                 La cantidad de vida utilizada por la habilidad.
+     * @param cantidadCuracionBase          La cantidad base de curación.
      * @param montoAdicionalPorInteligencia El monto adicional de curación por inteligencia.
-     * @param indiceSprite El índice del sprite de la habilidad.
-     * @param activaPasiva El tipo de activación de la habilidad.
-     * @param tipoHabilidad El tipo de habilidad.
+     * @param indiceSprite                  El índice del sprite de la habilidad.
+     * @param activaPasiva                  El tipo de activación de la habilidad.
+     * @param tipoHabilidad                 El tipo de habilidad.
      * @return La habilidad de curación creada.
      */
     private Curacion crearCuracion(String nombre, int duracion, int tiempoReutilizacion,
-            Object objetivo, int manaUtilizado, int vidaUtilizada,
-            int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
-            TipoObjeto tipoHabilidad) {
+                                   Object objetivo, int manaUtilizado, int vidaUtilizada,
+                                   int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
+                                   TipoObjeto tipoHabilidad, double alcance) {
         // Crea y devuelve una nueva habilidad de curación
         return new Curacion(nombre, duracion, tiempoReutilizacion, objetivo, manaUtilizado, vidaUtilizada,
-                cantidadCuracionBase, montoAdicionalPorInteligencia, indiceSprite, activaPasiva, tipoHabilidad);
+                cantidadCuracionBase, montoAdicionalPorInteligencia, indiceSprite, activaPasiva, tipoHabilidad, alcance);
+    }
+
+    private Danho crearDanho(String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,
+                             int montoAdicionalPorInteligencia, int danhoBase, int indiceSprite, TipoObjeto activaPasiva,
+                             TipoObjeto tipoHabilidad, double alcance) {
+        return new Danho(nombre, duracion, tiempoReutilizacion, manaUtilizado, vidaUtilizada,
+                montoAdicionalPorInteligencia, danhoBase, indiceSprite, activaPasiva, tipoHabilidad, alcance);
     }
 
     // Agrega otros métodos para crear diferentes tipos de habilidades si es necesario
+
     /**
      * Método para obtener una habilidad por su nombre.
      *
@@ -94,10 +107,8 @@ public class GestorHabilidades {
      *
      * @param indice El índice de la habilidad en el inventario del jugador.
      */
-    public static void usarHabilidad(int indice) {
+    public static void usarHabilidad(int indice, Entidad objetivo) {
         // Verifica si el objeto en el inventario es una habilidad
-        if (ElementosPrincipales.jugador.getAr().getAccesoEquipado(indice) instanceof Habilidad habilidad) {
-            habilidad.aplicarEfecto(habilidad.getObjetivo(), habilidad.getTipoHabilidad());
-        }
+
     }
 }
