@@ -122,7 +122,9 @@ public class GestorPrincipal {
         } else if (GestorControles.teclado.tiendaActiva) {
             ge.cambiarEstadoActual(2);
             GestorControles.teclado.inventarioActivo = false;
-        } else {
+        } else if(pantallaTitulo){
+            ge.cambiarEstadoActual(3);
+        }else{
             ge.cambiarEstadoActual(0);
         }
         // Actualiza el estado del juego si no se muestra la pantalla de título

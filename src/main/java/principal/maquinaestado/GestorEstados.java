@@ -9,6 +9,7 @@ import principal.graficos.SuperficieDibujo;
 import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.menu_tienda.GestorTienda;
 import principal.maquinaestado.menujuego.GestorMenu;
+import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
 
 /**
  *
@@ -24,10 +25,12 @@ public class GestorEstados {
     }
 
     private void iniciarEstados() {
-        estados = new EstadoJuego[3];
+
+        estados = new EstadoJuego[4];
         estados[0] = new GestorJuego();
         estados[1] = new GestorMenu();
         estados[2] = new GestorTienda();
+        estados[3] = new PantallaTitulo();
         
        
         //Añadir e iniciar los demas estados a medida que los creemos

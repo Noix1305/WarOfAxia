@@ -19,7 +19,7 @@ import principal.herramientas.DatosDebug;
 import principal.herramientas.DibujoDebug;
 import principal.maquinaestado.GestorEstados;
 import principal.maquinaestado.juego.GestorJuego;
-import principal.pantallaInicial.PantallaTitulo;
+import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
 
 /**
  * Superficie de dibujo donde se renderiza todo el juego.

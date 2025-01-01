@@ -117,13 +117,11 @@ public class Teclado implements KeyListener {
             case KeyEvent.VK_DOWN:
                 disminuir.teclaPulsada();
                 break;
-
             case KeyEvent.VK_F1:
                 debug = !debug;
                 break;
             case KeyEvent.VK_I:
                 inventarioActivo = !inventarioActivo;
-
                 break;
             case KeyEvent.VK_T:
                 tiendaActiva = !tiendaActiva;
