@@ -5,10 +5,21 @@ package principal.control;
 
 import java.awt.event.KeyEvent; // Importa la clase KeyEvent de awt.event
 import java.awt.event.KeyListener; // Importa la clase KeyListener de awt.event
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
 import principal.ElementosPrincipales; // Importa la clase ElementosPrincipales del paquete principal
 import principal.GestorPrincipal; // Importa la clase GestorPrincipal del paquete principal
+import principal.entes.enemigo.Enemigo;
+import principal.entes.jugador.Jugador;
 import principal.habilidades.GestorHabilidades; // Importa la clase GestorHabilidades del paquete principal.habilidades
 import principal.habilidades.Habilidad;
+import principal.maquinaestado.juego.EstadoJuegoGuardar;
+import principal.maquinaestado.juego.JuegoGuardado;
 import principal.maquinaestado.menujuego.MenuEquipo;
 
 /**
@@ -119,7 +130,7 @@ public class Teclado implements KeyListener {
                 break;
             case KeyEvent.VK_SPACE:
                 ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
-                System.out.println("Atacando: "+ElementosPrincipales.jugador.getAccionesJugador().isAtacando());
+                System.out.println("Atacando: " + ElementosPrincipales.jugador.getAccionesJugador().isAtacando());
                 break;
             case KeyEvent.VK_F12:
                 MenuEquipo.mostrarTooltip = !MenuEquipo.mostrarTooltip;
@@ -158,6 +169,13 @@ public class Teclado implements KeyListener {
                 Habilidad habilidad = gh.obtenerHabilidadPorNombre("Ataque Básico");
                 ElementosPrincipales.inventario.habilidades.add(habilidad);
                 break;
+            case KeyEvent.VK_F10:
+                ElementosPrincipales.gestorGuardado.guardarJuego();
+                break;
+            case KeyEvent.VK_F11:
+                ElementosPrincipales.gestorGuardado.cargarJuego();
+                break;
+
         }
         ultimaTeclaPulsada = e.getKeyCode(); // Actualiza la última tecla pulsada
     }
@@ -196,6 +214,10 @@ public class Teclado implements KeyListener {
         }
 
     }
+
+//
+//
+//
 
     // Método para manejar el evento de tecla tipeada
     @Override

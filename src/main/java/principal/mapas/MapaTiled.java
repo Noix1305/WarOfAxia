@@ -62,11 +62,13 @@ public class MapaTiled {
     private int anchoMapaTiles;
     private int altoMapaTiles;
     private String siguienteMapa;
+    private String nombreMapaActual;
     private Point puntoInicial;
     public Rectangle recMapa;
     public Tienda tiendaActiva;
     private boolean reproducirMusica = false;
     Gson gson = new Gson();
+
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
@@ -108,6 +110,7 @@ public class MapaTiled {
     public ArrayList<Tienda> tiendas;
 
     public MapaTiled(final String ruta) {
+        this.nombreMapaActual = ruta;
         zonaSalida1 = new Rectangle();
         zonaSalida2 = new Rectangle();
         zonaSalida3 = new Rectangle();
@@ -122,6 +125,7 @@ public class MapaTiled {
         Salida.getSalidas().clear();
 
         String contenido = CargadorRecursos.leerArchivoTexto(ruta);
+        System.out.println("Ruta en el mapa: " + ruta);
 
         JsonObject globalJSON = getObjetoJson(contenido);
 
@@ -204,7 +208,7 @@ public class MapaTiled {
                         }
 
                         intentosDibujo++;
-                        DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].getImagen(), puntoX, puntoY);
+                        DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].imagen(), puntoX, puntoY);
                     }
                 }
             }
@@ -215,7 +219,7 @@ public class MapaTiled {
                     getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.
                     getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
-            DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().getImagen(), puntoX, puntoY);
+            DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().imagen(), puntoX, puntoY);
         }
 
         for (ContenedorObjetos contenedorAct : listaContenedores) {
@@ -260,7 +264,7 @@ public class MapaTiled {
                         }
 
                         intentosDibujo++;
-                        DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].getImagen(), puntoX, puntoY);
+                        DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].imagen(), puntoX, puntoY);
                     }
                 }
             }
@@ -951,8 +955,7 @@ public class MapaTiled {
     private JsonObject getObjetoJson(final String codigoJson) {
         JsonParser parser = new JsonParser();
         try {
-            JsonObject objetoJson = parser.parse(codigoJson).getAsJsonObject();
-            return objetoJson;
+            return parser.parse(codigoJson).getAsJsonObject();
         } catch (JsonSyntaxException e) {
             System.err.println("Error al analizar el JSON: " + e.getMessage());
             e.printStackTrace();
@@ -1198,4 +1201,7 @@ public class MapaTiled {
         return dijkstra.getNodosMapa();
     }
 
+    public String getNombreMapaActual() {
+        return nombreMapaActual;
+    }
 }

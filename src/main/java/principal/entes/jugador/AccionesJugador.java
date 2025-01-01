@@ -6,10 +6,11 @@ import principal.control.GestorControles;
 import principal.entes.GestorAtributos;
 
 import java.awt.*;
+import java.io.Serializable;
 
 import static principal.ElementosPrincipales.reproductor;
 
-public class AccionesJugador {
+public class AccionesJugador implements Serializable{
     private double posicionX;
     private double posicionY;
     private double velocidadCaminar = 1;

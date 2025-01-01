@@ -1,10 +1,12 @@
 package principal.herramientas;
 
+import java.io.Serializable;
+
 /**
  * Clase que representa un cronómetro para medir el tiempo transcurrido. Permite iniciar, reiniciar, actualizar y
  * obtener el tiempo transcurrido.
  */
-public class Cronometro {
+public class Cronometro implements Serializable {
 
     private long tiempoInicio; // Tiempo en milisegundos en el que se inició el cronómetro
     private long tiempoTranscurrido; // Tiempo en milisegundos transcurrido desde el inicio del cronómetro

@@ -2,6 +2,7 @@ package principal.graficos;
 
 import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import principal.herramientas.CargadorRecursos;
@@ -9,7 +10,7 @@ import principal.herramientas.CargadorRecursos;
 /**
  * Clase que representa la ventana principal del juego.
  */
-public class Ventana extends JFrame {
+public class Ventana extends JFrame implements Serializable {
 
     // SerialVersionUID para compatibilidad entre versiones
     private static final long serialVersionUID = 987654321L;
@@ -19,6 +20,9 @@ public class Ventana extends JFrame {
 
     // Icono de la ventana
     private final ImageIcon icono;
+    private transient BufferedImage imagen;
+
+
 
     /**
      * Constructor de la ventana.
@@ -30,7 +34,7 @@ public class Ventana extends JFrame {
         this.titulo = titulo;
 
         // Cargar el icono de la ventana desde un archivo de imagen
-        BufferedImage imagen = CargadorRecursos.cargarImagenCompatibleOpaca("/icons/icono.png");
+        imagen = CargadorRecursos.cargarImagenCompatibleOpaca("/icons/icono.png");
         this.icono = new ImageIcon(imagen);
 
         // Configurar la ventana

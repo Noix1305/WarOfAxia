@@ -6,9 +6,11 @@
 package principal.inventario;
 
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import principal.sprites.Sprite;
 
-public abstract class Objeto {
+public abstract class Objeto implements Serializable {
 
     // Atributos comunes a todos los objetos
     protected final int id; // Identificador único del objeto

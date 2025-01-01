@@ -5,6 +5,8 @@
 package principal.sprites;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
+
 import principal.Constantes;
 import principal.herramientas.CargadorRecursos;
 
@@ -12,7 +14,7 @@ import principal.herramientas.CargadorRecursos;
  *
  * @author GAMER ARRAX
  */
-public class HojaSprites {
+public class HojaSprites implements Serializable {
 
     final private int anchoHojaPix;
     final private int altoHojaPix;

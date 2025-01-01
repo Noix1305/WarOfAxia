@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.List;
+
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
@@ -20,15 +21,15 @@ import principal.mapas.Salida;
 import principal.maquinaestado.EstadoJuego;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class GestorJuego implements EstadoJuego {
 
-    BufferedImage logo;
+    transient BufferedImage logo;
     MenuInferior menuInferior;
     EfectosVisuales ev;
     public static boolean recargar;
+    public static boolean cargarJuego;
 
     public GestorJuego() {
         menuInferior = new MenuInferior();
@@ -43,10 +44,12 @@ public class GestorJuego implements EstadoJuego {
         ElementosPrincipales.mapa.actualizar();
         ElementosPrincipales.jugador.actualizar();
         recargarJuego();
+
     }
 
     public void recargarJuego() {
         if (recargar) {
+            System.out.println("Recargar normal");
             ElementosPrincipales.mapa = new MapaTiled("textos/" + ElementosPrincipales.mapa.getSiguienteMapa());
 
             // Establecer la posición del jugador en el nuevo mapa
@@ -54,6 +57,17 @@ public class GestorJuego implements EstadoJuego {
             ElementosPrincipales.jugador.getAccionesJugador().setPosicionY(ElementosPrincipales.mapa.getPuntoInicial().y);
             recargar = false;
         }
+
+    }
+
+    public static void cargarMapa(String rutaMapa) {
+        System.out.println("Ruta mapa Gestor juego: " + rutaMapa);
+        System.out.println("Recargar sobrecargado");
+        ElementosPrincipales.mapa = new MapaTiled(rutaMapa);
+        // Establecer la posición del jugador en el nuevo mapa
+        ElementosPrincipales.jugador.getAccionesJugador().setPosicionX(ElementosPrincipales.mapa.getPuntoInicial().x);
+        ElementosPrincipales.jugador.getAccionesJugador().setPosicionY(ElementosPrincipales.mapa.getPuntoInicial().y);
+        cargarJuego = false;
 
     }
 

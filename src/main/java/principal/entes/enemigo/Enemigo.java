@@ -51,7 +51,7 @@ public class Enemigo extends Entidad {
     protected boolean enMovimiento = false; // Indica si el enemigo está en movimiento
 
     private HojaSprites hs; // Hoja de sprites del enemigo
-    private BufferedImage imagenActual; // Imagen actual del enemigo
+    private transient BufferedImage imagenActual; // Imagen actual del enemigo
 
     protected String nombre; // Nombre del enemigo
 
@@ -95,7 +95,7 @@ public class Enemigo extends Entidad {
         this.distanciaParaMov = distanciaParaMov;
 
         this.hs = hs;
-        imagenActual = hs.getSprites(0).getImagen();
+        imagenActual = hs.getSprites(0).imagen();
         this.co = contenedor;
         this.indiceContenedor = idxContenedor;
         this.posicionMenu = new Rectangle();
@@ -252,7 +252,7 @@ public class Enemigo extends Entidad {
         Sprite sprite = hs.getSprites(estado, direccion);
 
         if (sprite != null) {
-            imagenActual = sprite.getImagen();
+            imagenActual = sprite.imagen();
         } else {
             imagenActual = null; // o imagen por defecto
         }
@@ -295,7 +295,7 @@ public class Enemigo extends Entidad {
             Sprite sprite = hs.getSprites(estado, 0);
 
             if (sprite != null) {
-                imagenActual = sprite.getImagen();
+                imagenActual = sprite.imagen();
             } else {
                 imagenActual = null; // o imagen por defecto
             }

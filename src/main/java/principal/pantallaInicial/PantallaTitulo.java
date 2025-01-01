@@ -19,19 +19,19 @@ public class PantallaTitulo {
 
     private static boolean esperaEnter = true;
 
-    private static BufferedImage titulo;
+    private transient static BufferedImage titulo;
     private final HojaSprites ht;
     private final HojaSprites s1;
     private final HojaSprites s2;
-    private static BufferedImage start;
+    private transient static BufferedImage start;
     private final Timer timer;
 
     public PantallaTitulo() {
         s1 = new HojaSprites("/fondos/Start1.png", 79, 46, false);
         s2 = new HojaSprites("/fondos/Start2.png", 79, 46, false);
         ht = new HojaSprites("/fondos/titulo.png", 639, 353, true);
-        titulo = ht.getSprites(0).getImagen();
-        start = s1.getSprites(0).getImagen();
+        titulo = ht.getSprites(0).imagen();
+        start = s1.getSprites(0).imagen();
 
         // Crear un temporizador que cambie la imagen cada 1000 ms (1 segundo)
         timer = new Timer(1000, e -> cambiarImagen());
@@ -41,11 +41,11 @@ public class PantallaTitulo {
 
     private void cambiarImagen() {
         // Determinar qué imagen mostrar basándose en la imagen actual
-        if (start == s1.getSprites(0).getImagen()) {
-            start = s2.getSprites(0).getImagen();
+        if (start == s1.getSprites(0).imagen()) {
+            start = s2.getSprites(0).imagen();
         }
         else {
-            start = s1.getSprites(0).getImagen();
+            start = s1.getSprites(0).imagen();
         }
     }
 
