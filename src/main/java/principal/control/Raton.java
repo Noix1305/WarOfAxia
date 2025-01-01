@@ -23,6 +23,7 @@ import principal.herramientas.DatosDebug; // Importa la clase DatosDebug del paq
  */
 public class Raton extends MouseAdapter {
 
+    private transient BufferedImage iconoCursor;
     private final Cursor cursor; // Cursor personalizado
     private Point posicion; // Posición del ratón
 
@@ -38,7 +39,7 @@ public class Raton extends MouseAdapter {
         Toolkit configuracion = Toolkit.getDefaultToolkit();
 
         // Carga de la imagen del cursor
-        BufferedImage iconoCursor = CargadorRecursos.cargarImagenCompatibleTranslucida(Constantes.RUTA_RATON);
+        iconoCursor = CargadorRecursos.cargarImagenCompatibleTranslucida(Constantes.RUTA_RATON);
 
         Constantes.LADO_CURSOR = iconoCursor.getWidth();
 

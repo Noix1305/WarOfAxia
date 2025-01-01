@@ -4,11 +4,15 @@
 package principal;
 
 import principal.control.GestorControles; // Importa la clase GestorControles del paquete principal.control
+import principal.entes.enemigo.Enemigo;
+import principal.entes.jugador.Jugador;
 import principal.graficos.SuperficieDibujo; // Importa la clase SuperficieDibujo del paquete principal.graficos
 import principal.graficos.Ventana; // Importa la clase Ventana del paquete principal.graficos
 import principal.maquinaestado.GestorEstados; // Importa la clase GestorEstados del paquete principal.maquinaestado
-import principal.sonido.ReproductorSonido;
-import principal.sonido.SoundThread; // Importa la clase SoundThread del paquete principal.sonido
+import principal.maquinaestado.juego.EstadoJuegoGuardar;
+import principal.maquinaestado.juego.JuegoGuardado;
+
+import java.util.ArrayList;
 
 import static principal.ElementosPrincipales.reproductor;
 
@@ -37,6 +41,7 @@ public class GestorPrincipal {
         this.alto = alto;
         this.ancho = ancho;
     }
+
 
     // Método principal del programa
     public static void main(String[] args) throws InterruptedException {
@@ -114,12 +119,10 @@ public class GestorPrincipal {
         if (GestorControles.teclado.inventarioActivo) {
             ge.cambiarEstadoActual(1);
             GestorControles.teclado.tiendaActiva = false;
-        }
-        else if (GestorControles.teclado.tiendaActiva) {
+        } else if (GestorControles.teclado.tiendaActiva) {
             ge.cambiarEstadoActual(2);
             GestorControles.teclado.inventarioActivo = false;
-        }
-        else {
+        } else {
             ge.cambiarEstadoActual(0);
         }
         // Actualiza el estado del juego si no se muestra la pantalla de título

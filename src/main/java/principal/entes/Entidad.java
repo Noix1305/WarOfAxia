@@ -2,7 +2,9 @@ package principal.entes;
 
 import principal.inventario.TipoObjeto;
 
-public abstract class Entidad {
+import java.io.Serializable;
+
+public abstract class Entidad implements Serializable {
     public GestorAtributos gestorAtributos;
 
     public Entidad (GestorAtributos gestorAtributos){

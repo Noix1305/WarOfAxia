@@ -699,7 +699,7 @@ public class TiendaArmaduras extends SeccionTienda {
 
         dibujarElementosEnPanelTienda(g, objetos, lado);
         if (objetoSeleccionado != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().imagen(),
                     new Point(objetoSeleccionado.getPosicionFlotante().x,
                             objetoSeleccionado.getPosicionFlotante().y));
         }
@@ -720,7 +720,7 @@ public class TiendaArmaduras extends SeccionTienda {
 
         dibujarElementosPanelTiendaVenta(g, canastaVenta, lado);
         if (objetoSeleccionadoVenta != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().imagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,
                             objetoSeleccionadoVenta.getPosicionFlotante().y));
         }
@@ -764,7 +764,7 @@ public class TiendaArmaduras extends SeccionTienda {
 
         dibujarElementosPanelTiendaCompra(g, canastaCompra, lado);
         if (objetoSeleccionadoCompra != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoCompra.getSprite().getImagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoCompra.getSprite().imagen(),
                     new Point(objetoSeleccionadoCompra.getPosicionFlotante().x,
                             objetoSeleccionadoCompra.getPosicionFlotante().y));
         }
@@ -781,7 +781,7 @@ public class TiendaArmaduras extends SeccionTienda {
 
                 Rectangle posicionMenu = objetoActual.getPosicionTienda();
 
-                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
+                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionMenu.x, posicionMenu.y);
                 String texto = "$" + objetoActual.getPrecioCompra();
 
                 int xTexto = posicionMenu.x + lado - MedidorString.medirAnchoPixeles(g, texto);
@@ -816,7 +816,7 @@ public class TiendaArmaduras extends SeccionTienda {
             if (objetoActual instanceof Armadura) {
 
                 Rectangle posicionMenu = objetoActual.getPosicionMochila();
-                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
+                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionMenu.x, posicionMenu.y);
                 String texto = "";
                 if (objetoActual.getCantidad() < 10) {
                     texto = "0" + objetoActual.getCantidad();
@@ -857,7 +857,7 @@ public class TiendaArmaduras extends SeccionTienda {
             }
             Rectangle posicionTienda = objetoActual.getPosicionCompra();
 
-            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionTienda.x, posicionTienda.y);
+            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionTienda.x, posicionTienda.y);
 
             String texto = "";
             if (objetoActual.getCantidadCompra() < 10) {
@@ -893,7 +893,7 @@ public class TiendaArmaduras extends SeccionTienda {
             }
             Rectangle posicionVenta = objetoActual.getPosicionVenta();
 
-            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionVenta.x, posicionVenta.y);
+            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionVenta.x, posicionVenta.y);
 
             String texto = "";
             if (objetoActual.getCantidadVenta() < 10) {
@@ -929,7 +929,7 @@ public class TiendaArmaduras extends SeccionTienda {
 
         dibujarElementosEnPanelInventario(g, objetos, lado);
         if (objetoSeleccionadoVenta != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().imagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,
                             objetoSeleccionadoVenta.getPosicionFlotante().y));
         }

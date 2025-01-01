@@ -4,13 +4,15 @@
  */
 package principal.entes;
 
+import java.io.Serializable;
+
 /**
  * Clase que gestiona los atributos de una entidad en el juego, como la vida, fuerza, etc. Esta clase se utiliza para
  * mantener y manipular los atributos de los personajes y enemigos del juego.
  *
  * @author GAMER ARRAX
  */
-public class GestorAtributos {
+public class GestorAtributos implements Serializable {
 
     // Atributos de la entidad
     private int nivel;

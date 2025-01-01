@@ -19,7 +19,7 @@ public class ContenedorObjetos {
     private ArrayList<Objeto> objetos; // Lista de objetos contenidos en el contenedor
     private int indiceSprite; // Índice del sprite que representa el contenedor
     private HojaSprites hs; // Hoja de sprites que contiene las imágenes de los contenedores
-    private BufferedImage imagen; // Imagen del contenedor
+    private transient BufferedImage imagen; // Imagen del contenedor
     private Rectangle area; // Área del contenedor en la pantalla
 
     // Constructor por defecto
@@ -33,7 +33,7 @@ public class ContenedorObjetos {
         hs = new HojaSprites(Constantes.RUTA_HOJA_CONTENEDORES, 32, false);
         this.posicion = posicion;
         this.indiceSprite = indiceSprite;
-        this.imagen = hs.getSprites(indiceSprite).getImagen();
+        this.imagen = hs.getSprites(indiceSprite).imagen();
         this.objetos = new ArrayList<>();
         this.area = area;
     }

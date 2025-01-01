@@ -11,7 +11,6 @@ import java.util.Random;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
-import principal.GestorPrincipal;
 import principal.control.GestorControles;
 import principal.entes.Entidad;
 import principal.entes.GestorAtributos;
@@ -37,7 +36,7 @@ public class Jugador extends Entidad {
     public Curacion curacion;
     private Habilidad habilidadActual;
     private final AccionesJugador accionesJugador;
-    private final AnimacionJugador animacionJugador;
+    private AnimacionJugador animacionJugador;
     private final AlmacenEquipo almacenEquipo;
     private final AccesoRapido accesoRapido;
     private final Cronometro cronometro = new Cronometro();
@@ -48,8 +47,8 @@ public class Jugador extends Entidad {
     private ArrayList<Rectangle> alcanceActual;
 
     // Constructor del jugador
-    public Jugador() {
-        super(new GestorAtributos(1, 6, 6, 6, 6, 6, 80, 100, 0));
+    public Jugador(GestorAtributos gestorAtributos) {
+        super(gestorAtributos);
         this.accionesJugador = new AccionesJugador();
         this.animacionJugador = new AnimacionJugador(this.accionesJugador);
         this.almacenEquipo = new AlmacenEquipo();
@@ -64,6 +63,15 @@ public class Jugador extends Entidad {
         super.gestorAtributos.setMana(super.gestorAtributos.getManaMaximo());
         super.gestorAtributos.setResistencia(super.gestorAtributos.getResistenciaMaxima());
         this.habilidadActual = null;
+    }
+
+    public Jugador(GestorAtributos gestorAtributos, AlmacenEquipo almacenEquipo, AccesoRapido accesoRapido, AccionesJugador accionesJugador, Rectangle areaPosicional) {
+        super(gestorAtributos);
+        this.almacenEquipo = almacenEquipo;
+        this.accesoRapido = accesoRapido;
+        this.areaPosicional = areaPosicional;
+        this.accionesJugador = accionesJugador;
+        this.alcanceActual = new ArrayList<>();
     }
 
     // Método para aumentar la experiencia del jugador
@@ -367,7 +375,7 @@ public class Jugador extends Entidad {
 
             // Actualiza la imagen actual del jugador
             if (sprite != null) {
-                this.animacionJugador.setImagenActual(sprite.getImagen());
+                this.animacionJugador.setImagenActual(sprite.imagen());
             } else {
                 // Manejo de caso en el que sprite es null
                 // Puedes asignar una imagen por defecto, lanzar una excepción, etc.
@@ -666,5 +674,17 @@ public class Jugador extends Entidad {
 
     public void setHabilidadActual(Habilidad habilidadActual) {
         this.habilidadActual = habilidadActual;
+    }
+
+    public Rectangle getAreaPosicional() {
+        return areaPosicional;
+    }
+
+    public void setAreaPosicional(Rectangle areaPosicional) {
+        this.areaPosicional = areaPosicional;
+    }
+
+    public void setAnimacionJugador(AnimacionJugador animacionJugador) {
+        this.animacionJugador = animacionJugador;
     }
 }

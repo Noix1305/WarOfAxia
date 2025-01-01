@@ -3,12 +3,14 @@
  */
 package principal.entes.jugador;
 
+import java.io.Serializable;
+
 /**
  * Clase que representa un conjunto de accesos rápidos para equipar objetos. Proporciona un conjunto de accesos rápidos
  * que permiten equipar objetos en el juego. Permite establecer y obtener objetos en índices específicos dentro del
  * conjunto, verificando si los índices son válidos y manejando casos de índices fuera de rango.
  */
-public class AccesoRapido {
+public class AccesoRapido implements Serializable {
 
     public Object[] accesosEquipados; // Array para almacenar los objetos equipados
 

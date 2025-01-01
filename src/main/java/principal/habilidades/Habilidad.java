@@ -23,7 +23,7 @@ public abstract class Habilidad {
     protected Rectangle posicionMenu; // Posición de la habilidad en el menú
     protected Rectangle posicionFlotante; // Posición flotante de la habilidad
     HojaSprites hojaHabilidad; // Hoja de sprites que contiene la imagen de la habilidad
-    private final BufferedImage imagenActual; // Imagen actual de la habilidad
+    private transient final BufferedImage imagenActual; // Imagen actual de la habilidad
     private String nombre; // Nombre de la habilidad
     private String descripcion; // Descripción de la habilidad
     private int duracion; // Duración de la habilidad
@@ -50,7 +50,7 @@ public abstract class Habilidad {
         this.manaUtilizado = manaUtilizado;
         this.vidaUtilizada = vidaUtilizada;
         hojaHabilidad = new HojaSprites(Constantes.RUTA_HOJA_HABILIDADES, 32, true);
-        imagenActual = hojaHabilidad.getSprites(indiceSprite).getImagen();
+        imagenActual = hojaHabilidad.getSprites(indiceSprite).imagen();
         this.activaPasiva = activaPasiva;
         this.tipoHabilidad = tipoHabilidad;
         posicionMenu = new Rectangle(0, 0, 0, 0);

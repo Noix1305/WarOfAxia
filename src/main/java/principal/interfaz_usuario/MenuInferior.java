@@ -26,7 +26,7 @@ public class MenuInferior {
     int xActual;
     private final ArrayList<Rectangle> ranuraObjetos;
     private final Rectangle areaInventario;
-    private final BufferedImage areaInvent;
+    private transient final BufferedImage areaInvent;
     private final HojaSprites hojaMenuInferior;
     public static HojaSprites bordesRanuras;
     private Rectangle bordeAreaInventario;
@@ -60,7 +60,7 @@ public class MenuInferior {
                 Constantes.ANCHO_JUEGO/*720*/, altoMenu/*64*/);
         hojaMenuInferior = new HojaSprites("/fondos/bordeMenuInferior.png", 720, 64, true);
         bordesRanuras = new HojaSprites("/fondos/BordeSkills.png", 39, true);
-        areaInvent = hojaMenuInferior.getSprites(0).getImagen();
+        areaInvent = hojaMenuInferior.getSprites(0).imagen();
         bordeAreaInventario = new Rectangle(areaInventario.x, areaInventario.y - 1, areaInventario.width, 1);
         tiempoReutilizacionCuracion = 0;
         xActual = Constantes.ANCHO_JUEGO / 3 - 42;
@@ -164,7 +164,7 @@ public class MenuInferior {
         int i = 1;
         for (Rectangle ranura : ranuraObjetos) {
 
-            DibujoDebug.dibujarImagen(g, bordesRanuras.getSprites(0).getImagen(), ranura.x - 3, ranura.y - 4);
+            DibujoDebug.dibujarImagen(g, bordesRanuras.getSprites(0).imagen(), ranura.x - 3, ranura.y - 4);
             if (i > 9) {
                 DibujoDebug.dibujarString(g, "0", ranuraObjetos.get(i - 1).x + 13, areaInventario.height + areaInventario.y - 8, Color.BLACK);
             }
@@ -180,7 +180,7 @@ public class MenuInferior {
                 Rectangle ranura = ranuraObjetos.get(j); // Obtener la ranura correspondiente
 
                 // Dibujar el consumible en la ranura
-                DibujoDebug.dibujarImagen(g, consumible.getSprite().getImagen(), ranura.x, ranura.y);
+                DibujoDebug.dibujarImagen(g, consumible.getSprite().imagen(), ranura.x, ranura.y);
                 Color colorTexto = Color.white;
                 if (consumible.getCantidad() < 4) {
                     colorTexto = Color.red;

@@ -5,32 +5,15 @@
 package principal.sprites;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
- *
  * @author GAMER ARRAX
  */
-public class Sprite {
-    private final BufferedImage imagen;
-    
-    private final int ancho;
-    private final int alto;
-    
-    public Sprite(final BufferedImage imagen,int ancho, int alto){
+public record Sprite(BufferedImage imagen, int ancho, int alto) implements Serializable {
+    public Sprite(final BufferedImage imagen, int ancho, int alto) {
         this.imagen = imagen;
         this.ancho = imagen.getWidth();
         this.alto = imagen.getHeight();
-    }
-    
-    public BufferedImage getImagen(){
-        return imagen;
-    }
-
-    public int getAncho() {
-        return ancho;
-    }
-
-    public int getAlto() {
-        return alto;
     }
 }

@@ -3,13 +3,14 @@
  */
 package principal.entes.jugador;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import principal.inventario.Objeto;
 import principal.inventario.armaduras.Armadura;
 import principal.inventario.joyas.Joya;
 import principal.inventario.armas.Arma;
 
-public class AlmacenEquipo {
+public class AlmacenEquipo implements Serializable {
 
     // Variables para almacenar los objetos equipados
     private Arma arma1;

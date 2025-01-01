@@ -4,10 +4,11 @@ import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SoundThread extends Thread {
+public class SoundThread extends Thread implements Serializable {
 
     private String filename;
     private Clip clip;

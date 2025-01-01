@@ -46,6 +46,6 @@ public class Tile {
     }
 
     public Rectangle getLimites(final int x, final int y) {
-        return new Rectangle(x, y, sprite.getAncho(), sprite.getAlto());
+        return new Rectangle(x, y, sprite.ancho(), sprite.alto());
     }
 }
