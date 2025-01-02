@@ -253,13 +253,13 @@ public class MapaTiled {
             DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
         }
 
-        for (Rectangle rectagulo : areasColisionActualizadas) {
-            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.blue);
-        }
-
-        for (Rectangle rectagulo : areasTransparenciaActualizadas) {
-            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.white);
-        }
+//        for (Rectangle rectagulo : areasColisionActualizadas) {
+//            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.blue);
+//        }
+//
+//        for (Rectangle rectagulo : areasTransparenciaActualizadas) {
+//            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.white);
+//        }
         dibujarTooltipObjetosMapa(g, GestorPrincipal.sd);
 
         /*DibujoDebug.dibujarString(g, zonaSalida1.toString(), 10, 90, Color.white);

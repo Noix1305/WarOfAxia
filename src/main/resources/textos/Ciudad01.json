@@ -2517,7 +2517,7 @@
                     "width": 94.6666666666666,
                     "x": 288,
                     "y": 1269.33333333333,
-                    "mapaDestino": "ciudad1Interiores.json",
+                    "mapaDestino": "afueras.json",
                     "punto inicial": {
                         "x": 80,
                         "y": 1270
