@@ -2384,7 +2384,7 @@
                     "y": 734.5
                 }],
             "opacity": 1,
-            "type": "objectgroup1",
+            "type": "objectgroup2",
             "visible": false,
             "x": 0,
             "y": 0
@@ -2398,7 +2398,7 @@
                 {
                     "height": 18.75,
                     "id": 234,
-                    "name": "1",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2414,9 +2414,9 @@
                 {
                     "height": 18.75,
                     "id": 235,
-                    "name": "2",
+                    "name": "",
                     "rotation": 0,
-                    "type": "3",
+                    "type": "",
                     "visible": true,
                     "width": 32.5,
                     "x": 63.75,
@@ -2430,7 +2430,7 @@
                 {
                     "height": 18.75,
                     "id": 237,
-                    "name": "4",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2446,7 +2446,7 @@
                 {
                     "height": 18.75,
                     "id": 238,
-                    "name": "5",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2456,13 +2456,13 @@
                     "mapaDestino": "ciudad1Interiores.json",
                     "punto inicial": {
                         "x": 705,
-                        "y": 540
+                        "y": 545
                     }
                 },
                 {
                     "height": 18.75,
                     "id": 239,
-                    "name": "6",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2471,14 +2471,14 @@
                     "y": 577.291666666667,
                     "mapaDestino": "ciudad1Interiores.json",
                     "punto inicial": {
-                        "x": 1215,
-                        "y": 510
+                        "x": 705,
+                        "y": 830
                     }
                 },
                 {
                     "height": 18.75,
                     "id": 240,
-                    "name": "7",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2488,13 +2488,13 @@
                     "mapaDestino": "ciudad1Interiores.json",
                     "punto inicial": {
                         "x": 1215,
-                        "y": 825
+                        "y": 510
                     }
                 },
                 {
                     "height": 18.75,
                     "id": 241,
-                    "name": "8",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2503,14 +2503,14 @@
                     "y": 796.625,
                     "mapaDestino": "ciudad1Interiores.json",
                     "punto inicial": {
-                        "x": 705,
+                        "x": 1215,
                         "y": 830
                     }
                 },
                 {
                     "height": 8.66666666666674,
                     "id": 243,
-                    "name": "9",
+                    "name": "",
                     "rotation": 0,
                     "type": "",
                     "visible": true,
@@ -2519,8 +2519,8 @@
                     "y": 1269.33333333333,
                     "mapaDestino": "ciudad1Interiores.json",
                     "punto inicial": {
-                        "x": 80,
-                        "y": 1270
+                        "x": 1215,
+                        "y": 830
                     }
                 }
             ],
@@ -2568,6 +2568,11 @@
     "version": 1.1,
     "width": 40,
     "ruta": "Lively Meadow",
+    "start":
+            {
+                "x": 180,
+                "y": 340
+            },
     "contenedores": [
         {
             "idContenedor": 0,
@@ -2594,7 +2599,7 @@
             "x": 280,
             "y": 400
         }
-    ,
+        ,
         {
             "id": 401,
             "cantidad": 1,
@@ -2619,7 +2624,7 @@
             "id": 508,
             "cantidad": 1
         }
-    ,
+        ,
         {
             "id": 509,
             "cantidad": 1
@@ -2652,7 +2657,7 @@
             "id": 3,
             "cantidad": 1
         }
-    ,
+        ,
         {
             "id": 4,
             "cantidad": 1

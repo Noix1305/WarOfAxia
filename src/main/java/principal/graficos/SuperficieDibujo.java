@@ -33,7 +33,6 @@ public class SuperficieDibujo extends Canvas {
     private final EfectosVisuales efectosVisuales;
 
     // Variables para controlar cambios de mapa y el inicio del cronómetro
-    public boolean cambioMapa = false;
     public boolean cronometroIniciado = false;
 
     // Ancho y alto de la superficie de dibujo

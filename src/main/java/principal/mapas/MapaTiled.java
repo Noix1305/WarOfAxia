@@ -73,17 +73,8 @@ public class MapaTiled {
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
     private Habilidad habilidad = null;
-
-    public Rectangle zonaSalida1;
-    public Rectangle zonaSalida2;
-    public Rectangle zonaSalida3;
-    public Rectangle zonaSalida4;
-    public Rectangle zonaSalida5;
-    public Rectangle zonaSalida6;
-    public Rectangle zonaSalida7;
-    public Rectangle zonaSalida8;
-    public Rectangle zonaSalida9;
-    public ArrayList<Rectangle> zonasSalida;
+    public ArrayList<Rectangle> zonasSalidaOriginales;
+    public ArrayList<Rectangle> zonasSalidaActualizadas;
 
     private ArrayList<CapaSprites> capaSprites1;
     private ArrayList<CapaSprites> capaSprites2;
@@ -111,16 +102,8 @@ public class MapaTiled {
 
     public MapaTiled(final String ruta) {
         this.nombreMapaActual = ruta;
-        zonaSalida1 = new Rectangle();
-        zonaSalida2 = new Rectangle();
-        zonaSalida3 = new Rectangle();
-        zonaSalida4 = new Rectangle();
-        zonaSalida5 = new Rectangle();
-        zonaSalida6 = new Rectangle();
-        zonaSalida7 = new Rectangle();
-        zonaSalida8 = new Rectangle();
-        zonaSalida9 = new Rectangle();
-        zonasSalida = new ArrayList<>();
+        zonasSalidaOriginales = new ArrayList<>();
+        zonasSalidaActualizadas = new ArrayList<>();
 
         Salida.getSalidas().clear();
 
@@ -160,6 +143,7 @@ public class MapaTiled {
     }
 
     public void actualizar() {
+        Point punto = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(), ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
         actualizarEnemigos();
         actualizarAreasColision();
         actualizarAreasTransparencia();
@@ -168,8 +152,6 @@ public class MapaTiled {
         actualizarZonaSalida();
         actualizarTiendas();
 
-        Point punto = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(),
-                ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
 
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
@@ -196,14 +178,11 @@ public class MapaTiled {
                 for (int x = 0; x < anchoMapaTiles; x++) {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
-                        int puntoX = x * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-                        int puntoY = y * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
                         // OPTIMIZACION DIBUJADO
-                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
-                                || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
+                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
@@ -215,27 +194,21 @@ public class MapaTiled {
         }
 
         for (ObjetoUnicoTiled objetoActual : objetosMapa) {
-            int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().imagen(), puntoX, puntoY);
         }
 
         for (ContenedorObjetos contenedorAct : listaContenedores) {
-            int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             contenedorAct.dibujar(g, puntoX, puntoY);
         }
 
         for (Enemigo enemigo : enemigosMapa) {
-            int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             enemigo.dibujar(g, puntoX, puntoY);
 
         }
@@ -246,20 +219,17 @@ public class MapaTiled {
 
         // Dibujar sprites del mapa
         int intentosDibujo = 0;
-        for (int i = 0; i < capaSprites2.size(); i++) {
-            int[] spritesCapa = capaSprites2.get(i).getSprites();
+        for (CapaSprites capaSprites : capaSprites2) {
+            int[] spritesCapa = capaSprites.getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
                 for (int x = 0; x < anchoMapaTiles; x++) {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
-                        int puntoX = x * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-                        int puntoY = y * Constantes.LADO_SPRITE
-                                - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
                         // OPTIMIZACION DIBUJADO
-                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO
-                                || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
+                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
 
@@ -270,28 +240,20 @@ public class MapaTiled {
             }
         }
 
-        /*for(Rectangle zonaSalida: zonasSalida){
-            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida,Color.RED);
-        }*/
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida1, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida2, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida3, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida4, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida5, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida6, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida7, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida8, Color.red);
-        DibujoDebug.dibujarRectanguloContorno(g, zonaSalida9, Color.red);
+        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
+
+            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
+        }
+
         for (Tienda tiendaActual : tiendas) {
             DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
 
         }
         if (habilidad != null) {
-            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32),
-                    jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
+            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
         }
 
-        /*for (Rectangle rectagulo : areasColisionActualizadas) {
+        for (Rectangle rectagulo : areasColisionActualizadas) {
             DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.blue);
         }
 
@@ -337,10 +299,12 @@ public class MapaTiled {
         this.capaColisiones = new ArrayList<>();
         this.capaTransparencias = new ArrayList<>();
 
+
         if (capas != null) {
             for (JsonElement capaElement : capas) {
                 JsonObject capaNode = capaElement.getAsJsonObject();
                 String tipo = capaNode.get("id").getAsString();
+                String tipo2 = capaNode.get("type").getAsString();
 
                 switch (tipo) {
                     case "1":
@@ -352,21 +316,20 @@ public class MapaTiled {
                         inicializarCapaSprites2(capaNode);
                         break;
                 }
-            }
 
-            for (JsonElement capaElement : capas) {
-                JsonObject capaNode = capaElement.getAsJsonObject();
-                String tipo = capaNode.get("type").getAsString();
-
-                switch (tipo) {
+                switch (tipo2) {
                     case "objectgroup":
                         inicializarCapaColisiones(capaNode);
                         break;
                     case "objectgroup1":
                         inicializarCapaTransparencia(capaNode);
                         break;
+                    case "objectgroup2":
+                        obtenerInformacionSiguienteMapa(capaNode);
+
                 }
             }
+
         } else {
             System.err.println("La clave 'layers' no está presente o no es un array en el JSON.");
         }
@@ -376,12 +339,9 @@ public class MapaTiled {
         // Lógica para combinar colisiones en un solo ArrayList
         areaColisionOriginales = new ArrayList<>();
 
-        for (int i = 0; i < capaColisiones.size(); i++) {
-            Rectangle[] rectangulos = capaColisiones.get(i).getColisionables();
-
-            for (int j = 0; j < rectangulos.length; j++) {
-                areaColisionOriginales.add(rectangulos[j]);
-            }
+        for (CapaColisiones capaColisiones : capaColisiones) {
+            Rectangle[] rectangulos = capaColisiones.getColisionables();
+            Collections.addAll(areaColisionOriginales, rectangulos);
         }
     }
 
@@ -431,12 +391,10 @@ public class MapaTiled {
                 }
 
                 // Asignar sprites a paletaSprites1 y paletaSprites2
-                for (int i = 0; i < this.capaSprites1.size(); i++) {
-                    CapaSprites capaActual = this.capaSprites1.get(i);
+                for (CapaSprites capaActual : this.capaSprites1) {
                     int[] spritesCapa = capaActual.getSprites();
 
-                    for (int j = 0; j < spritesCapa.length; j++) {
-                        int idSpriteActual = spritesCapa[j];
+                    for (int idSpriteActual : spritesCapa) {
                         if (idSpriteActual >= primerSpriteColeccion && idSpriteActual <= ultimoSpriteColeccion) {
                             if (paletaSprites1[idSpriteActual] == null) {
                                 paletaSprites1[idSpriteActual] = sprites[idSpriteActual - primerSpriteColeccion];
@@ -573,45 +531,51 @@ public class MapaTiled {
         }
     }
 
-    private void obtenerInformacionSiguienteMapa(JsonObject globalJSON) {
-        JsonArray salidasJSON = globalJSON.getAsJsonArray("salidas");
+    private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
+        JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
+        if (rectangulosNode != null) {
 
-        if (salidasJSON != null && salidasJSON.size() > 0) {
-            for (JsonElement salidaElement : salidasJSON) {
-                JsonObject salidaJSON = salidaElement.getAsJsonObject();
+            // Obtener las coordenadas de inicio en el siguiente mapa desde salidaJSON
 
-                // Comprobación de valores nulos
-                if (salidaJSON == null) {
-                    System.err.println("Salida JSON es nula.");
-                    continue; // Saltar a la siguiente salida
+
+            for (int j = 0; j < rectangulosNode.size(); j++) {
+                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
+                JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
+                String siguienteMapa = datosRectangulo.get("mapaDestino").getAsString();
+
+                int x = getIntJson(datosRectangulo, "x");
+                int y = getIntJson(datosRectangulo, "y");
+                int ancho = getIntJson(datosRectangulo, "width");
+                int alto = getIntJson(datosRectangulo, "height");
+
+                // Asegurar que los valores no sean cero
+                if (x == 0) {
+                    x = 1;
+                }
+                if (y == 0) {
+                    y = 1;
+                }
+                if (ancho == 0) {
+                    ancho = 1;
+                }
+                if (alto == 0) {
+                    alto = 1;
                 }
 
-                // Si no existe, agregar la nueva salida
-                int xSalidaMapa = salidaJSON.get("x").getAsInt();
-                int ySalidaMapa = salidaJSON.get("y").getAsInt();
-                Point puntoSalidaMapa = new Point(xSalidaMapa, ySalidaMapa);
-
-                String siguienteMapa = salidaJSON.get("mapaDestino").getAsString();
-
-                // Obtener las coordenadas de inicio en el siguiente mapa desde salidaJSON
-                JsonObject puntoInicialJSON = salidaJSON.getAsJsonObject("punto inicial");
-
-                if (puntoInicialJSON == null) {
-                    System.err.println("El punto inicial no está presente en la salida JSON.");
-                    continue; // Saltar a la siguiente salida
-                }
+                Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
+                Point puntoSalidaMapa = new Point(x, y);
+                this.zonasSalidaOriginales.add(rectangulo);
 
                 int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
                 int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
                 Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
+                String nombreSalida = datosRectangulo.get("name").getAsString();
 
-                Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa);
-                Rectangle nuevaZonaSalida = new Rectangle(xSalidaMapa, ySalidaMapa, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa, nombreSalida);
                 Salida.getSalidas().add(nuevaSalida);
-                zonasSalida.add(nuevaZonaSalida);
             }
         } else {
-            System.err.println("La clave 'salidas' no está presente o está vacía en el JSON.");
+            System.err.println("No se encontraron datos válidos en la capa de salidas.");
         }
     }
 
@@ -740,8 +704,7 @@ public class MapaTiled {
     }
 
     private void actualizarAtaques() {
-        if (enemigosMapa.isEmpty() || ElementosPrincipales.jugador.getAlcanceActual().isEmpty() &&
-                ElementosPrincipales.jugador.getHabilidadActual() == null) {
+        if (enemigosMapa.isEmpty() || ElementosPrincipales.jugador.getAlcanceActual().isEmpty() && ElementosPrincipales.jugador.getHabilidadActual() == null) {
             return;
         }
 
@@ -779,14 +742,10 @@ public class MapaTiled {
                     Double distanciaCercana = null;
 
                     for (Enemigo enemigo : enemigosMapa) {
-                        if (ElementosPrincipales.jugador.getAlcanceActual().get(0)
-                                .intersects(enemigo.getArea())) {
-                            Point puntoJugador = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() / 32,
-                                    ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() / 32);
+                        if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
+                            Point puntoJugador = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() / 32, ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() / 32);
 
-                            Point puntoEnemigo = new Point(
-                                    (int) enemigo.getPosicionX() / 32,
-                                    (int) enemigo.getPosicionY());
+                            Point puntoEnemigo = new Point((int) enemigo.getPosicionX() / 32, (int) enemigo.getPosicionY());
                             Double distanciaActual = CalculadoraDistancia.getDistanciaEntrePuntos(puntoJugador, puntoEnemigo);
 
                             if (enemigoCercano == null) {
@@ -807,15 +766,13 @@ public class MapaTiled {
                     atributo = ElementosPrincipales.jugador.getGestorAt().getDestreza();
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() / 2
-                            + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
+                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() / 2 + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
                     atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza();
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza()
-                            + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
+                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
                 }
                 arma.atacar(enemigosAlcanzados, atributo);
@@ -846,11 +803,7 @@ public class MapaTiled {
                 for (Enemigo enemigo : enemigosAlcanzados) {
                     System.out.println("Enemigo alcanzado: " + enemigo.gestorAtributos.getNombre() + "Vida enemigo: " + enemigo.gestorAtributos.getVidaEnemigo());
 
-                    habilidad.aplicarEfecto(
-                            ElementosPrincipales.jugador,
-                            enemigo,
-                            habilidad.getTipoHabilidad()
-                    );
+                    habilidad.aplicarEfecto(ElementosPrincipales.jugador, enemigo, habilidad.getTipoHabilidad());
                     System.out.println("Vida enemigo: " + enemigo.gestorAtributos.getVida());
                 }
             }
@@ -879,11 +832,7 @@ public class MapaTiled {
 
         while (iterador.hasNext()) {
             ObjetoUnicoTiled objetoActual = iterador.next();
-            Rectangle posicionObjetoActual = new Rectangle(
-                    objetoActual.getPosicion().x,
-                    objetoActual.getPosicion().y,
-                    Constantes.LADO_SPRITE,
-                    Constantes.LADO_SPRITE);
+            Rectangle posicionObjetoActual = new Rectangle(objetoActual.getPosicion().x, objetoActual.getPosicion().y, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
 
             if (areaJugador.intersects(posicionObjetoActual) && GestorPrincipal.sd.getRaton().isRecogiendo()) {
                 if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
@@ -914,15 +863,12 @@ public class MapaTiled {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
         if (contenedorAbierto && contenedorActual != null) {
-            int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle areaContenedor = new Rectangle(puntoX, puntoY, 32, 32);
             contenedorActual.setArea(areaContenedor);
 
-            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(areaContenedor))
-                    && GestorPrincipal.sd.getRaton().isClick()) {
+            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(areaContenedor)) && GestorPrincipal.sd.getRaton().isClick()) {
                 recogerObjetosDelContenedor(contenedorActual);
             } else {
                 contenedorActual = null;
@@ -986,59 +932,31 @@ public class MapaTiled {
         return valor;
     }
 
-    public void actualizarZonaSalida() {
+    private void actualizarZonaSalida() {
 
-        for (int i = 0; i < zonasSalida.size(); i++) {
-            int puntoX = zonasSalida.get(i).x - ElementosPrincipales.jugador.getAccionesJugador().
-                    getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = zonasSalida.get(i).y - ElementosPrincipales.jugador.getAccionesJugador().
-                    getPosicionYInt() + Constantes.MARGEN_Y;
-            switch (i) {
-                case 0:
-                    zonaSalida1 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 1:
-                    zonaSalida2 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 2:
-                    zonaSalida3 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 3:
-                    zonaSalida4 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 4:
-                    zonaSalida5 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 5:
-                    zonaSalida6 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 6:
-                    zonaSalida7 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 7:
-                    zonaSalida8 = new Rectangle(puntoX - 18, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-                    break;
-                case 8:
-                    zonaSalida9 = new Rectangle(puntoX - 40, puntoY, Constantes.LADO_SPRITE * 3, Constantes.LADO_SPRITE);
-                    break;
+        if (!this.zonasSalidaActualizadas.isEmpty()) {
+            this.zonasSalidaActualizadas.clear();
+        }
 
-            }
+        for (Rectangle rInicial : zonasSalidaOriginales) {
+            int puntoX = rInicial.x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = rInicial.y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+
+            final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
+            zonasSalidaActualizadas.add(rFinal);
         }
     }
 
     private void actualizarTiendas() {
         for (Tienda tiendaActual : tiendas) {
 
-            int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
-            Rectangle nuevaAreaTienda = new Rectangle(puntoX - 18, puntoY, 16, 16);
+            Rectangle nuevaAreaTienda = new Rectangle(puntoX - 18, puntoY, tiendaActual.getAreaTienda().width, tiendaActual.getAreaTienda().height);
             tiendaActual.setAreaTienda(nuevaAreaTienda);
 
-            if (ElementosPrincipales.jugador.getAccionesJugador().getLIMITE_ABAJO().intersects(tiendaActual.getAreaTienda())
-                    && GestorPrincipal.sd.getRaton().isClick2()) {
+            if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) && GestorPrincipal.sd.getRaton().isClick2()) {
                 tiendaActiva = tiendaActual;
                 System.out.println("Tipo: " + tiendaActiva.getTipo());
                 obtenerObjetosMapa(tiendas.get(0).getIdTienda());
@@ -1054,13 +972,9 @@ public class MapaTiled {
             areasColisionActualizadas.clear();
         }
 
-        for (int i = 0; i < areaColisionOriginales.size(); i++) {
-            Rectangle rInicial = areaColisionOriginales.get(i);
-
-            int puntoX = rInicial.x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = rInicial.y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+        for (Rectangle rInicial : areaColisionOriginales) {
+            int puntoX = rInicial.x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = rInicial.y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasColisionActualizadas.add(rFinal);
@@ -1072,9 +986,7 @@ public class MapaTiled {
             areasTransparenciaActualizadas.clear();
         }
 
-        for (int i = 0; i < areaTransparenciaOriginales.size(); i++) {
-            Rectangle rInicial = areaTransparenciaOriginales.get(i);
-
+        for (Rectangle rInicial : areaTransparenciaOriginales) {
             int puntoX = rInicial.x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = rInicial.y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
@@ -1087,10 +999,8 @@ public class MapaTiled {
         int x = Constantes.MARGEN_X - posicionX + ElementosPrincipales.jugador.getAccionesJugador().getANCHO_JUGADOR();
         int y = Constantes.MARGEN_Y - posicionY + ElementosPrincipales.jugador.getAccionesJugador().getALTO_JUGADOR();
 
-        int ancho = this.anchoMapaTiles * Constantes.LADO_SPRITE -
-                ElementosPrincipales.jugador.getAccionesJugador().getANCHO_JUGADOR() * 2;
-        int alto = this.altoMapaTiles * Constantes.LADO_SPRITE -
-                ElementosPrincipales.jugador.getAccionesJugador().getALTO_JUGADOR() * 2;
+        int ancho = this.anchoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getANCHO_JUGADOR() * 2;
+        int alto = this.altoMapaTiles * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getALTO_JUGADOR() * 2;
 
         return new Rectangle(x, y, ancho, alto);
     }
@@ -1099,10 +1009,8 @@ public class MapaTiled {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
         for (ObjetoUnicoTiled objeto : objetosMapa) {
-            int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.
-                    getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle nuevaArea = new Rectangle(puntoX, puntoY, 32, 32);
 
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(nuevaArea))) {

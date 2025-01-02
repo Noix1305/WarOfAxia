@@ -8,23 +8,24 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class Salida {
 
     private static ArrayList<Salida> salidas = new ArrayList<>();
 
+    private String nombreSalida;
     private Point puntoInicioSiguienteMapa;
-    public static Point puntoInicialSiguiente = new Point(0,0);
+    public static Point puntoInicialSiguiente = new Point(0, 0);
     public static String mapaSiguiente;
     private static Point puntoSalida;
     private String nombreSiguienteMapa;
 
-    public Salida(Point puntoInicioSiguienteMapa, Point puntoSalida ,String siguienteMapa) {
+    public Salida(Point puntoInicioSiguienteMapa, Point puntoSalida, String siguienteMapa, String nombreSalida) {
         this.puntoInicioSiguienteMapa = puntoInicioSiguienteMapa;
         this.puntoSalida = puntoSalida;
         this.nombreSiguienteMapa = siguienteMapa;
+        this.nombreSalida = nombreSalida;
 
     }
 
@@ -43,7 +44,7 @@ public class Salida {
         this.puntoSalida = puntoSalida;
     }
 
-    public  static ArrayList<Salida> getSalidas() {
+    public static ArrayList<Salida> getSalidas() {
         return salidas;
     }
 
@@ -54,12 +55,10 @@ public class Salida {
     public String getNombreSiguienteMapa() {
         return nombreSiguienteMapa;
     }
-    
-    
-    
-    
-    
-    
-    
+
+    public String getNombreSalida() {
+        return this.nombreSalida;
+    }
+
 
 }

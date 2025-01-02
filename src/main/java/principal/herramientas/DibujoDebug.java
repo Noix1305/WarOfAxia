@@ -11,7 +11,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class DibujoDebug {
@@ -56,14 +55,14 @@ public class DibujoDebug {
     }
 
     public static void dibujarRectanguloRelleno(final Graphics g, final int x, final int y, final int ancho,
-            final int alto, final Color c) {
+                                                final int alto, final Color c) {
         objetosDibujados++;
         g.setColor(c);
         g.fillRect(x, y, ancho, alto);
     }
 
     public static void dibujarRectanguloRelleno(final Graphics g, final int x, final int y, final int ancho,
-            final int alto) {
+                                                final int alto) {
         objetosDibujados++;
         g.fillRect(x, y, ancho, alto);
     }
@@ -81,7 +80,7 @@ public class DibujoDebug {
     }
 
     public static void dibujarRectanguloContorno(final Graphics g, final int x, final int y, final int ancho,
-            final int alto, final Color c) {
+                                                 final int alto, final Color c) {
         objetosDibujados++;
         g.setColor(c);
         g.drawRect(x, y, ancho, alto);
@@ -92,14 +91,13 @@ public class DibujoDebug {
         if (r != null) {
             g.drawRect(r.x, r.y, r.width, r.height);
             // Realizar alguna operación para cambiar los valores de r.x, r.y, r.width o r.height
-        }
-        else {
+        } else {
             return;
         }
     }
 
     public static void dibujarRectanguloContorno(final Graphics g, final int x, final int y, final int ancho,
-            final int alto) {
+                                                 final int alto) {
         objetosDibujados++;
         g.drawRect(x, y, ancho, alto);
     }

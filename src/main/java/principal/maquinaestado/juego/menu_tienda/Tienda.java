@@ -7,10 +7,10 @@ package principal.maquinaestado.juego.menu_tienda;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+
 import principal.inventario.Objeto;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class Tienda {
@@ -25,10 +25,11 @@ public class Tienda {
         this.posicion = posicion;
         this.objetosTienda = new ArrayList<>();
         this.tipo = tipo;
+        this.areaTienda = new Rectangle(posicion.x, posicion.y, 32, 32);
     }
 
     public Tienda() {
-        this.tipo =0;
+        this.tipo = 0;
     }
 
     public int getIdTienda() {
@@ -66,16 +67,6 @@ public class Tienda {
     public void setTipo(int tipo) {
         this.tipo = tipo;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
 }
