@@ -293,9 +293,9 @@ public class AccionesJugador implements Serializable{
     }
 
     public Rectangle getArea() {
-        final int puntoX = (int) this.getPosicionX();
+        final int puntoX =  this.getPosicionXInt();
 
-        final int puntoY = (int) this.getPosicionY();
+        final int puntoY =  this.getPosicionYInt();
 
         return new Rectangle(puntoX + 8, puntoY + 8, Constantes.LADO_SPRITE / 2 + 8, Constantes.LADO_SPRITE / 2 + 8);
     }

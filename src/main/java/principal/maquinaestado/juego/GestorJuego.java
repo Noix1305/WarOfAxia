@@ -88,18 +88,20 @@ public class GestorJuego implements EstadoJuego {
     private void revisarZonaSalida() {
         List<Salida> salidas = Salida.getSalidas();
 
-        for (int i = 0; i < salidas.size(); i++) {
-            Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalida.get(i);
+        if (!ElementosPrincipales.mapa.zonasSalidaActualizadas.isEmpty()) {
+            for (int i = 0; i < salidas.size(); i++) {
+                Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalidaActualizadas.get(i);
 
-            if (ElementosPrincipales.jugador.getAccionesJugador().getArea().intersects(zonaSalida)) {
-                Salida salidaActual = salidas.get(i);
+                if (ElementosPrincipales.jugador.getAreaPosicional().intersects(zonaSalida)) {
+                    Salida salidaActual = salidas.get(i);
+                    System.out.println("X: " + zonaSalida.x + " Y: " + zonaSalida.y);
+                    System.out.println("Nombre salida: " + salidaActual.getNombreSalida());
 
-                Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();
-                ElementosPrincipales.mapa.setSiguienteMapa(salidaActual.getNombreSiguienteMapa());
-                GestorPrincipal.sd.cambioMapa = true;
-                recargar = true;
-
-                break;  // Salir del bucle una vez que se ha detectado la intersección
+                    Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();
+                    ElementosPrincipales.mapa.setSiguienteMapa(salidaActual.getNombreSiguienteMapa());
+                    recargar = true;
+                    break;  // Salir del bucle una vez que se ha detectado la intersección
+                }
             }
         }
     }

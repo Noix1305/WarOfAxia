@@ -2,6 +2,7 @@ package principal.herramientas;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import principal.Constantes;
 
 /**
@@ -21,6 +22,17 @@ public class EscaladorElementos {
         int y = (int) (r.y * Constantes.FACTOR_ESCALADO_Y);
         int ancho = (int) (r.width * Constantes.FACTOR_ESCALADO_X);
         int alto = (int) (r.height * Constantes.FACTOR_ESCALADO_Y);
+
+        final Rectangle rr = new Rectangle(x, y, ancho, alto);
+
+        return rr;
+    }
+
+    public static Rectangle escalarRectangleAbajo(final Rectangle r) {
+        int x = (int) (r.x / Constantes.FACTOR_ESCALADO_X);
+        int y = (int) (r.y / Constantes.FACTOR_ESCALADO_Y);
+        int ancho = (int) (r.width / Constantes.FACTOR_ESCALADO_X);
+        int alto = (int) (r.height / Constantes.FACTOR_ESCALADO_Y);
 
         final Rectangle rr = new Rectangle(x, y, ancho, alto);
 
