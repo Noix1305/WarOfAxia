@@ -10,6 +10,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
@@ -41,13 +42,12 @@ public class SuperficieDibujo extends Canvas {
 
     // Variable para controlar la posición del ratón
     Raton raton = new Raton(this);
-    PantallaTitulo pantallaInicial;
 
     /**
      * Constructor de la superficie de dibujo.
      *
      * @param ancho El ancho de la superficie.
-     * @param alto El alto de la superficie.
+     * @param alto  El alto de la superficie.
      */
     public SuperficieDibujo(final int ancho, final int alto) {
         this.alto = alto;
@@ -65,7 +65,6 @@ public class SuperficieDibujo extends Canvas {
         addMouseListener(raton);
         setFocusable(true);
         requestFocus();
-        pantallaInicial = new PantallaTitulo();
     }
 
     /**
@@ -74,96 +73,60 @@ public class SuperficieDibujo extends Canvas {
      * @param ge El gestor de estados del juego.
      */
     public void dibujar(final GestorEstados ge) {
-        // Si estamos en la pantalla de título, dibujamos la pantalla de título
-        if (GestorPrincipal.pantallaTitulo) {
-            dibujarPantallaTitulo(pantallaInicial);
-        }
-        else {
-            // Si no, dibujamos el juego normalmente
+        // Si no, dibujamos el juego normalmente
 
-            // Obtener la estrategia de buffer
-            BufferStrategy buffer = getBufferStrategy();
-            if (buffer == null) {
-                createBufferStrategy(3);
-                return;
-            }
-
-            // Obtener el contexto gráfico
-            final Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
-            DibujoDebug.reiniciarContadorObjetos();
-
-            // Configuración inicial del contexto gráfico
-            g.setFont(Constantes.FUENTE_POR_DEFECTO);
-            DibujoDebug.dibujarRectanguloRelleno(g, 0, 0, Constantes.ANCHO_PANTALLA_COMPLETA,
-                    Constantes.ALTO_PANTALLA_COMPLETA, Color.black);
-
-            // Dibujar el juego mediante el gestor de estados
-            g.scale(Constantes.FACTOR_ESCALADO_X, Constantes.FACTOR_ESCALADO_Y);
-            ge.dibujar(g);
-
-            // Dibujar FPS y APS
-            g.setColor(Color.white);
-            DibujoDebug.dibujarString(g, "FPS:  " + GestorPrincipal.getFps(), 20, 20);
-            DibujoDebug.dibujarString(g, "APS:  " + GestorPrincipal.getAps(), 20, 30);
-            raton.dibujar(g);
-
-            // Dibujar datos de debug si está activado
-            if (GestorControles.teclado.debug) {
-                DatosDebug.dibujarDatos(g);
-            }
-            else {
-                DatosDebug.vaciarDatos();
-            }
-
-            // Sincronizar la pantalla
-            Toolkit.getDefaultToolkit().sync();
-
-            // Si el jugador está muerto, mostrar transición de pantalla de muerte
-            if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
-                efectosVisuales.dibujarTransicionNegro(g, getWidth(), getHeight());
-                g.setColor(Color.WHITE);
-                g.setFont(new Font("Arial", Font.BOLD, 30));
-                String mensajeMuerte = "¡ESTÁS MUERTO!";
-                int anchoTexto = g.getFontMetrics().stringWidth(mensajeMuerte);
-                int xTexto = (Constantes.ANCHO_JUEGO - anchoTexto) / 2;
-                int yTexto = Constantes.ALTO_JUEGO / 2;
-                g.drawString(mensajeMuerte, xTexto, yTexto);
-
-                // Recargar el juego y volver a la pantalla de título al presionar una tecla
-                ElementosPrincipales.jugador.getGestorAt().setVida(ElementosPrincipales.jugador.getGestorAt().getVidaMaxima());
-                GestorJuego.recargar = true;
-                GestorPrincipal.pantallaTitulo = true;
-            }
-
-            // Liberar recursos
-            g.dispose();
-
-            // Mostrar la siguiente imagen del buffer
-            buffer.show();
-        }
-    }
-
-    /**
-     * Método para dibujar la pantalla de título.
-     *
-     * @param pantallaTitulo La pantalla de título a dibujar.
-     */
-    public void dibujarPantallaTitulo(PantallaTitulo pantallaTitulo) {
         // Obtener la estrategia de buffer
         BufferStrategy buffer = getBufferStrategy();
         if (buffer == null) {
-            createBufferStrategy(3);
+            createBufferStrategy(4);
             return;
         }
 
         // Obtener el contexto gráfico
         final Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
+        DibujoDebug.reiniciarContadorObjetos();
 
-        // Escalar la pantalla de título
-        g.scale(2, 2);
+        // Configuración inicial del contexto gráfico
+        g.setFont(Constantes.FUENTE_POR_DEFECTO);
+        DibujoDebug.dibujarRectanguloRelleno(g, 0, 0, Constantes.ANCHO_PANTALLA_COMPLETA,
+                Constantes.ALTO_PANTALLA_COMPLETA, Color.black);
 
-        // Dibujar la pantalla de título
-        pantallaTitulo.dibujar(g);
+        // Dibujar el juego mediante el gestor de estados
+        g.scale(Constantes.FACTOR_ESCALADO_X, Constantes.FACTOR_ESCALADO_Y);
+        ge.dibujar(g);
+
+        // Dibujar FPS y APS
+        g.setColor(Color.white);
+        DibujoDebug.dibujarString(g, "FPS:  " + GestorPrincipal.getFps(), 20, 20);
+        DibujoDebug.dibujarString(g, "APS:  " + GestorPrincipal.getAps(), 20, 30);
+        raton.dibujar(g);
+
+        // Dibujar datos de debug si está activado
+        if (GestorControles.teclado.debug) {
+            DatosDebug.dibujarDatos(g);
+        } else {
+            DatosDebug.vaciarDatos();
+        }
+
+        // Sincronizar la pantalla
+        Toolkit.getDefaultToolkit().sync();
+
+        // Si el jugador está muerto, mostrar transición de pantalla de muerte
+        if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
+            efectosVisuales.dibujarTransicionNegro(g, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 30));
+            String mensajeMuerte = "¡ESTÁS MUERTO!";
+            int anchoTexto = g.getFontMetrics().stringWidth(mensajeMuerte);
+            int xTexto = (Constantes.ANCHO_JUEGO - anchoTexto) / 2;
+            int yTexto = Constantes.ALTO_JUEGO / 2;
+            g.drawString(mensajeMuerte, xTexto, yTexto);
+
+            // Recargar el juego y volver a la pantalla de título al presionar una tecla
+            ElementosPrincipales.jugador.getGestorAt().setVida(ElementosPrincipales.jugador.getGestorAt().getVidaMaxima());
+            GestorJuego.recargar = true;
+            GestorPrincipal.pantallaTitulo = true;
+        }
 
         // Liberar recursos
         g.dispose();
@@ -171,6 +134,33 @@ public class SuperficieDibujo extends Canvas {
         // Mostrar la siguiente imagen del buffer
         buffer.show();
     }
+
+
+    /**
+     * Método para dibujar la pantalla de título.
+     *
+     * @param pantallaTitulo La pantalla de título a dibujar.
+     */
+//    public void dibujarPantallaTitulo(PantallaTitulo pantallaTitulo) {
+//        // Obtener la estrategia de buffer
+//        BufferStrategy buffer = getBufferStrategy();
+//        if (buffer == null) {
+//            createBufferStrategy(3);
+//            return;
+//        }
+//
+//        // Obtener el contexto gráfico
+//        final Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
+//
+//        // Escalar la pantalla de título
+//        g.scale(2, 2);
+//
+//        // Liberar recursos
+//        g.dispose();
+//
+//        // Mostrar la siguiente imagen del buffer
+//        buffer.show();
+//    }
 
     /**
      * Método para cargar una imagen desde una ruta.
@@ -181,8 +171,7 @@ public class SuperficieDibujo extends Canvas {
     public BufferedImage cargarImagen(String ruta) {
         try {
             return ImageIO.read(getClass().getResource(ruta));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -190,8 +179,8 @@ public class SuperficieDibujo extends Canvas {
     /**
      * Método para dibujar una imagen en la superficie de dibujo.
      *
-     * @param x La coordenada X de la posición de la imagen.
-     * @param y La coordenada Y de la posición de la imagen.
+     * @param x      La coordenada X de la posición de la imagen.
+     * @param y      La coordenada Y de la posición de la imagen.
      * @param imagen La imagen a dibujar.
      */
     public void dibujarImagen(int x, int y, BufferedImage imagen) {
@@ -205,7 +194,6 @@ public class SuperficieDibujo extends Canvas {
      */
     public void actualizar() {
         raton.actualizar(this);
-        pantallaInicial.actualizar();
     }
 
     // Getters y Setters

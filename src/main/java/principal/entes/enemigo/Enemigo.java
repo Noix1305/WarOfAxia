@@ -266,9 +266,9 @@ public class Enemigo extends Entidad {
      * @param puntoY Coordenada Y de la pantalla.
      */
     public void dibujar(final Graphics g, final int puntoX, final int puntoY) {
-        //dibujarBarraVida(g, puntoX, puntoY);
+        dibujarBarraVida(g, puntoX, puntoY);
         //DibujoDebug.dibujarRectanguloContorno(g, getArea());
-        //dibujarVidaActual(g, puntoX, puntoY);
+        dibujarVidaActual(g, puntoX, puntoY);
         // DibujoDebug.dibujarRectanguloContorno(GestorPrincipal.sd.getGraphics(), ElementosPrincipales.jugador.areaPosicional);
         dibujarDanhoRecibido(g, puntoX, puntoY + 20);
 

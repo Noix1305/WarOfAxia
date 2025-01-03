@@ -13,12 +13,13 @@ import principal.entes.jugador.Jugador;
 import principal.inventario.TipoObjeto;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author GAMER ARRAX
  */
-public class Danho extends Habilidad {
+public class Danho extends Habilidad implements Serializable {
 
     private final double montoAdicionalPorInteligencia;
     private int danhoBase;
@@ -27,10 +28,11 @@ public class Danho extends Habilidad {
 
     public Danho(String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,
                  double montoAdicionalPorInt, int danhoBase, int indiceSprite, TipoObjeto activaPasiva, TipoObjeto tipoHabilidad, double alcance) {
-        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, alcance);
+        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, alcance, tiempoReutilizacion);
 
         montoAdicionalPorInteligencia = montoAdicionalPorInt;
         this.danhoBase = danhoBase;
+
     }
 
 

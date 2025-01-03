@@ -191,7 +191,7 @@ public class Jugador extends Entidad {
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_ABAJO);
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_IZQUIERDA);
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_DERECHA);*/
-        DibujoDebug.dibujarRectanguloContorno(g, areaPosicional, Color.BLUE);
+        //DibujoDebug.dibujarRectanguloContorno(g, areaPosicional, Color.BLUE);
 
 
         animacionJugador.dibujarDanhoRecibido(g, centroX, centroY + 20);

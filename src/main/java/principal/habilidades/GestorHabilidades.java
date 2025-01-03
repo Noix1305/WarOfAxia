@@ -29,13 +29,13 @@ public class GestorHabilidades {
         // Agrega las habilidades disponibles a la lista
         habilidades.add(crearCuracion("Curacion Basica", 1, 10,
                 ElementosPrincipales.jugador, 10, 0, 30,
-                1, 0, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
+                1, 0, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0,15));
         habilidades.add(crearCuracion("Curacion Media", 1, 15,
                 ElementosPrincipales.jugador, 15, 0, 40,
-                1, 1, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
+                1, 1, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0,25));
         habilidades.add(crearCuracion("Curacion Avanzada", 1, 30,
                 ElementosPrincipales.jugador, 30, 0, 50,
-                2, 2, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0));
+                2, 2, TipoObjeto.ACTIVA, TipoObjeto.CURACION, 0,35));
         habilidades.add(crearDanho("Ataque Básico",
                 0, 10, 10, 0, 1,
                 2, 2, TipoObjeto.ACTIVA, TipoObjeto.AOT, 3));
@@ -58,13 +58,13 @@ public class GestorHabilidades {
      * @param tipoHabilidad                 El tipo de habilidad.
      * @return La habilidad de curación creada.
      */
-    private Curacion crearCuracion(String nombre, int duracion, int tiempoReutilizacion,
-                                   Object objetivo, int manaUtilizado, int vidaUtilizada,
+    private Curacion crearCuracion(String nombre, int duracion,
+                                   int tiempoCarga, Object objetivo, int manaUtilizado, int vidaUtilizada,
                                    int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
-                                   TipoObjeto tipoHabilidad, double alcance) {
+                                   TipoObjeto tipoHabilidad, double alcance, int tiempoReutilizacion) {
         // Crea y devuelve una nueva habilidad de curación
-        return new Curacion(nombre, duracion, tiempoReutilizacion, objetivo, manaUtilizado, vidaUtilizada,
-                cantidadCuracionBase, montoAdicionalPorInteligencia, indiceSprite, activaPasiva, tipoHabilidad, alcance);
+        return new Curacion(nombre, duracion, tiempoCarga, objetivo, manaUtilizado, vidaUtilizada,
+                cantidadCuracionBase, montoAdicionalPorInteligencia, indiceSprite, activaPasiva, tipoHabilidad, alcance, tiempoReutilizacion);
     }
 
     private Danho crearDanho(String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,

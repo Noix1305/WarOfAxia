@@ -18,6 +18,7 @@ import principal.entes.enemigo.Enemigo;
 import principal.entes.jugador.Jugador;
 import principal.habilidades.GestorHabilidades; // Importa la clase GestorHabilidades del paquete principal.habilidades
 import principal.habilidades.Habilidad;
+import principal.maquinaestado.GestorEstados;
 import principal.maquinaestado.juego.EstadoJuegoGuardar;
 import principal.maquinaestado.juego.JuegoGuardado;
 import principal.maquinaestado.menujuego.MenuEquipo;
@@ -92,6 +93,7 @@ public class Teclado implements KeyListener {
                 if (GestorPrincipal.pantallaTitulo) {
                     // Establece la bandera para iniciar el juego
                     GestorPrincipal.pantallaTitulo = false;
+                    GestorPrincipal.ge.cambiarEstadoActual(3);
                 }
                 break;
             case KeyEvent.VK_W:

@@ -36,8 +36,8 @@ public class Curacion extends Habilidad {
     public Curacion(String nombre, int duracion, int tiempoCarga,
                     Object objetivo, int manaUtilizado, int vidaUtilizada,
                     int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
-                    TipoObjeto tipoHabilidad, double alcance) {
-        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, 0);
+                    TipoObjeto tipoHabilidad, double alcance, int tiempoReutilizacion) {
+        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, 0, tiempoReutilizacion);
         this.cantidadCuracionBase = cantidadCuracionBase;
         this.montoAdicionalPorInteligencia = montoAdicionalPorInteligencia;
         super.setTiempoReutilizacion(0);

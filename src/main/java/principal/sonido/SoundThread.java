@@ -139,4 +139,12 @@ public class SoundThread extends Thread implements Serializable {
         detener(); // Detener la reproducción actual antes de cambiar el archivo
         this.filename = nuevoArchivo;
     }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }

@@ -47,12 +47,12 @@ import principal.inventario.consumibles.Claves;
 import principal.inventario.consumibles.Consumible;
 import principal.inventario.joyas.Accesorio;
 import principal.inventario.joyas.Joya;
+import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
 
 import static principal.ElementosPrincipales.jugador;
-import static principal.ElementosPrincipales.reproductor;
 
 /**
  * @author GAMER ARRAX
@@ -64,11 +64,7 @@ public class MapaTiled {
     private String siguienteMapa;
     private String nombreMapaActual;
     private Point puntoInicial;
-    public Rectangle recMapa;
     public Tienda tiendaActiva;
-    private boolean reproducirMusica = false;
-    Gson gson = new Gson();
-
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
@@ -99,46 +95,22 @@ public class MapaTiled {
     public ArrayList<ContenedorObjetos> listaContenedores;
     private ContenedorObjetos contenedorActual;
     public ArrayList<Tienda> tiendas;
+    private String rutaMusica;
+    private boolean musicaIniciada;
 
     public MapaTiled(final String ruta) {
+        System.out.println("Inicializando Mapa");
         this.nombreMapaActual = ruta;
         zonasSalidaOriginales = new ArrayList<>();
         zonasSalidaActualizadas = new ArrayList<>();
-
-        Salida.getSalidas().clear();
-
-        String contenido = CargadorRecursos.leerArchivoTexto(ruta);
-        System.out.println("Ruta en el mapa: " + ruta);
-
-        JsonObject globalJSON = getObjetoJson(contenido);
-
-        obtenerInformacionSiguienteMapa(globalJSON);
-        // Inicializar atributos básicos
-        inicializarAtributosBasicos(globalJSON);
-        // Inicializar capas
-        inicializarCapas(globalJSON);
-        // Combinar colisiones en un solo ArrayList
-        combinarColisiones();
-        // Combinar transparencias en un solo ArrayList
-        combinarTransparencias();
-        // Inicializar Dijkstra
-        inicializarDijkstra();
-        // Inicializar paleta de sprites
-        inicializarPaletaSprites(globalJSON);
-
-        // Obtener objetos del mapa
-        obtenerObjetosMapa(globalJSON);
-        // Obtener enemigos del mapa
-        obtenerEnemigosMapa(globalJSON);
-
-        obtenerContenedoresMapa(globalJSON);
-
-        obtenerTiendas(globalJSON);
         areasColisionActualizadas = new ArrayList<>();
         areasTransparenciaActualizadas = new ArrayList<>();
         objetosTiendaMapa = new ArrayList<>();
         objetosTiendaActual = new ArrayList<>();
         tiendaActiva = new Tienda();
+        this.musicaIniciada = false;
+
+        inicializarMapa(ruta);
 
     }
 
@@ -152,28 +124,60 @@ public class MapaTiled {
         actualizarZonaSalida();
         actualizarTiendas();
 
-
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
         mostrarElementoscontenedor();
+        iniciarMusica();
+    }
 
-        if (!GestorPrincipal.pantallaTitulo) {
-            if (!reproducirMusica) {
-                reproductor.musica.cambiarArchivo("FF-I-OST-Main-theme-_aJbbAPMvqrA_");
-                reproductor.musica.repetir(0.7f);
-                reproducirMusica = true;
+    private void iniciarMusica() {
+        if (!GestorPrincipal.pantallaTitulo && !musicaIniciada) {
+            if (!ElementosPrincipales.reproductor.musica.getFilename().toUpperCase().equalsIgnoreCase(rutaMusica)) {
+                ElementosPrincipales.reproductor.musica.cambiarArchivo(rutaMusica);
+                ElementosPrincipales.reproductor.musica.repetir(0.7f);
+                musicaIniciada = true;
             }
-
         }
+    }
 
+    private void inicializarMapa(final String ruta) {
+
+        Salida.getSalidas().clear();
+        String contenido = CargadorRecursos.leerArchivoTexto(ruta);
+
+        JsonObject globalJSON = getObjetoJson(contenido);
+
+        assert globalJSON != null;
+        this.rutaMusica = globalJSON.get("rutaMusica").getAsString();
+        obtenerInformacionSiguienteMapa(globalJSON);
+        // Inicializar atributos básicos
+        inicializarAtributosBasicos(globalJSON);
+        // Inicializar capas
+        inicializarCapas(globalJSON);
+        // Combinar colisiones en un solo ArrayList
+        combinarColisiones();
+        // Combinar transparencias en un solo ArrayList
+        combinarTransparencias();
+        // Inicializar Dijkstra
+        inicializarDijkstra();
+        // Inicializar paleta de sprites
+        inicializarPaletaSprites(globalJSON);
+        // Obtener objetos del mapa
+        obtenerObjetosMapa(globalJSON);
+        // Obtener enemigos del mapa
+        obtenerEnemigosMapa(globalJSON);
+
+        obtenerContenedoresMapa(globalJSON);
+
+        obtenerTiendas(globalJSON);
     }
 
     public void dibujar(Graphics2D g) {
 
         // Dibujar sprites del mapa
         int intentosDibujo = 0;
-        for (int i = 0; i < capaSprites1.size(); i++) {
-            int[] spritesCapa = capaSprites1.get(i).getSprites();
+        for (CapaSprites capaSprites : capaSprites1) {
+            int[] spritesCapa = capaSprites.getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
                 for (int x = 0; x < anchoMapaTiles; x++) {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
@@ -261,14 +265,6 @@ public class MapaTiled {
 //            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.white);
 //        }
         dibujarTooltipObjetosMapa(g, GestorPrincipal.sd);
-
-        /*DibujoDebug.dibujarString(g, zonaSalida1.toString(), 10, 90, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida2.toString(), 10, 100, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida3.toString(), 10, 110, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida4.toString(), 10, 120, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida5.toString(), 10, 130, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida6.toString(), 10, 140, Color.white);
-        DibujoDebug.dibujarString(g, zonaSalida7.toString(), 10, 150, Color.white);*/
     }
 
     private void inicializarAtributosBasicos(JsonObject globalJSON) {
@@ -299,25 +295,22 @@ public class MapaTiled {
         this.capaColisiones = new ArrayList<>();
         this.capaTransparencias = new ArrayList<>();
 
-
         if (capas != null) {
             for (JsonElement capaElement : capas) {
                 JsonObject capaNode = capaElement.getAsJsonObject();
-                String tipo = capaNode.get("id").getAsString();
-                String tipo2 = capaNode.get("type").getAsString();
+                int id = capaNode.get("id").getAsInt();
+                String tipo = capaNode.get("type").getAsString();
 
-                switch (tipo) {
-                    case "1":
-                    case "2":
+                switch (id) {
+                    case 1, 2:
                         inicializarCapaSprites1(capaNode);
                         break;
-                    case "3":
-                    case "4":
+                    case 3, 4:
                         inicializarCapaSprites2(capaNode);
                         break;
                 }
 
-                switch (tipo2) {
+                switch (tipo) {
                     case "objectgroup":
                         inicializarCapaColisiones(capaNode);
                         break;
@@ -326,7 +319,6 @@ public class MapaTiled {
                         break;
                     case "objectgroup2":
                         obtenerInformacionSiguienteMapa(capaNode);
-
                 }
             }
 
@@ -534,10 +526,7 @@ public class MapaTiled {
     private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
         if (rectangulosNode != null) {
-
-            // Obtener las coordenadas de inicio en el siguiente mapa desde salidaJSON
-
-
+            System.out.println("Rectangulos node es true");
             for (int j = 0; j < rectangulosNode.size(); j++) {
                 JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
                 JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
@@ -1022,20 +1011,15 @@ public class MapaTiled {
 
     private void dibujarTooltipObjeto(Graphics g, SuperficieDibujo sd, Object objeto) {
         // Aquí puedes personalizar la apariencia del tooltip según tus necesidades
-        if (objeto instanceof Consumible) {
-            Consumible consumible = (Consumible) objeto;
+        if (objeto instanceof Consumible consumible) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, consumible.getNombre() + "\nPESO: " + consumible.getPeso() + " oz.");
-        } else if (objeto instanceof Arma) {
-            Arma arma = (Arma) objeto;
+        } else if (objeto instanceof Arma arma) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, arma.getNombre() + "\nPESO: " + arma.getPeso() + " oz.");
-        } else if (objeto instanceof Armadura) {
-            Armadura armadura = (Armadura) objeto;
+        } else if (objeto instanceof Armadura armadura) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, armadura.getNombre() + "\nPESO: " + armadura.getPeso() + " oz.");
-        } else if (objeto instanceof Joya) {
-            Joya joya = (Joya) objeto;
+        } else if (objeto instanceof Joya joya) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, joya.getNombre() + "\nPESO: " + joya.getPeso() + " oz.");
-        } else if (objeto instanceof Claves) {
-            Claves claves = (Claves) objeto;
+        } else if (objeto instanceof Claves claves) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, claves.getNombre() + "\nPESO: " + claves.getPeso() + " oz.");
         }
     }

@@ -2,6 +2,7 @@ package principal.habilidades;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import principal.Constantes;
@@ -44,7 +45,7 @@ public abstract class Habilidad {
      * @param tipoHabilidad El tipo de habilidad.
      */
     public Habilidad(String nombre, int duracion, int manaUtilizado, int vidaUtilizada, int indiceSprite, TipoObjeto activaPasiva,
-                     TipoObjeto tipoHabilidad, double alcance) {
+                     TipoObjeto tipoHabilidad, double alcance, int tiempoReutilizacion) {
         this.nombre = nombre;
         this.duracion = duracion;
         this.manaUtilizado = manaUtilizado;
@@ -58,6 +59,7 @@ public abstract class Habilidad {
         cronometro = new Cronometro();
         efectoActivado = false;
         this.alcance = alcance;
+        this.tiempoReutilizacion = tiempoReutilizacion;
     }
 
     // Método abstracto que debe ser implementado por las subclases

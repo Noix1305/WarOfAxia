@@ -11,10 +11,9 @@ import principal.graficos.Ventana; // Importa la clase Ventana del paquete princ
 import principal.maquinaestado.GestorEstados; // Importa la clase GestorEstados del paquete principal.maquinaestado
 import principal.maquinaestado.juego.EstadoJuegoGuardar;
 import principal.maquinaestado.juego.JuegoGuardado;
+import principal.sonido.ReproductorSonido;
 
 import java.util.ArrayList;
-
-import static principal.ElementosPrincipales.reproductor;
 
 /**
  * Clase que gestiona el funcionamiento principal del juego.
@@ -25,12 +24,10 @@ public class GestorPrincipal {
     private String titulo; // Título de la ventana del juego
     private int ancho; // Ancho de la ventana del juego
     private int alto; // Alto de la ventana del juego
-    public static boolean pantallaTitulo = true; // Variable que indica si se muestra la pantalla de título
-
+    public static boolean pantallaTitulo = true;// Variable que indica si se muestra la pantalla de título
     // Instancias principales del juego
     public static SuperficieDibujo sd; // Superficie de dibujo del juego
-    private Ventana ventana; // Ventana del juego
-    private GestorEstados ge; // Gestor de estados del juego
+    public static GestorEstados ge; // Gestor de estados del juego
 
     private static int fps = 0; // FPS (cuadros por segundo) del juego
     private static int aps = 0; // APS (actualizaciones por segundo) del juego
@@ -45,7 +42,6 @@ public class GestorPrincipal {
 
     // Método principal del programa
     public static void main(String[] args) throws InterruptedException {
-
         System.setProperty("javafx.animation.fullspeed", "true");
         // Configuración de OpenGL
         GestorPrincipal gp = new GestorPrincipal("Juego", Constantes.ANCHO_PANTALLA_COMPLETA,
@@ -59,13 +55,14 @@ public class GestorPrincipal {
     private void iniciarJuego() {
         enFuncionamiento = true; // Establece que el juego está en funcionamiento
         inicializar(); // Inicializa los componentes del juego
-        reproductor.musica.repetir(0.7f); // Reproduce la música del juego
     }
 
     // Método para inicializar los componentes del juego
     private void inicializar() {
+
         sd = new SuperficieDibujo(ancho, alto); // Inicializa la superficie de dibujo
-        ventana = new Ventana(titulo, sd); // Inicializa la ventana del juego
+        // Ventana del juego
+        Ventana ventana = new Ventana(titulo, sd); // Inicializa la ventana del juego
         ge = new GestorEstados(sd); // Inicializa el gestor de estados del juego
     }
 
@@ -122,9 +119,9 @@ public class GestorPrincipal {
         } else if (GestorControles.teclado.tiendaActiva) {
             ge.cambiarEstadoActual(2);
             GestorControles.teclado.inventarioActivo = false;
-        } else if(pantallaTitulo){
+        } else if (pantallaTitulo) {
             ge.cambiarEstadoActual(3);
-        }else{
+        } else {
             ge.cambiarEstadoActual(0);
         }
         // Actualiza el estado del juego si no se muestra la pantalla de título
@@ -148,5 +145,7 @@ public class GestorPrincipal {
     public static int getAps() {
         return aps;
     }
+
+
 
 }
