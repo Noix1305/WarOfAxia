@@ -2,13 +2,13 @@ package principal.entes.jugador;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
+import principal.GestorPrincipal;
 import principal.control.GestorControles;
 import principal.entes.GestorAtributos;
+import principal.maquinaestado.juego.GestorJuego;
 
 import java.awt.*;
 import java.io.Serializable;
-
-import static principal.ElementosPrincipales.reproductor;
 
 public class AccionesJugador implements Serializable{
     private double posicionX;
@@ -106,7 +106,7 @@ public class AccionesJugador implements Serializable{
             animacionJugador.setDireccion(3);
         }
 
-        reproductor.sonidoCaminar1.reproducir(0.7f);
+        ElementosPrincipales.reproductor.sonidoCaminar1.reproducir(0.7f);
     }
 
 

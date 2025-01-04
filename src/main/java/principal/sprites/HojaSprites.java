@@ -5,6 +5,7 @@
 package principal.sprites;
 
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.io.Serializable;
 
 import principal.Constantes;
@@ -16,6 +17,8 @@ import principal.herramientas.CargadorRecursos;
  */
 public class HojaSprites implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     final private int anchoHojaPix;
     final private int altoHojaPix;
 

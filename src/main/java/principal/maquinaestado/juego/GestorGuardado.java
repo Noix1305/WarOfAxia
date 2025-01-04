@@ -3,6 +3,9 @@ package principal.maquinaestado.juego;
 import principal.ElementosPrincipales;
 import principal.entes.enemigo.Enemigo;
 import principal.entes.jugador.Jugador;
+import principal.habilidades.Habilidad;
+import principal.inventario.Objeto;
+import principal.inventario.RegistroObjetos;
 import principal.maquinaestado.GestorEstados;
 
 import java.io.File;
@@ -15,13 +18,7 @@ import java.util.Comparator;
 public class GestorGuardado {
 
     public void guardarJuego() {
-        Jugador jugador = ElementosPrincipales.jugador;
-        Jugador jugadorGuardar = new Jugador(jugador.getGestorAt(), jugador.getAlmacenEquipo(),
-                jugador.getAccesoRapido(), jugador.getAccionesJugador(), jugador.getAreaPosicional());
-        ArrayList<Enemigo> enemigos = new ArrayList<>();
-
-        // Crear un estado del juego
-        EstadoJuegoGuardar estadoJuego = new EstadoJuegoGuardar(jugadorGuardar, ElementosPrincipales.mapa.getNombreMapaActual());
+        EstadoJuegoGuardar estadoJuego = getEstadoJuegoGuardar();
         System.out.println(estadoJuego.getMapaActual());
 
         // Guardar el estado del juego
@@ -31,6 +28,21 @@ public class GestorGuardado {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         String fechaFormateada = fechaActual.format(formato);
         JuegoGuardado.guardarEstadoJuego(estadoJuego, "juegosGuardados", "guardado." + fechaFormateada);
+    }
+
+    private static EstadoJuegoGuardar getEstadoJuegoGuardar() {
+        Jugador jugador = ElementosPrincipales.jugador;
+        Jugador jugadorGuardar = new Jugador(jugador.getGestorAt(),
+                jugador.getAccionesJugador(), jugador.getAreaPosicional());
+        ArrayList<Integer[]> listaObjetos = ElementosPrincipales.inventario.obtenerListaIndicesObjetos();
+        ArrayList<Integer> listaHabilidades = ElementosPrincipales.inventario.obtenerIndicesHabilidades();
+        ArrayList<Integer> listaEnemigos = ElementosPrincipales.inventario.obtenerIndiceEnemigosBestiario();
+        ArrayList<Integer[]> listaAccesos = ElementosPrincipales.jugador.getAccesoRapido().obtenerIndiceYObjeto();
+        ArrayList<Integer> listaEquipoActual = ElementosPrincipales.jugador.getAlmacenEquipo().obtenerIndicesEquipo();
+
+        // Crear un estado del juego
+        return new EstadoJuegoGuardar(jugadorGuardar, ElementosPrincipales.mapa.getNombreMapaActual(),
+                listaObjetos, listaHabilidades, listaEnemigos, listaAccesos, listaEquipoActual);
     }
 
     public void cargarJuego() {
@@ -58,12 +70,22 @@ public class GestorGuardado {
 
         // Verificar los datos cargados
         if (estadoCargado != null) {
+            ArrayList<Objeto> listaObjetosCreados = ElementosPrincipales.inventario.
+                    actualizarInventarioMochila(estadoCargado.getListaIndicesObjetos());
+            ArrayList<Habilidad> listaHabilidadesCreadas = ElementosPrincipales.inventario.
+                    actualizarListaHabilidades(estadoCargado.getListaHabilidades());
+            ArrayList<Enemigo> listaEnemigos = ElementosPrincipales.inventario.actualizarListaEnemigos(estadoCargado.getListaIndicesEnemigos());
+
+
             GestorJuego.cargarJuego = true;
             System.out.println("Jugador: " + estadoCargado.getJugador());
             ElementosPrincipales.jugador = estadoCargado.getJugador();
-            System.out.println("Mapa al cargar: " + estadoCargado.getMapaActual());
+            ElementosPrincipales.inventario.objetos = listaObjetosCreados;
+            ElementosPrincipales.inventario.habilidades = listaHabilidadesCreadas;
+            ElementosPrincipales.inventario.enemigosEliminados = listaEnemigos;
+            ElementosPrincipales.jugador.getAccesoRapido().actualizarAccesos(estadoCargado.getListaAccesos());
+            ElementosPrincipales.jugador.getAlmacenEquipo().actualizarEquipoActual(estadoCargado.getListaEquipoActual());
             GestorJuego.cargarMapa(estadoCargado.getMapaActual());
-            System.out.println("Jugador nuevo: " + ElementosPrincipales.jugador);
         }
     }
 }

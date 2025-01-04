@@ -37,7 +37,7 @@ public class AnimacionJugador implements Serializable {
         this.setDireccion(0);
         hojaPersonaje = new HojaSprites(Constantes.RUTA_PERSONAJE, 32, 32, false);
         hojaTransparencia = new HojaSprites(Constantes.RUTA_PERSONAJE_TRANSPARENTE, Constantes.LADO_SPRITE, false);
-        imagenActual = hojaPersonaje.getSprites(accionesJugador.getEstado(), this.getDireccion()).imagen();
+        imagenActual = hojaPersonaje.getSprites(accionesJugador.getEstado(), this.getDireccion()).getImagen();
         hojaCuracion = new HojaSprites(Constantes.RUTA_CURACION, 32, 32, false);
         habilidad = CargadorRecursos.cargarImagenCompatibleTranslucida("/icons/Habilidad1.png");
 
@@ -93,16 +93,16 @@ public class AnimacionJugador implements Serializable {
                 if (tiempoTranscurrido <= 100) {
                     accionesJugador.setEstado(3);
                     DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion)
-                            .imagen(), centroX, centroY);
+                            .getImagen(), centroX, centroY);
 
                 } else if (tiempoTranscurrido < 200) {
                     accionesJugador.setEstado(4);
                     DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion).
-                            imagen(), centroX, centroY);
+                            getImagen(), centroX, centroY);
                 } else {
                     accionesJugador.setEstado(5);
                     DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion).
-                            imagen(), centroX, centroY);
+                            getImagen(), centroX, centroY);
 
                 }
 
@@ -135,7 +135,7 @@ public class AnimacionJugador implements Serializable {
             }
 
             // Obtiene la imagen correspondiente y la dibuja
-            this.setHabilidad(hojaHabilidad.getSprites(0).imagen());
+            this.setHabilidad(hojaHabilidad.getSprites(0).getImagen());
             DibujoDebug.dibujarImagen(g, this.habilidad, 0, 0);
         } else {
             // Si han pasado más de 0.5 segundos, detiene la animación
@@ -218,11 +218,11 @@ public class AnimacionJugador implements Serializable {
                 DibujoDebug.dibujarString(g, Float.toString(this.getMontoRecuperado()), puntoX, posY);
 
                 if (indiceImagen % 2 == 0) {
-                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(0, 0).imagen(), puntoX, puntoY - 20);
+                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(0, 0).getImagen(), puntoX, puntoY - 20);
                 } else if (indiceImagen % 2 == 1) {
-                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(1, 0).imagen(), puntoX, puntoY - 20);
+                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(1, 0).getImagen(), puntoX, puntoY - 20);
                 } else {
-                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(2, 0).imagen(), puntoX, puntoY - 20);
+                    DibujoDebug.dibujarImagen(g, this.getHojaCuracion().getSprites(2, 0).getImagen(), puntoX, puntoY - 20);
                 }
                 // Si ha pasado el tiempo de duración o el texto ha subido lo suficiente, deja de mostrar la información
                 if (tiempoTranscurrido >= DURACION_MOSTRAR_DANHO || posY <= puntoY - DURACION_MOSTRAR_DANHO * VELOCIDAD_SUBIDA_DANHO - 20) {

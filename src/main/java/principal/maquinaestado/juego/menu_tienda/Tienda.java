@@ -18,7 +18,7 @@ public class Tienda {
     private Point posicion;
     private Rectangle areaTienda;
     private ArrayList<Objeto> objetosTienda;
-    private int tipo;
+    private int tipo; //{1:Armadura, 2:Arma, 3:Accesorio, 4:Consumible}
 
     public Tienda(int idTienda, Point posicion, int tipo) {
         this.idTienda = idTienda;

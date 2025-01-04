@@ -6,7 +6,10 @@ package principal.maquinaestado.juego.menuInicial;
 
 import java.awt.*;
 
+import principal.ElementosPrincipales;
+import principal.GestorPrincipal;
 import principal.maquinaestado.EstadoJuego;
+import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.menujuego.EstructuraMenu;
 import principal.maquinaestado.menujuego.MenuInventario;
 import principal.maquinaestado.menujuego.SeccionMenu;
@@ -30,10 +33,8 @@ public class PantallaTitulo implements EstadoJuego {
 
     private final EstructuraMenu estructuraMenu;
 
-
     public PantallaTitulo() {
-
-
+        System.out.println("Inicializando Pantalla Titulo");
         estructuraMenu = new EstructuraMenu();
         secciones = new SeccionMenu[5];
 
@@ -43,9 +44,7 @@ public class PantallaTitulo implements EstadoJuego {
                 estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
-
-
-
+        ElementosPrincipales.reproductor.musica.repetir(0.7f);
     }
 
 //    private void cambiarImagen() {

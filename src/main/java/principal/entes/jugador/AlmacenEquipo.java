@@ -5,8 +5,13 @@ package principal.entes.jugador;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import principal.ElementosPrincipales;
 import principal.inventario.Objeto;
-import principal.inventario.armaduras.Armadura;
+import principal.inventario.armaduras.*;
+import principal.inventario.joyas.Accesorio;
+import principal.inventario.joyas.Anillo;
+import principal.inventario.joyas.Collar;
 import principal.inventario.joyas.Joya;
 import principal.inventario.armas.Arma;
 
@@ -29,7 +34,7 @@ public class AlmacenEquipo implements Serializable {
 
     // Constructor que inicializa el equipo con objetos pasados como parámetros
     public AlmacenEquipo(Arma arma1, Arma arma2, Armadura armadura, Armadura casco, Armadura guante, Armadura bota,
-            Joya collar, Joya accesorio, Joya anillo1, Joya anillo2) {
+                         Joya collar, Joya accesorio, Joya anillo1, Joya anillo2) {
         this.arma1 = arma1;
         this.arma2 = arma2;
         this.armadura = armadura;
@@ -49,6 +54,64 @@ public class AlmacenEquipo implements Serializable {
     public AlmacenEquipo() {
         // Inicializar la lista de equipo actual
         equipoActual = new ArrayList<>();
+    }
+
+    public ArrayList<Integer> obtenerIndicesEquipo() {
+        ArrayList<Integer> listaEquipo = new ArrayList<>();
+        for (Objeto objeto : equipoActual) {
+            int id = objeto.getId();
+            listaEquipo.add(id);
+            System.out.println(objeto.getId());
+        }
+        return listaEquipo;
+    }
+
+    public void actualizarEquipoActual(ArrayList<Integer> listaIndices) {
+
+        equipoActual = obtenerEquipoPorIndices(listaIndices);
+
+        for (Objeto equipo : equipoActual) {
+            asignarAtributoSegunTipo(equipo);
+        }
+    }
+
+    private ArrayList<Objeto> obtenerEquipoPorIndices(ArrayList<Integer> listaIndices) {
+        ArrayList<Objeto> equipoActualizado = new ArrayList<>();
+        for (int i : listaIndices) {
+            ElementosPrincipales.inventario.objetos.stream()
+                    .filter(objeto -> objeto.getId() == i)
+                    .findFirst()
+                    .ifPresent(equipoActualizado::add);
+        }
+        return equipoActualizado;
+    }
+
+    private void asignarAtributoSegunTipo(Objeto equipo) {
+        if (equipo instanceof Arma) {
+            if (arma1 == null) {
+                this.arma1 = (Arma) equipo;
+            } else if (arma2 == null) {
+                this.arma2 = (Arma) equipo;
+            }
+        } else if (equipo instanceof ProteccionMedia) {
+            armadura = (ProteccionMedia) equipo;
+        } else if (equipo instanceof ProteccionAlta) {
+            casco = (ProteccionAlta) equipo;
+        } else if (equipo instanceof ProteccionLateral) {
+            guante = (ProteccionLateral) equipo;
+        } else if (equipo instanceof ProteccionBaja) {
+            bota = (ProteccionBaja) equipo;
+        } else if (equipo instanceof Collar) {
+            collar = (Collar) equipo;
+        } else if (equipo instanceof Accesorio) {
+            accesorio = (Accesorio) equipo;
+        } else if (equipo instanceof Anillo) {
+            if (anillo1 == null) {
+                this.anillo1 = (Anillo) equipo;
+            } else if (anillo2 == null) {
+                this.anillo2 = (Anillo) equipo;
+            }
+        }
     }
 
     // Métodos para obtener y cambiar los objetos equipados

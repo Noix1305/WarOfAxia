@@ -2,6 +2,7 @@
     "compressionlevel": -1,
     "height": 40,
     "infinite": false,
+    "rutaMusica": "FF-I-OST-Main-theme-_aJbbAPMvqrA_",
     "layers": [
         {
             "data": [195, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 202, 194, 41, 43, 194, 194, 194, 194, 194, 194, 194, 194, 194, 41, 43, 186, 202, 202, 202, 202, 202, 202, 202, 202,
@@ -2517,10 +2518,10 @@
                     "width": 94.6666666666666,
                     "x": 288,
                     "y": 1269.33333333333,
-                    "mapaDestino": "ciudad1Interiores.json",
+                    "mapaDestino": "afueras.json",
                     "punto inicial": {
-                        "x": 80,
-                        "y": 1270
+                        "x": 150,
+                        "y": 1000
                     }
                 }
             ],
@@ -2567,7 +2568,6 @@
     "type": "map",
     "version": 1.1,
     "width": 40,
-    "ruta": "Lively Meadow",
     "contenedores": [
         {
             "idContenedor": 0,

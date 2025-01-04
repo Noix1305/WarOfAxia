@@ -2,6 +2,7 @@ package principal.habilidades;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import principal.Constantes;
@@ -16,6 +17,7 @@ import principal.sprites.HojaSprites;
  */
 public abstract class Habilidad {
 
+    protected int id;
     private boolean efectoActivado; // Indica si el efecto de la habilidad está activado
     Cronometro cronometro; // Cronómetro para controlar el tiempo de reutilización de la habilidad
     private TipoObjeto tipoHabilidad; // Tipo de la habilidad
@@ -43,14 +45,15 @@ public abstract class Habilidad {
      * @param activaPasiva  El tipo de activación de la habilidad.
      * @param tipoHabilidad El tipo de habilidad.
      */
-    public Habilidad(String nombre, int duracion, int manaUtilizado, int vidaUtilizada, int indiceSprite, TipoObjeto activaPasiva,
-                     TipoObjeto tipoHabilidad, double alcance) {
+    public Habilidad(int id,String nombre, int duracion, int manaUtilizado, int vidaUtilizada, int indiceSprite, TipoObjeto activaPasiva,
+                     TipoObjeto tipoHabilidad, double alcance, int tiempoReutilizacion) {
+        this.id = id;
         this.nombre = nombre;
         this.duracion = duracion;
         this.manaUtilizado = manaUtilizado;
         this.vidaUtilizada = vidaUtilizada;
         hojaHabilidad = new HojaSprites(Constantes.RUTA_HOJA_HABILIDADES, 32, true);
-        imagenActual = hojaHabilidad.getSprites(indiceSprite).imagen();
+        imagenActual = hojaHabilidad.getSprites(indiceSprite).getImagen();
         this.activaPasiva = activaPasiva;
         this.tipoHabilidad = tipoHabilidad;
         posicionMenu = new Rectangle(0, 0, 0, 0);
@@ -58,6 +61,7 @@ public abstract class Habilidad {
         cronometro = new Cronometro();
         efectoActivado = false;
         this.alcance = alcance;
+        this.tiempoReutilizacion = tiempoReutilizacion;
     }
 
     // Método abstracto que debe ser implementado por las subclases
@@ -223,5 +227,13 @@ public abstract class Habilidad {
 
     public void setAlcance(double alcance) {
         this.alcance = alcance;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -757,7 +757,7 @@ public class TiendaAccesorios extends SeccionTienda {
 
         dibujarElementosEnPanelTienda(g, objetos, lado);
         if (objetoSeleccionado != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
                     new Point(objetoSeleccionado.getPosicionFlotante().x,
                             objetoSeleccionado.getPosicionFlotante().y));
         }
@@ -784,7 +784,7 @@ public class TiendaAccesorios extends SeccionTienda {
         dibujarElementosPanelTiendaVenta(g, canastaVenta, lado);
         // Dibujar el objeto seleccionado de la canasta de venta si existe
         if (objetoSeleccionadoVenta != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,
                             objetoSeleccionadoVenta.getPosicionFlotante().y));
         }
@@ -832,7 +832,7 @@ public class TiendaAccesorios extends SeccionTienda {
         dibujarElementosPanelTiendaCompra(g, canastaCompra, lado);
         // Dibujar el objeto seleccionado de la canasta de compra si existe
         if (objetoSeleccionadoCompra != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoCompra.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoCompra.getSprite().getImagen(),
                     new Point(objetoSeleccionadoCompra.getPosicionFlotante().x,
                             objetoSeleccionadoCompra.getPosicionFlotante().y));
         }
@@ -848,7 +848,7 @@ public class TiendaAccesorios extends SeccionTienda {
         for (Objeto objetoActual : objetos) {
             if (objetoActual instanceof Joya) {
                 Rectangle posicionMenu = objetoActual.getPosicionTienda();
-                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionMenu.x, posicionMenu.y);
+                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
                 String texto = objetoActual.getPrecioCompra() < 10 ? "$0" + objetoActual.getPrecioCompra() : "$" + objetoActual.getPrecioCompra();
                 g.setColor(Color.BLACK);
                 DibujoDebug.dibujarRectanguloRelleno(g, posicionMenu.x + 4, posicionMenu.y + 32 - 8, 32, 8);
@@ -871,7 +871,7 @@ public class TiendaAccesorios extends SeccionTienda {
         for (Objeto objetoActual : objetos) {
             if (objetoActual instanceof Joya) {
                 Rectangle posicionMenu = objetoActual.getPosicionMochila();
-                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionMenu.x, posicionMenu.y);
+                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
                 String texto = objetoActual.getCantidad() < 10 ? "0" + objetoActual.getCantidad() : String.valueOf(objetoActual.getCantidad());
                 g.setColor(Color.BLACK);
                 DibujoDebug.dibujarRectanguloRelleno(g, posicionMenu.x + lado - 12, posicionMenu.y + 32 - 8, 12, 8);
@@ -893,7 +893,7 @@ public class TiendaAccesorios extends SeccionTienda {
         for (Objeto objetoActual : objetos) {
             if (objetoActual instanceof Joya && objetoActual.getCantidadCompra() > 0) {
                 Rectangle posicionTienda = objetoActual.getPosicionCompra();
-                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionTienda.x, posicionTienda.y);
+                DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionTienda.x, posicionTienda.y);
                 String texto = objetoActual.getCantidadCompra() < 10 ? "0" + objetoActual.getCantidadCompra() : String.valueOf(objetoActual.getCantidadCompra());
                 g.setColor(Color.BLACK);
                 DibujoDebug.dibujarRectanguloRelleno(g, posicionTienda.x + lado - 12, posicionTienda.y + 32 - 8, 12, 8);
@@ -919,7 +919,7 @@ public class TiendaAccesorios extends SeccionTienda {
             }
             Rectangle posicionVenta = objetoActual.getPosicionVenta();
 
-            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionVenta.x, posicionVenta.y);
+            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionVenta.x, posicionVenta.y);
 
             String texto = "";
             if (objetoActual.getCantidadVenta() < 10) {
@@ -956,7 +956,7 @@ public class TiendaAccesorios extends SeccionTienda {
 
         dibujarElementosEnPanelInventario(g, objetos, lado);
         if (objetoSeleccionadoVenta != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,
                             objetoSeleccionadoVenta.getPosicionFlotante().y));
         }

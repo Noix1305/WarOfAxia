@@ -4,11 +4,15 @@
  */
 package principal.inventario;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import principal.ElementosPrincipales;
 import principal.entes.enemigo.Enemigo;
 import principal.entes.enemigo.RegistroEnemigos;
+import principal.habilidades.GestorHabilidades;
 import principal.habilidades.Habilidad;
 import principal.inventario.armaduras.Armadura;
 import principal.inventario.armas.Arma;
@@ -19,16 +23,17 @@ import principal.inventario.consumibles.Consumible;
 import principal.inventario.joyas.Joya;
 
 /**
- *
  * @author GAMER ARRAX
  */
-public class Inventario {
+public class Inventario implements Serializable {
 
-    public final ArrayList<Objeto> objetos;
-    public final ArrayList<Habilidad> habilidades;
+    @Serial
+    private static final long serialVersionUID = 123456789L;
+    public ArrayList<Objeto> objetos;
+    public ArrayList<Habilidad> habilidades;
     public ArrayList<Objeto> objetosTienda;
     public ArrayList<Enemigo> enemigosEliminados;
-    
+
     public int dinero;
 
     public Inventario() {
@@ -48,8 +53,8 @@ public class Inventario {
         Enemigo enemigo9 = RegistroEnemigos.obtenerEnemigo(9);
         Enemigo enemigo10 = RegistroEnemigos.obtenerEnemigo(10);
 
-        enemigosEliminados = new ArrayList<>(List.of(enemigo1,enemigo2,enemigo3,enemigo4,enemigo5,enemigo6,
-                enemigo7,enemigo8,enemigo9,enemigo10)); 
+        enemigosEliminados = new ArrayList<>(List.of(enemigo1, enemigo2, enemigo3, enemigo4, enemigo5, enemigo6,
+                enemigo7, enemigo8, enemigo9, enemigo10));
 
     }
 
@@ -63,9 +68,105 @@ public class Inventario {
                 break;
             }
         }
-
         return incrementado;
     }
+
+    public ArrayList<Integer> obtenerIndiceEnemigosBestiario() {
+        ArrayList<Integer> listaIndices = new ArrayList<>();
+        for (Enemigo enemigo : enemigosEliminados) {
+            int indice = enemigo.gestorAtributos.getIdEnemigo();
+            listaIndices.add(indice);
+        }
+        System.out.println(listaIndices);
+        return listaIndices;
+    }
+
+    public ArrayList<Enemigo> actualizarListaEnemigos(ArrayList<Integer> listaIndices) {
+        ArrayList<Enemigo> listaEnemigosCreados = new ArrayList<>();
+        for (int i : listaIndices) {
+            Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(i);
+            listaEnemigosCreados.add(enemigo);
+            System.out.println("Enemigo creado: " + enemigo.gestorAtributos.getNombre());
+        }
+
+        return listaEnemigosCreados;
+    }
+
+    public ArrayList<Integer[]> obtenerListaIndicesObjetos() {
+        ArrayList<Integer[]> listaIndices = new ArrayList<>();
+        for (Objeto objeto : objetos) {
+            int indice = objeto.getId();
+            int cantidadObjeto = objeto.getCantidad();
+            Integer[] par = {indice, cantidadObjeto}; // Crear un arreglo con los dos valores
+            listaIndices.add(par); // Añadir el arreglo a la lista
+        }
+        System.out.println(listaIndices);
+        return listaIndices;
+    }
+
+    public ArrayList<Integer> obtenerIndicesHabilidades() {
+        ArrayList<Integer> listaIndicesHabilidades = new ArrayList<>();
+        for (Habilidad habilidad : habilidades) {
+            int id = habilidad.getId();
+            listaIndicesHabilidades.add(id);
+        }
+
+        return listaIndicesHabilidades;
+    }
+
+    public ArrayList<Habilidad> actualizarListaHabilidades(ArrayList<Integer> indices) {
+        ArrayList<Habilidad> habilidades = new ArrayList<>();
+        for (int i : indices) {
+            Habilidad habilidadCreada = GestorHabilidades.obtenerHabilidad(i);
+            habilidades.add(habilidadCreada);
+            System.out.println(habilidadCreada.getNombre());
+        }
+        return habilidades;
+    }
+
+
+    public ArrayList<Objeto> actualizarInventarioMochila(ArrayList<Integer[]> listaIndices) {
+        ArrayList<Objeto> listaObjetos = new ArrayList<>();
+
+        for (Integer[] indiceYCantidad : listaIndices) {
+            // Obtener índice y cantidad del arreglo
+            int indice = indiceYCantidad[0];
+            int cantidad = indiceYCantidad[1];
+
+            // Crear objeto usando el índice
+            Objeto objetoCreado = RegistroObjetos.obtenerObjeto(indice);
+
+            // Configurar la cantidad en el objeto
+            objetoCreado.setCantidad(cantidad);
+
+            // Agregar el objeto a la lista
+            listaObjetos.add(objetoCreado);
+        }
+
+        // Imprimir los nombres de los objetos actualizados
+        for (Objeto objeto : listaObjetos) {
+            System.out.println(objeto.getNombre());
+        }
+
+        return listaObjetos;
+    }
+
+    public void anadirHabilidad(Habilidad habilidadEntrante) {
+        boolean existe = false;
+
+        for (Habilidad habilidad : habilidades) {
+            if (habilidad.getId() == habilidadEntrante.getId()) {
+                existe = true;
+                System.out.println("Habilidad Existe");
+                break;
+            }
+        }
+
+        if (!existe) {
+            habilidades.add(habilidadEntrante);
+        }
+    }
+
 
     public void recogerObjetos(final ObjetoUnicoTiled out) {
         if (objetoExiste(out.getObjeto())) {
@@ -135,11 +236,9 @@ public class Inventario {
         for (Objeto objeto : objetos) {
             if (objeto instanceof Arma) {
                 equipo.add(objeto);
-            }
-            else if (objeto instanceof Armadura) {
+            } else if (objeto instanceof Armadura) {
                 equipo.add(objeto);
-            }
-            else if (objeto instanceof Joya) {
+            } else if (objeto instanceof Joya) {
                 equipo.add(objeto);
             }
         }
@@ -156,8 +255,8 @@ public class Inventario {
         }
         return armas;
     }
-    
-    public ArrayList<Objeto> getUnaMano(){
+
+    public ArrayList<Objeto> getUnaMano() {
         ArrayList<Objeto> armas = new ArrayList<>();
 
         for (Objeto objeto : objetos) {
@@ -167,8 +266,8 @@ public class Inventario {
         }
         return armas;
     }
-    
-    public ArrayList<Objeto> getDosManos(){
+
+    public ArrayList<Objeto> getDosManos() {
         ArrayList<Objeto> armas = new ArrayList<>();
 
         for (Objeto objeto : objetos) {
@@ -217,8 +316,8 @@ public class Inventario {
     public ArrayList<Objeto> getObjetosTienda() {
         return objetosTienda;
     }
-    
-    public void agregarObjeto(Objeto objeto){
+
+    public void agregarObjeto(Objeto objeto) {
         this.objetosTienda.add(objeto);
     }
 
@@ -229,10 +328,6 @@ public class Inventario {
     public void setDinero(int dinero) {
         this.dinero = dinero;
     }
-    
-    
-    
-    
-    
-    
+
+
 }

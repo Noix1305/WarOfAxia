@@ -31,14 +31,10 @@ public class GestorEstados {
         estados[1] = new GestorMenu();
         estados[2] = new GestorTienda();
         estados[3] = new PantallaTitulo();
-        
-       
-        //Añadir e iniciar los demas estados a medida que los creemos
     }
 
     private void iniciarEstadoActual() {
-        estadoActual = estados[0];
-        
+        estadoActual = estados[3];
     }
     
     public void actualizar(){
