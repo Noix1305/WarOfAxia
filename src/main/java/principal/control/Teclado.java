@@ -20,6 +20,7 @@ import principal.habilidades.GestorHabilidades; // Importa la clase GestorHabili
 import principal.habilidades.Habilidad;
 import principal.maquinaestado.GestorEstados;
 import principal.maquinaestado.juego.EstadoJuegoGuardar;
+import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.JuegoGuardado;
 import principal.maquinaestado.menujuego.MenuEquipo;
 
@@ -93,7 +94,15 @@ public class Teclado implements KeyListener {
                 if (GestorPrincipal.pantallaTitulo) {
                     // Establece la bandera para iniciar el juego
                     GestorPrincipal.pantallaTitulo = false;
-                    GestorPrincipal.ge.cambiarEstadoActual(3);
+                    GestorPrincipal.ge.cambiarEstadoActual(0);
+                }
+                if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
+
+                    ElementosPrincipales.jugador.getGestorAt().setVida(100);
+                    ElementosPrincipales.jugador.getAnimacionJugador().setEstaVivo(true);
+                    GestorJuego.cargarMapa(ElementosPrincipales.mapa.getNombreMapaActual());
+                    GestorPrincipal.pantallaTitulo = true;
+
                 }
                 break;
             case KeyEvent.VK_W:
@@ -166,8 +175,18 @@ public class Teclado implements KeyListener {
                 ElementosPrincipales.jugador.habilidadSlot(9);
                 break;
             case KeyEvent.VK_F5:
-                Habilidad habilidad = gh.obtenerHabilidadPorNombre("Ataque Básico");
-                ElementosPrincipales.inventario.habilidades.add(habilidad);
+                Habilidad habilidad = GestorHabilidades.obtenerHabilidad(1);
+                ElementosPrincipales.inventario.anadirHabilidad(habilidad);
+
+                Habilidad habilidad2 = GestorHabilidades.obtenerHabilidad(2);
+                ElementosPrincipales.inventario.anadirHabilidad(habilidad2);
+
+                Habilidad habilidad3 = GestorHabilidades.obtenerHabilidad(3);
+                ElementosPrincipales.inventario.anadirHabilidad(habilidad3);
+
+                Habilidad habilidad4 = GestorHabilidades.obtenerHabilidad(4);
+                ElementosPrincipales.inventario.anadirHabilidad(habilidad4);
+
                 break;
             case KeyEvent.VK_F10:
                 ElementosPrincipales.gestorGuardado.guardarJuego();

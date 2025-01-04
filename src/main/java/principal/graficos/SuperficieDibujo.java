@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serial;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 
 import principal.Constantes;
@@ -21,6 +23,7 @@ import principal.herramientas.DibujoDebug;
 import principal.maquinaestado.GestorEstados;
 import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
+import principal.sprites.HojaSprites;
 
 /**
  * Superficie de dibujo donde se renderiza todo el juego.
@@ -28,6 +31,7 @@ import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
 public class SuperficieDibujo extends Canvas {
 
     // SerialVersionUID para compatibilidad entre versiones
+    @Serial
     private static final long serialVersionUID = 123456789L;
 
     // Efectos visuales para transiciones
@@ -112,7 +116,17 @@ public class SuperficieDibujo extends Canvas {
         Toolkit.getDefaultToolkit().sync();
 
         // Si el jugador está muerto, mostrar transición de pantalla de muerte
-        if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
+        dibujarMuerte(g);
+
+        // Liberar recursos
+        g.dispose();
+
+        // Mostrar la siguiente imagen del buffer
+        buffer.show();
+    }
+
+    private void dibujarMuerte(Graphics2D g) {
+        if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo() && !GestorPrincipal.pantallaTitulo) {
             efectosVisuales.dibujarTransicionNegro(g, getWidth(), getHeight());
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 30));
@@ -123,16 +137,10 @@ public class SuperficieDibujo extends Canvas {
             g.drawString(mensajeMuerte, xTexto, yTexto);
 
             // Recargar el juego y volver a la pantalla de título al presionar una tecla
-            ElementosPrincipales.jugador.getGestorAt().setVida(ElementosPrincipales.jugador.getGestorAt().getVidaMaxima());
-            GestorJuego.recargar = true;
-            GestorPrincipal.pantallaTitulo = true;
+            if (GestorPrincipal.pantallaTitulo) {
+                GestorPrincipal.ge.cambiarEstadoActual(3);
+            }
         }
-
-        // Liberar recursos
-        g.dispose();
-
-        // Mostrar la siguiente imagen del buffer
-        buffer.show();
     }
 
 
@@ -170,7 +178,7 @@ public class SuperficieDibujo extends Canvas {
      */
     public BufferedImage cargarImagen(String ruta) {
         try {
-            return ImageIO.read(getClass().getResource(ruta));
+            return ImageIO.read(Objects.requireNonNull(getClass().getResource(ruta)));
         } catch (IOException e) {
             return null;
         }
@@ -179,11 +187,11 @@ public class SuperficieDibujo extends Canvas {
     /**
      * Método para dibujar una imagen en la superficie de dibujo.
      *
-     * @param x      La coordenada X de la posición de la imagen.
-     * @param y      La coordenada Y de la posición de la imagen.
-     * @param imagen La imagen a dibujar.
+     * @param x La coordenada X de la posición de la imagen.
+     * @param y La coordenada Y de la posición de la imagen.
      */
-    public void dibujarImagen(int x, int y, BufferedImage imagen) {
+    public void dibujarImagen(int x, int y, HojaSprites hs, int indice) {
+        BufferedImage imagen = hs.getSprites(indice).getImagen();
         if (imagen != null) {
             getGraphics().drawImage(imagen, x, y, this);
         }

@@ -976,7 +976,7 @@ public class MenuEquipo extends SeccionMenu {
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmas()) {
 
                         if (objetoActual instanceof ArmaUnaMano) {
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1000,7 +1000,7 @@ public class MenuEquipo extends SeccionMenu {
                 case 1:
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmas()) {
                         if (objetoActual instanceof ArmaDosManos) {
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1025,7 +1025,7 @@ public class MenuEquipo extends SeccionMenu {
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
                         if (objetoActual instanceof ProteccionMedia) {
 
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1050,7 +1050,7 @@ public class MenuEquipo extends SeccionMenu {
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
                         if (objetoActual instanceof ProteccionAlta) {
 
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1075,7 +1075,7 @@ public class MenuEquipo extends SeccionMenu {
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
                         if (objetoActual instanceof ProteccionLateral) {
 
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1100,7 +1100,7 @@ public class MenuEquipo extends SeccionMenu {
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
                         if (objetoActual instanceof ProteccionBaja) {
 
-                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                     objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                             DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1123,7 +1123,7 @@ public class MenuEquipo extends SeccionMenu {
 
                 case 6:
                     for (Objeto objetoActual : ElementosPrincipales.inventario.getJoyas()) {
-                        DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(),
+                        DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
                                 objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
 
                         DibujoDebug.dibujarRectanguloRelleno(g,
@@ -1145,7 +1145,7 @@ public class MenuEquipo extends SeccionMenu {
             }
 
             if (objetoSeleccionado != null) {
-                DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().imagen(),
+                DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
                         new Point(objetoSeleccionado.getPosicionFlotante().x,
                                 objetoSeleccionado.getPosicionFlotante().y));
             }
@@ -1161,7 +1161,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen1 = new Point(contenedorArma1.x + contenedorArma1.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorArma1.y + 1);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArma1().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArma1().getSprite().getImagen(),
                     coordenadaImagen1);
         }
         if (ElementosPrincipales.jugador.getAlmacenEquipo().getArma2() != null) {
@@ -1169,7 +1169,7 @@ public class MenuEquipo extends SeccionMenu {
                 Point coordenadaImagen2 = new Point(contenedorArma2.x + contenedorArma2.width / 2 - Constantes.LADO_SPRITE / 2,
                         contenedorArma2.y + 1);
 
-                DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArma2().getSprite().imagen(),
+                DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArma2().getSprite().getImagen(),
                         coordenadaImagen2);
             }
         }
@@ -1179,7 +1179,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen3 = new Point(contenedorArmadura1.x + contenedorArmadura1.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorArmadura1.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArmaduraMedia().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getArmaduraMedia().getSprite().getImagen(),
                     coordenadaImagen3);
 
         }
@@ -1188,7 +1188,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen4 = new Point(contenedorArmadura2.x + contenedorArmadura2.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorArmadura2.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getCasco().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getCasco().getSprite().getImagen(),
                     coordenadaImagen4);
 
         }
@@ -1198,7 +1198,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen5 = new Point(contenedorArmadura3.x + contenedorArmadura3.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorArmadura3.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getGuante().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getGuante().getSprite().getImagen(),
                     coordenadaImagen5);
 
         }
@@ -1208,7 +1208,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen6 = new Point(contenedorArmadura4.x + contenedorArmadura4.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorArmadura4.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getBota().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getBota().getSprite().getImagen(),
                     coordenadaImagen6);
 
         }
@@ -1217,7 +1217,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen7 = new Point(contenedorCollar.x + contenedorCollar.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorCollar.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getCollar().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getCollar().getSprite().getImagen(),
                     coordenadaImagen7);
 
         }
@@ -1227,7 +1227,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen8 = new Point(contenedorAccesorio.x + contenedorAccesorio.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorAccesorio.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio().getSprite().getImagen(),
                     coordenadaImagen8);
 
         }
@@ -1237,7 +1237,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen9 = new Point(contenedorAnillo1.x + contenedorAnillo1.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorAnillo1.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1().getSprite().getImagen(),
                     coordenadaImagen9);
 
         }
@@ -1247,7 +1247,7 @@ public class MenuEquipo extends SeccionMenu {
             Point coordenadaImagen10 = new Point(contenedorAnillo2.x + contenedorAnillo2.width / 2 - Constantes.LADO_SPRITE / 2,
                     contenedorAnillo2.y);
 
-            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2().getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2().getSprite().getImagen(),
                     coordenadaImagen10);
 
         }

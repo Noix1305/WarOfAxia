@@ -108,7 +108,7 @@ public class MenuHabilidades extends SeccionMenu {
     private void dibujarRectangulosAccesoRapido(Graphics g) {
         int i =0;
         for (Rectangle rectangulo : rectangulosAccesosRapidos) {
-            DibujoDebug.dibujarImagen(g, MenuInferior.bordesRanuras.getSprites(0).imagen(), rectangulo.x-3, rectangulo.y-4);
+            DibujoDebug.dibujarImagen(g, MenuInferior.bordesRanuras.getSprites(0).getImagen(), rectangulo.x-3, rectangulo.y-4);
         }
     }
 
@@ -373,7 +373,7 @@ public class MenuHabilidades extends SeccionMenu {
 
     private void dibujarObjetoEnRectangulo(Graphics g, Object objeto, Rectangle rectangulo) {
         if (objeto instanceof Consumible) {
-            DibujoDebug.dibujarImagen(g, ((Consumible) objeto).getSprite().imagen(), rectangulo.x, rectangulo.y);
+            DibujoDebug.dibujarImagen(g, ((Consumible) objeto).getSprite().getImagen(), rectangulo.x, rectangulo.y);
         }
         else if (objeto instanceof Habilidad) {
             DibujoDebug.dibujarImagen(g, ((Habilidad) objeto).getImagenActual(), rectangulo.x, rectangulo.y);

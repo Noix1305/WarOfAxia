@@ -55,7 +55,6 @@ public class Enemigo extends Entidad {
 
     protected String nombre; // Nombre del enemigo
 
-    protected SoundThread lamento; // Sonido de lamento del enemigo
     protected long duracionLamento; // Duración del sonido de lamento
     protected long lamentoSiguiente = 0; // Tiempo para reproducir el siguiente lamento
     protected ContenedorObjetos co; // Contenedor de objetos asociado al enemigo
@@ -75,18 +74,15 @@ public class Enemigo extends Entidad {
      * @param idEnemigo        Identificador único del enemigo.
      * @param nombre           Nombre del enemigo.
      * @param vidaMaxima       Vida máxima del enemigo.
-     * @param rutaLamento      Ruta del archivo de sonido de lamento del enemigo.
      * @param ataque           Poder de ataque del enemigo.
      * @param hs               Hoja de sprites del enemigo.
      * @param distanciaParaMov Distancia mínima para que el enemigo comience a moverse.
      * @param contenedor       Contenedor de objetos asociado al enemigo.
      * @param idxContenedor    Índice del contenedor de objetos al que pertenece el enemigo.
      */
-    public Enemigo(int idEnemigo, String nombre, int vidaMaxima, final String rutaLamento, int ataque, HojaSprites hs,
+    public Enemigo(int idEnemigo, String nombre, int vidaMaxima, int ataque, HojaSprites hs,
                    double distanciaParaMov, ContenedorObjetos contenedor, int idxContenedor, int experiencia) {
         super(new GestorAtributos(idEnemigo, nombre, vidaMaxima, ataque, experiencia));
-        this.lamento = new SoundThread(rutaLamento);
-        this.duracionLamento = lamento.getDuracion();
 
         this.animacion = 0;
         this.estado = 0;
@@ -95,7 +91,7 @@ public class Enemigo extends Entidad {
         this.distanciaParaMov = distanciaParaMov;
 
         this.hs = hs;
-        imagenActual = hs.getSprites(0).imagen();
+        imagenActual = hs.getSprites(0).getImagen();
         this.co = contenedor;
         this.indiceContenedor = idxContenedor;
         this.posicionMenu = new Rectangle();
@@ -252,7 +248,7 @@ public class Enemigo extends Entidad {
         Sprite sprite = hs.getSprites(estado, direccion);
 
         if (sprite != null) {
-            imagenActual = sprite.imagen();
+            imagenActual = sprite.getImagen();
         } else {
             imagenActual = null; // o imagen por defecto
         }
@@ -295,7 +291,7 @@ public class Enemigo extends Entidad {
             Sprite sprite = hs.getSprites(estado, 0);
 
             if (sprite != null) {
-                imagenActual = sprite.imagen();
+                imagenActual = sprite.getImagen();
             } else {
                 imagenActual = null; // o imagen por defecto
             }
@@ -398,7 +394,7 @@ public class Enemigo extends Entidad {
 
     // Método para reducir la vida del enemigo y mostrar el daño recibido
     public void perderVida(float danhoRecibido, boolean critico) {
-        lamento.reproducir(0.8f); // Reproduce un sonido de lamento
+        ElementosPrincipales.reproductor.lamentoEnemigo.reproducir(0.8f); // Reproduce un sonido de lamento
 
         // Establece el daño recibido y si fue un golpe crítico
         danhoPorGolpe = (int) danhoRecibido;
@@ -524,8 +520,8 @@ public class Enemigo extends Entidad {
     // Método para recibir daño del jugador
     @Override
     public void recibirDanho(int danho, TipoObjeto tipoDeHabilidad) {
-        gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaEnemigo()-danho);
-         System.out.println((gestorAtributos.getVidaEnemigo()));// Reduce la vida del enemigo en función del daño recibido
+        gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaEnemigo() - danho);
+        System.out.println((gestorAtributos.getVidaEnemigo()));// Reduce la vida del enemigo en función del daño recibido
     }
 
 }

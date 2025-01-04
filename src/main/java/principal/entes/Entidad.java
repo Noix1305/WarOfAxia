@@ -2,9 +2,12 @@ package principal.entes;
 
 import principal.inventario.TipoObjeto;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public abstract class Entidad implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     public GestorAtributos gestorAtributos;
 
     public Entidad (GestorAtributos gestorAtributos){

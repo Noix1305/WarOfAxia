@@ -33,7 +33,7 @@ public class ContenedorObjetos {
         hs = new HojaSprites(Constantes.RUTA_HOJA_CONTENEDORES, 32, false);
         this.posicion = posicion;
         this.indiceSprite = indiceSprite;
-        this.imagen = hs.getSprites(indiceSprite).imagen();
+        this.imagen = hs.getSprites(indiceSprite).getImagen();
         this.objetos = new ArrayList<>();
         this.area = area;
     }

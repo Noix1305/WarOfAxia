@@ -65,8 +65,7 @@ public class GestorJuego implements EstadoJuego {
         System.out.println("Recargar sobrecargado");
         ElementosPrincipales.mapa = new MapaTiled(rutaMapa);
         // Establecer la posición del jugador en el nuevo mapa
-        ElementosPrincipales.jugador.getAccionesJugador().setPosicionX(ElementosPrincipales.mapa.getPuntoInicial().x);
-        ElementosPrincipales.jugador.getAccionesJugador().setPosicionY(ElementosPrincipales.mapa.getPuntoInicial().y);
+
         cargarJuego = false;
 
     }
@@ -86,24 +85,25 @@ public class GestorJuego implements EstadoJuego {
     }
 
     private void revisarZonaSalida() {
-        List<Salida> salidas = Salida.getSalidas();
+        if (!cargarJuego) {
+            List<Salida> salidas = Salida.getSalidas();
 
-        if (!ElementosPrincipales.mapa.zonasSalidaActualizadas.isEmpty()) {
-            for (int i = 0; i < salidas.size(); i++) {
-                Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalidaActualizadas.get(i);
+            if (!ElementosPrincipales.mapa.zonasSalidaActualizadas.isEmpty()) {
+                for (int i = 0; i < salidas.size(); i++) {
+                    Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalidaActualizadas.get(i);
 
-                if (ElementosPrincipales.jugador.getAreaPosicional().intersects(zonaSalida)) {
-                    Salida salidaActual = salidas.get(i);
-                    System.out.println("X: " + zonaSalida.x + " Y: " + zonaSalida.y);
-                    System.out.println("Nombre salida: " + salidaActual.getNombreSalida());
+                    if (ElementosPrincipales.jugador.getAreaPosicional().intersects(zonaSalida)) {
+                        Salida salidaActual = salidas.get(i);
+                        System.out.println("X: " + zonaSalida.x + " Y: " + zonaSalida.y);
+                        System.out.println("Nombre salida: " + salidaActual.getNombreSalida());
 
-                    Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();
-                    ElementosPrincipales.mapa.setSiguienteMapa(salidaActual.getNombreSiguienteMapa());
-                    recargar = true;
-                    break;  // Salir del bucle una vez que se ha detectado la intersección
+                        Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();
+                        ElementosPrincipales.mapa.setSiguienteMapa(salidaActual.getNombreSiguienteMapa());
+                        recargar = true;
+                        break;  // Salir del bucle una vez que se ha detectado la intersección
+                    }
                 }
             }
         }
     }
-
 }

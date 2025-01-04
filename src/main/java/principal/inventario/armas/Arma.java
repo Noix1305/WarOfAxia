@@ -23,7 +23,7 @@ public abstract class Arma extends Objeto {
     // Atributos comunes a todas las armas
     protected int alcanceFrontal;
     protected int alcanceLateral;
-    protected SoundThread disparo;
+    protected String rutaDisparo;
     protected HojaSprites hojaArmas;
     protected int ataqueMin;
     protected int ataqueMax;
@@ -35,8 +35,8 @@ public abstract class Arma extends Objeto {
 
     // Constructor de la clase Arma
     public Arma(int id, String nombre, String descripcion, int peso, int ataqueMin, int ataqueMax, int alcanceFrontal,
-            int alcanceLateral, final TipoObjeto tipoObjeto, final boolean automatica, final boolean penetrante, final double ataquesXSegundo, final String rutaDisparo,
-            String rutaPersonaje, int precioCompra, int precioVenta) {
+                int alcanceLateral, final TipoObjeto tipoObjeto, final boolean automatica, final boolean penetrante, final double ataquesXSegundo, final String rutaDisparo,
+                String rutaPersonaje, int precioCompra, int precioVenta) {
         super(id, nombre, peso, descripcion, tipoObjeto, precioCompra, precioVenta);
         this.ataqueMin = ataqueMin;
         this.ataqueMax = ataqueMax;
@@ -46,8 +46,8 @@ public abstract class Arma extends Objeto {
         this.penetrante = penetrante;
         this.ataqueXSegundo = ataquesXSegundo;
         this.actualizacionesParaSgteAtaque = 0;
-        this.disparo = new SoundThread(rutaDisparo);
         this.hojaArma = new HojaSprites(rutaPersonaje, 32, false);
+        this.rutaDisparo = rutaDisparo;
     }
 
     // Método abstracto para obtener el alcance del arma
@@ -63,13 +63,11 @@ public abstract class Arma extends Objeto {
             alcance1.x = Constantes.CENTRO_VENTANA_X;
             if (jugador.getAnimacionJugador().getDireccion() == 0) {
                 alcance1.y = Constantes.CENTRO_VENTANA_Y - 9;
-            }
-            else {
+            } else {
                 alcance1.y = Constantes.CENTRO_VENTANA_Y - 9 - alcance1.height;
             }
 
-        }
-        else {
+        } else {
             alcance1.height = alcanceLateral;
             alcance1.width = alcanceFrontal * Constantes.LADO_SPRITE;
 
@@ -77,8 +75,7 @@ public abstract class Arma extends Objeto {
 
             if (jugador.getAnimacionJugador().getDireccion() == 1) {
                 alcance1.x = Constantes.CENTRO_VENTANA_X - alcance1.width;
-            }
-            else {
+            } else {
                 alcance1.x = Constantes.CENTRO_VENTANA_X;
             }
         }
@@ -102,7 +99,8 @@ public abstract class Arma extends Objeto {
                 return;
             }
             actualizacionesParaSgteAtaque = (int) (ataqueXSegundo * 60);
-            disparo.reproducir(0.8f);
+            ElementosPrincipales.reproductor.sonidoArma.cambiarArchivo(rutaDisparo);
+            ElementosPrincipales.reproductor.sonidoArma.reproducir(0.7f);
 
             ElementosPrincipales.jugador.getCronometro().reiniciar();
             ElementosPrincipales.jugador.getAccionesJugador().setPreparado(true);

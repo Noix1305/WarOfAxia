@@ -5,6 +5,8 @@
 package principal.entes.jugador;
 
 import java.awt.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,14 +33,16 @@ import principal.sprites.Sprite;
 /**
  * @author GAMER ARRAX
  */
-public class Jugador extends Entidad {
+public class Jugador extends Entidad implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     public Curacion curacion;
     private Habilidad habilidadActual;
     private final AccionesJugador accionesJugador;
     private AnimacionJugador animacionJugador;
-    private final AlmacenEquipo almacenEquipo;
-    private final AccesoRapido accesoRapido;
+    private AlmacenEquipo almacenEquipo;
+    private AccesoRapido accesoRapido;
     private final Cronometro cronometro = new Cronometro();
 
     // Área de colisión del jugador
@@ -65,10 +69,8 @@ public class Jugador extends Entidad {
         this.habilidadActual = null;
     }
 
-    public Jugador(GestorAtributos gestorAtributos, AlmacenEquipo almacenEquipo, AccesoRapido accesoRapido, AccionesJugador accionesJugador, Rectangle areaPosicional) {
+    public Jugador(GestorAtributos gestorAtributos, AccionesJugador accionesJugador, Rectangle areaPosicional) {
         super(gestorAtributos);
-        this.almacenEquipo = almacenEquipo;
-        this.accesoRapido = accesoRapido;
         this.areaPosicional = areaPosicional;
         this.accionesJugador = accionesJugador;
         this.alcanceActual = new ArrayList<>();
@@ -373,7 +375,7 @@ public class Jugador extends Entidad {
 
             // Actualiza la imagen actual del jugador
             if (sprite != null) {
-                this.animacionJugador.setImagenActual(sprite.imagen());
+                this.animacionJugador.setImagenActual(sprite.getImagen());
             } else {
                 // Manejo de caso en el que sprite es null
                 // Puedes asignar una imagen por defecto, lanzar una excepción, etc.
@@ -684,5 +686,13 @@ public class Jugador extends Entidad {
 
     public void setAnimacionJugador(AnimacionJugador animacionJugador) {
         this.animacionJugador = animacionJugador;
+    }
+
+    public void setAccesoRapido(AccesoRapido accesoRapido) {
+        this.accesoRapido = accesoRapido;
+    }
+
+    public void setAlmacenEquipo(AlmacenEquipo almacenEquipo) {
+        this.almacenEquipo = almacenEquipo;
     }
 }

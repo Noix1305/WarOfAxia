@@ -26,9 +26,9 @@ public class Danho extends Habilidad implements Serializable {
     private int alcanceLateral;
     private int alcanceFrontal;
 
-    public Danho(String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,
+    public Danho(int id, String nombre, int duracion, int tiempoReutilizacion, int manaUtilizado, int vidaUtilizada,
                  double montoAdicionalPorInt, int danhoBase, int indiceSprite, TipoObjeto activaPasiva, TipoObjeto tipoHabilidad, double alcance) {
-        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, alcance, tiempoReutilizacion);
+        super(id, nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, alcance, tiempoReutilizacion);
 
         montoAdicionalPorInteligencia = montoAdicionalPorInt;
         this.danhoBase = danhoBase;

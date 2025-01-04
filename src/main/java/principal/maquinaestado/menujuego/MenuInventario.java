@@ -127,7 +127,7 @@ public class MenuInventario extends SeccionMenu {
 
     private void dibujarRectangulosAccesoRapido(Graphics g) {
         for (Rectangle rectangulo : rectangulosAccesoRapido) {
-            DibujoDebug.dibujarImagen(g, MenuInferior.bordesRanuras.getSprites(0).imagen(), rectangulo.x - 3, rectangulo.y - 4);
+            DibujoDebug.dibujarImagen(g, MenuInferior.bordesRanuras.getSprites(0).getImagen(), rectangulo.x - 3, rectangulo.y - 4);
         }
     }
 
@@ -201,7 +201,7 @@ public class MenuInventario extends SeccionMenu {
 // Método para dibujar un objeto en un rectángulo
     private void dibujarObjetoEnRectangulo(Graphics g, Object objeto, Rectangle rectangulo) {
         if (objeto instanceof Consumible) {
-            DibujoDebug.dibujarImagen(g, ((Consumible) objeto).getSprite().imagen(), rectangulo.x, rectangulo.y);
+            DibujoDebug.dibujarImagen(g, ((Consumible) objeto).getSprite().getImagen(), rectangulo.x, rectangulo.y);
         }
         else if (objeto instanceof Habilidad) {
             DibujoDebug.dibujarImagen(g, ((Habilidad) objeto).getImagenActual(), rectangulo.x, rectangulo.y);
@@ -234,7 +234,7 @@ public class MenuInventario extends SeccionMenu {
 
         dibujarElementosEnPanel(g, consumibles, pi, lado);
         if (objetoSeleccionado != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
                     new Point(objetoSeleccionado.getPosicionFlotante().x,
                             objetoSeleccionado.getPosicionFlotante().y));
         }
@@ -249,7 +249,7 @@ public class MenuInventario extends SeccionMenu {
             Objeto objetoActual = objetos.get(i);
             Rectangle posicionMenu = objetoActual.getPosicionMenu();
 
-            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().imagen(), posicionMenu.x, posicionMenu.y);
+            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
 
             String texto = "";
             if (objetoActual.getCantidad() < 10) {
@@ -280,7 +280,7 @@ public class MenuInventario extends SeccionMenu {
 
         dibujarElementosEnPanel(g, claves, pi, lado);
         if (objetoSeleccionado != null) {
-            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().imagen(),
+            DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
                     new Point(objetoSeleccionado.getPosicionFlotante().x,
                             objetoSeleccionado.getPosicionFlotante().y));
         }

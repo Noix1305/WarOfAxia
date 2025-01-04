@@ -16,6 +16,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -57,8 +59,10 @@ import static principal.ElementosPrincipales.jugador;
 /**
  * @author GAMER ARRAX
  */
-public class MapaTiled {
+public class MapaTiled implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     private int anchoMapaTiles;
     private int altoMapaTiles;
     private String siguienteMapa;
@@ -191,7 +195,7 @@ public class MapaTiled {
                         }
 
                         intentosDibujo++;
-                        DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].imagen(), puntoX, puntoY);
+                        DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
                 }
             }
@@ -200,7 +204,7 @@ public class MapaTiled {
         for (ObjetoUnicoTiled objetoActual : objetosMapa) {
             int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
             int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
-            DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().imagen(), puntoX, puntoY);
+            DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().getImagen(), puntoX, puntoY);
         }
 
         for (ContenedorObjetos contenedorAct : listaContenedores) {
@@ -238,7 +242,7 @@ public class MapaTiled {
                         }
 
                         intentosDibujo++;
-                        DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].imagen(), puntoX, puntoY);
+                        DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
                 }
             }

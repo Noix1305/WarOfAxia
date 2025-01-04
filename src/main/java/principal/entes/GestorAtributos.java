@@ -4,6 +4,7 @@
  */
 package principal.entes;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,8 @@ import java.io.Serializable;
  */
 public class GestorAtributos implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     // Atributos de la entidad
     private int nivel;
     private int vida;

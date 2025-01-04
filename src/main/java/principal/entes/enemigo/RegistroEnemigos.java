@@ -27,63 +27,62 @@ public class RegistroEnemigos {
             case 1:
                 // Se crea un enemigo tipo "DEMON" con sus atributos específicos
                 hs = new HojaSprites(Constantes.RUTA_DEMON, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "DEMON", 60, "Zombie", 20, hs,
+                enemigo = new Enemigo(idEnemigo, "DEMON", 60, 20, hs,
                         400, new ContenedorObjetos(), 0,30);
-                System.out.println("Enemigo creado: " + enemigo.gestorAtributos.getNombre());
                 break;
 
             case 2:
                 // Se crea un enemigo tipo "SKELETON WARRIOR" con sus atributos específicos
                 hs = new HojaSprites(Constantes.RUTA_SKELETON_SWORD, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON WARRIOR", 60, "Zombie", 20,
+                enemigo = new Enemigo(idEnemigo, "SKELETON WARRIOR", 60,  20,
                         hs, 400, new ContenedorObjetos(), 0,30);
                 break;
             case 3:
                 hs = new HojaSprites(Constantes.RUTA_SKELETON_AXE, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON AXE WARRIOR", 60, "Zombie",
+                enemigo = new Enemigo(idEnemigo, "SKELETON AXE WARRIOR", 60,
                         1, hs, 400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 4:
                 hs = new HojaSprites(Constantes.RUTA_SKELETON_BLODDY, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "BLOODY SKELETON", 60, "Zombie", 10,
+                enemigo = new Enemigo(idEnemigo, "BLOODY SKELETON", 60, 10,
                         hs, 400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 5:
                 hs = new HojaSprites(Constantes.RUTA_SKELETON_MAGE, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON MAGE", 60, "Zombie", 20, hs,
+                enemigo = new Enemigo(idEnemigo, "SKELETON MAGE", 60,  20, hs,
                         400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 6:
                 hs = new HojaSprites(Constantes.RUTA_SKELETON_MAGE2, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON \nHIGH MAGE", 60, "Zombie", 10, hs,
+                enemigo = new Enemigo(idEnemigo, "SKELETON \nHIGH MAGE", 60,  10, hs,
                         400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 7:
                 hs = new HojaSprites(Constantes.RUTA_ORC_ARCHER, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON AXE WARRIOR", 60, "Zombie",
+                enemigo = new Enemigo(idEnemigo, "SKELETON AXE WARRIOR", 60,
                         10, hs, 400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 8:
                 hs = new HojaSprites(Constantes.RUTA_ORC_AXE, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "BLOODY SKELETON", 60, "Zombie", 10,
+                enemigo = new Enemigo(idEnemigo, "BLOODY SKELETON", 60,  10,
                         hs, 400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 9:
                 hs = new HojaSprites(Constantes.RUTA_ORC_KNIGHT, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON MAGE", 60, "Zombie", 10, hs,
+                enemigo = new Enemigo(idEnemigo, "SKELETON MAGE", 60,  10, hs,
                         400, new ContenedorObjetos(), 0,30);
 
                 break;
             case 10:
                 // Se crea un enemigo tipo "SKELETON HIGH MAGE" con sus atributos específicos
                 hs = new HojaSprites(Constantes.RUTA_SATIRO, Constantes.LADO_SPRITE, false);
-                enemigo = new Enemigo(idEnemigo, "SKELETON HIGH MAGE", 60, "Zombie", 10, hs,
+                enemigo = new Enemigo(idEnemigo, "SKELETON HIGH MAGE", 60,  10, hs,
                         400, new ContenedorObjetos(), 0,30);
                 break;
         }

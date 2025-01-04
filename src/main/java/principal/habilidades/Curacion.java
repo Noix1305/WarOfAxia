@@ -5,17 +5,19 @@ import principal.entes.Entidad;
 import principal.entes.enemigo.Enemigo;
 import principal.entes.jugador.Jugador;
 import principal.inventario.TipoObjeto;
+import principal.sonido.ReproductorSonido;
 import principal.sonido.SoundThread;
+
+import java.io.Serializable;
 
 /**
  * Clase que representa la habilidad de curación.
  */
-public class Curacion extends Habilidad {
+public class Curacion extends Habilidad implements Serializable {
 
     // Atributos específicos de la habilidad de curación
     private final int cantidadCuracionBase; // Cantidad base de curación
     private final double montoAdicionalPorInteligencia; // Monto adicional de curación basado en la inteligencia
-    private final SoundThread sonido; // Sonido de la habilidad
     private final int tiempoCarga; // Tiempo de carga de la habilidad
 
     /**
@@ -33,17 +35,16 @@ public class Curacion extends Habilidad {
      * @param activaPasiva                  El tipo de activación de la habilidad.
      * @param tipoHabilidad                 El tipo de habilidad.
      */
-    public Curacion(String nombre, int duracion, int tiempoCarga,
+    public Curacion(int id, String nombre, int duracion, int tiempoCarga,
                     Object objetivo, int manaUtilizado, int vidaUtilizada,
                     int cantidadCuracionBase, int montoAdicionalPorInteligencia, int indiceSprite, TipoObjeto activaPasiva,
                     TipoObjeto tipoHabilidad, double alcance, int tiempoReutilizacion) {
-        super(nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, 0, tiempoReutilizacion);
+        super(id, nombre, duracion, manaUtilizado, vidaUtilizada, indiceSprite, activaPasiva, tipoHabilidad, 0, tiempoReutilizacion);
         this.cantidadCuracionBase = cantidadCuracionBase;
         this.montoAdicionalPorInteligencia = montoAdicionalPorInteligencia;
         super.setTiempoReutilizacion(0);
         this.tiempoCarga = tiempoCarga;
         super.setDescripcion("Restaura 30 pts de VIT + \nun adicional basado en\nla INT del conjurador");
-        sonido = new SoundThread("Heal");
 
     }
 
@@ -82,7 +83,7 @@ public class Curacion extends Habilidad {
                 }
 
                 super.setTiempoReutilizacion(tiempoCarga);
-                sonido.reproducir(0.7f);
+                ElementosPrincipales.reproductor.sonidoHeal.reproducir(0.7f);
                 cronometro.reiniciar();
             }
         }
