@@ -30,7 +30,7 @@ public class GestorMenu implements EstadoJuego {
 
         final Rectangle etiquetaInventario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS, estructuraMenu.BANNER_LATERAL.y
-                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, estructuraMenu.ANCHO_ETIQUETAS,
+                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, EstructuraMenu.ANCHO_ETIQUETAS,
                 estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
@@ -38,7 +38,7 @@ public class GestorMenu implements EstadoJuego {
         final Rectangle etiquetaEquipo = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS,
                 etiquetaInventario.y + etiquetaInventario.height + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS,
-                estructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
+                EstructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[1] = new MenuEquipo("EQUIPO", etiquetaEquipo, estructuraMenu);
 
@@ -46,21 +46,21 @@ public class GestorMenu implements EstadoJuego {
         final Rectangle etiquetaBestiario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS,
                 etiquetaEquipo.y + etiquetaEquipo.height + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS,
-                estructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
+                EstructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[2] = new MenuBestiario("BESTIARIO", etiquetaBestiario, estructuraMenu);
 
         final Rectangle etiquetaHabilidades = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS,
                 etiquetaBestiario.y + etiquetaBestiario.height + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS,
-                estructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
+                EstructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[3] = new MenuHabilidades("HABILIDADES", etiquetaHabilidades, estructuraMenu);
         
         final Rectangle etiquetaCrecimiento = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS,
                 etiquetaHabilidades.y + etiquetaHabilidades.height + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS,
-                estructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
+                EstructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[4] = new MenuCrecimiento("CRECIMIENTO", etiquetaCrecimiento, estructuraMenu);
 
@@ -69,27 +69,24 @@ public class GestorMenu implements EstadoJuego {
 
     @Override
     public void actualizar() {
-        for (int i = 0; i < secciones.length; i++) {
+        for (SeccionMenu seccionActual : secciones) {
             if (GestorPrincipal.sd.getRaton().isClick()
-                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
+                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccionActual.getEtiquetaMenuEscalada())) {
 
-                if (secciones[i] instanceof MenuEquipo) {
-                    MenuEquipo seccion = (MenuEquipo) secciones[i];
-                    if(seccion.getObjetoSeleccionado() != null){
+                if (seccionActual instanceof MenuEquipo seccion) {
+                    if (seccion.getObjetoSeleccionado() != null) {
                         seccion.eliminarObjetoSeleccionado();
                     }
-                }else if(secciones[i] instanceof MenuHabilidades){
-                    MenuHabilidades seccion = (MenuHabilidades) secciones[i];
-                    if(seccion.getHabilidadSeleccionado() != null){
+                } else if (seccionActual instanceof MenuHabilidades seccion) {
+                    if (seccion.getHabilidadSeleccionado() != null) {
                         seccion.eliminarHabilidadSeleccionado();
                     }
-                }else if(secciones[i] instanceof MenuInventario){
-                    MenuInventario seccion = (MenuInventario) secciones[i];
-                    if(seccion.getObjetoSeleccionado() != null){
+                } else if (seccionActual instanceof MenuInventario seccion) {
+                    if (seccion.getObjetoSeleccionado() != null) {
                         seccion.eliminarObjetoSeleccionado();
                     }
                 }
-                seccionActual = secciones[i];
+                this.seccionActual = seccionActual;
 
             }
         }
@@ -101,22 +98,19 @@ public class GestorMenu implements EstadoJuego {
     public void dibujar(final Graphics2D g) {
         estructuraMenu.dibujar(g);
 
-        for (int i = 0; i < secciones.length; i++) {
+        for (SeccionMenu seccionActual : secciones) {
 
-            if (seccionActual == secciones[i]) {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaActivaResaltada(g);
+            if (this.seccionActual == seccionActual) {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccionActual.getEtiquetaMenuEscalada())) {
+                    seccionActual.dibujarEtiquetaActivaResaltada(g);
+                } else {
+                    seccionActual.dibujarEtiquetaActiva(g);
                 }
-                else {
-                    secciones[i].dibujarEtiquetaActiva(g);
-                }
-            }
-            else {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaInactResaltada(g);
-                }
-                else {
-                    secciones[i].dibujarEtiquetaInactiva(g);
+            } else {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccionActual.getEtiquetaMenuEscalada())) {
+                    seccionActual.dibujarEtiquetaInactResaltada(g);
+                } else {
+                    seccionActual.dibujarEtiquetaInactiva(g);
 
                 }
 

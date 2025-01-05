@@ -89,7 +89,7 @@ public class DibujoDebug {
     public static void dibujarRectanguloContorno(final Graphics g, final Rectangle r) {
         objetosDibujados++;
         if (r != null) {
-            g.drawRect(r.x, r.y, r.width, r.height);
+            g.drawRect(r.x, r.y, r.width, r.height+1);
             // Realizar alguna operación para cambiar los valores de r.x, r.y, r.width o r.height
         } else {
             return;
