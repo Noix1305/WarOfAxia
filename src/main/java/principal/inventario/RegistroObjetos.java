@@ -267,7 +267,7 @@ public class RegistroObjetos {
                         TipoObjeto.BOTA, 30, 20);
                 break;
             case 649:
-                objeto = new ProteccionBaja(idObjeto, "BOTAS DE Acero", 1, 1, 1, "",
+                objeto = new ProteccionBaja(idObjeto, "BOTAS DE ACERO", 1, 1, 1, "",
                         TipoObjeto.BOTA, 30, 20);
                 break;
             case 700:

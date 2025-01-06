@@ -826,7 +826,6 @@ public class MapaTiled implements Serializable {
                     return;
                 }
                 ElementosPrincipales.inventario.recogerObjetos(objetoActual);
-                System.out.println("Objeto recogido: " + objetoActual.getObjeto().getNombre());
                 iterador.remove();
                 break; // Salir del bucle después de recoger un objeto
             }

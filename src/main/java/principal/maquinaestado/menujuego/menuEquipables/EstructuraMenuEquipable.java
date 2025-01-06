@@ -31,9 +31,9 @@ public class EstructuraMenuEquipable {
         DibujoDebug.dibujarRectanguloContorno(g, margen, Color.darkGray);
         DibujoDebug.dibujarRectanguloRelleno(g, titularPanelEquipo, Color.darkGray);
         DibujoDebug.dibujarRectanguloRelleno(g, subPanel, Color.DARK_GRAY);
-        DibujoDebug.dibujarString(g, "EQUIPABLES", new Point(
-                margen.x + titularPanelEquipo.width / 2 - MedidorString.medirAnchoPixeles(g, "EQUIPABLES") / 2,
-                margen.y + titularPanelEquipo.height - MedidorString.medirAltoPixeles(g, "EQUIPABLES") - 4),Color.white);
+        DibujoDebug.dibujarString(g, "INVENTARIO", new Point(
+                margen.x + titularPanelEquipo.width / 2 - MedidorString.medirAnchoPixeles(g, "INVENTARIO") / 2,
+                margen.y + titularPanelEquipo.height - MedidorString.medirAltoPixeles(g, "INVENTARIO") - 4),Color.white);
     }
 
     public int getX() {

@@ -6,13 +6,16 @@ import principal.GestorPrincipal;
 import principal.graficos.SuperficieDibujo;
 import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.herramientas.MedidorString;
 import principal.inventario.Objeto;
+import principal.inventario.armaduras.ProteccionAlta;
 import principal.inventario.armas.Arma;
 import principal.inventario.armas.ArmaUnaMano;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MenuArmaUnaMano extends SeccionMenuEquipable {
 
@@ -36,6 +39,7 @@ public class MenuArmaUnaMano extends SeccionMenuEquipable {
     @Override
     public void dibujar(Graphics g) {
         dibujarObjetosEquipables(g);
+        dibujarTooltip(g, GestorPrincipal.sd);
     }
 
     public void dibujarObjetosEquipables(Graphics g) {
@@ -43,6 +47,24 @@ public class MenuArmaUnaMano extends SeccionMenuEquipable {
             super.dibujarObjetoPosicionMenu(g, objetoActual);
         }
         super.dibujarObjetoSeleccionado(g);
+
+    }
+
+    private void dibujarTooltip(Graphics g, SuperficieDibujo sd) {
+        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
+        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(em.getMargen()))) {
+            for (ArmaUnaMano objeto : ElementosPrincipales.inventario.getUnaMano()) {
+                if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    dibujarTooltipArma(g, GestorPrincipal.sd, objeto);
+                }
+            }
+        }
+    }
+
+    private void dibujarTooltipArma(Graphics g, SuperficieDibujo sd, ArmaUnaMano objeto) {
+        DibujoDebug.dibujarRectanguloContorno(g, objeto.getPosicionMenu(), Color.DARK_GRAY);
+        GeneradorTooltip.dibujarTooltipMejorado(g, sd, objeto.getNombre() + "\nATAQUE: " + objeto.getAtaque()
+                + "\nALCANCE: " + objeto.getAlcanceInt() + "\nPESO: " + objeto.getPeso() + " oz.");
     }
 
     @Override
@@ -106,7 +128,7 @@ public class MenuArmaUnaMano extends SeccionMenuEquipable {
                     && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArma))) {
                 seleccionarArma();
             } else if (GestorPrincipal.sd.getRaton().isDobleClick()) {
-                    seleccionarArma();
+                seleccionarArma();
                 GestorPrincipal.sd.getRaton().setDobleClick(false);
             }
         }
@@ -128,6 +150,5 @@ public class MenuArmaUnaMano extends SeccionMenuEquipable {
     private boolean sonMismasArmas(Arma arma1, Arma arma2) {
         return arma1 != null && arma1.equals(arma2);
     }
-
 
 }

@@ -3,17 +3,24 @@ package principal.maquinaestado.menujuego.menuEquipables;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
+import principal.graficos.SuperficieDibujo;
+import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.inventario.Objeto;
 import principal.inventario.armaduras.Armadura;
 import principal.inventario.armaduras.ProteccionAlta;
 import principal.inventario.armaduras.ProteccionBaja;
+import principal.inventario.armaduras.ProteccionLateral;
+import principal.maquinaestado.menujuego.MenuEquipo;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 
 public class MenuBotas extends SeccionMenuEquipable {
     private Rectangle contenedorBotas;
+
     public MenuBotas(String crecimiento, Rectangle etiquetaCrecimiento2, EstructuraMenuEquipable estructuraMenu, int numeroSeccion, Rectangle contenedorBotas) {
         super(crecimiento, etiquetaCrecimiento2, estructuraMenu, numeroSeccion);
         this.contenedorBotas = contenedorBotas;
@@ -30,6 +37,7 @@ public class MenuBotas extends SeccionMenuEquipable {
     @Override
     public void dibujar(Graphics g) {
         dibujarObjetosEquipables(g);
+        dibujarTooltip(g, GestorPrincipal.sd);
     }
 
     @Override
@@ -42,14 +50,31 @@ public class MenuBotas extends SeccionMenuEquipable {
         super.dibujarObjetoSeleccionado(g);
     }
 
+    private void dibujarTooltip(Graphics g, SuperficieDibujo sd) {
+        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
+        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(em.getMargen()))) {
+            for (Objeto objeto : obtenerBotas()) {
+                if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    dibujarTooltipBotas(g, GestorPrincipal.sd, objeto);
+                }
+            }
+        }
+
+    }
+
+    private void dibujarTooltipBotas(Graphics g, SuperficieDibujo sd, Objeto objeto) {
+        DibujoDebug.dibujarRectanguloContorno(g, objeto.getPosicionMenu(), Color.DARK_GRAY);
+        ProteccionBaja bota = (ProteccionBaja) objeto;
+        GeneradorTooltip.dibujarTooltipMejorado(g, sd, objeto.getNombre() + "\nDEF FISICA: "
+                + bota.getDefensaF() + "\nDEF MAGICA: " + bota.getDefensaM() + "\nPESO: " + objeto.getPeso() + " oz.");
+    }
+
     @Override
     public void actualizarPosicionMenu() {
         int contador = 0;
-        for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-            if (objeto instanceof ProteccionBaja) {
-                super.actualizarPosicionMenuObjeto(objeto, contador);
-                contador++;
-            }
+        for (Objeto objeto : obtenerBotas()) {
+            super.actualizarPosicionMenuObjeto(objeto, contador);
+            contador++;
         }
     }
 
@@ -63,12 +88,10 @@ public class MenuBotas extends SeccionMenuEquipable {
                 return;
             }
 
-            for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-                if (objeto instanceof ProteccionBaja) {
-                    if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
-                            .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
-                        objetoSeleccionado = objeto;
-                    }
+            for (Objeto objeto : obtenerBotas()) {
+                if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
+                        .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    objetoSeleccionado = objeto;
                 }
             }
             Point pr = EscaladorElementos.escalarAbajo(GestorPrincipal.sd.getRaton().getPosicion());
@@ -85,12 +108,10 @@ public class MenuBotas extends SeccionMenuEquipable {
                 if (ElementosPrincipales.inventario.getArmaduras().isEmpty()) {
                     return;
                 }
-                for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-                    if (objeto instanceof ProteccionBaja) {
-                        if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
-                                .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
-                            objetoSeleccionado = objeto;
-                        }
+                for (Objeto objeto : obtenerBotas()) {
+                    if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
+                            .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                        objetoSeleccionado = objeto;
                     }
                 }
             } else {
@@ -122,5 +143,15 @@ public class MenuBotas extends SeccionMenuEquipable {
             objetoSeleccionado = null;
         }
 
+    }
+
+    private ArrayList<Objeto> obtenerBotas() {
+        ArrayList<Objeto> listaBotas = new ArrayList<>();
+        for (Objeto objeto : ElementosPrincipales.inventario.objetos) {
+            if (objeto instanceof ProteccionBaja) {
+                listaBotas.add(objeto);
+            }
+        }
+        return listaBotas;
     }
 }

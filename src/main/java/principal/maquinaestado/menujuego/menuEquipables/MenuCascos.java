@@ -4,14 +4,15 @@ import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
 import principal.graficos.SuperficieDibujo;
+import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.inventario.Objeto;
-import principal.inventario.armaduras.Armadura;
-import principal.inventario.armaduras.ProteccionAlta;
-import principal.inventario.armaduras.ProteccionBaja;
-import principal.inventario.armaduras.ProteccionMedia;
+import principal.inventario.armaduras.*;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MenuCascos extends SeccionMenuEquipable {
     private final Rectangle contenedorCasco;
@@ -33,14 +34,31 @@ public class MenuCascos extends SeccionMenuEquipable {
     @Override
     public void dibujar(Graphics g) {
         dibujarObjetosEquipables(g);
+        dibujarTooltip(g, GestorPrincipal.sd);
+    }
+
+    private void dibujarTooltip(Graphics g, SuperficieDibujo sd) {
+        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
+        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(em.getMargen()))) {
+            for (Objeto objeto : obtenerCascos()) {
+                if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    dibujarTooltipCasco(g, GestorPrincipal.sd, objeto);
+                }
+            }
+        }
+    }
+
+    private void dibujarTooltipCasco(Graphics g, SuperficieDibujo sd, Objeto objeto) {
+        DibujoDebug.dibujarRectanguloContorno(g, objeto.getPosicionMenu(), Color.DARK_GRAY);
+        ProteccionAlta casco = (ProteccionAlta) objeto;
+        GeneradorTooltip.dibujarTooltipMejorado(g, sd, objeto.getNombre() + "\nDEF FISICA: "
+                + casco.getDefensaF() + "\nDEF MAGICA: " + casco.getDefensaM() + "\nPESO: " + objeto.getPeso() + " oz.");
     }
 
     @Override
     public void dibujarObjetosEquipables(Graphics g) {
-        for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-            if (objeto instanceof ProteccionAlta) {
-                super.dibujarObjetoPosicionMenu(g, objeto);
-            }
+        for (Objeto objeto : obtenerCascos()) {
+            super.dibujarObjetoPosicionMenu(g, objeto);
         }
         super.dibujarObjetoSeleccionado(g);
     }
@@ -48,11 +66,9 @@ public class MenuCascos extends SeccionMenuEquipable {
     @Override
     public void actualizarPosicionMenu() {
         int contador = 0;
-        for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-            if (objeto instanceof ProteccionAlta) {
-                super.actualizarPosicionMenuObjeto(objeto, contador);
-                contador++;
-            }
+        for (Objeto objeto : obtenerCascos()) {
+            super.actualizarPosicionMenuObjeto(objeto, contador);
+            contador++;
         }
     }
 
@@ -66,13 +82,13 @@ public class MenuCascos extends SeccionMenuEquipable {
                 return;
             }
 
-            for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-                if (objeto instanceof ProteccionAlta) {
-                    if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
-                            .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
-                        objetoSeleccionado = objeto;
-                    }
+            for (Objeto objeto : obtenerCascos()) {
+
+                if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
+                        .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    objetoSeleccionado = objeto;
                 }
+
             }
             Point pr = EscaladorElementos.escalarAbajo(GestorPrincipal.sd.getRaton().getPosicion());
             objetoSeleccionado.setPosicionFlotante(
@@ -88,12 +104,10 @@ public class MenuCascos extends SeccionMenuEquipable {
                 if (ElementosPrincipales.inventario.getArmaduras().isEmpty()) {
                     return;
                 }
-                for (Objeto objeto : ElementosPrincipales.inventario.getArmaduras()) {
-                    if (objeto instanceof ProteccionAlta) {
-                        if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
-                                .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
-                            objetoSeleccionado = objeto;
-                        }
+                for (Objeto objeto : obtenerCascos()) {
+                    if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
+                            .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                        objetoSeleccionado = objeto;
                     }
                 }
             } else {
@@ -117,13 +131,22 @@ public class MenuCascos extends SeccionMenuEquipable {
     }
 
     private void seleccionCasco() {
-        if (objetoSeleccionado instanceof ProteccionAlta) {
-            Objeto casco = ElementosPrincipales.jugador.getAlmacenEquipo().getCasco();
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(casco);
-            ElementosPrincipales.jugador.getAlmacenEquipo().setCasco((Armadura) objetoSeleccionado);
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-            objetoSeleccionado = null;
-        }
 
+        Objeto casco = ElementosPrincipales.jugador.getAlmacenEquipo().getCasco();
+        ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(casco);
+        ElementosPrincipales.jugador.getAlmacenEquipo().setCasco((Armadura) objetoSeleccionado);
+        ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
+        objetoSeleccionado = null;
+
+    }
+
+    private ArrayList<Objeto> obtenerCascos() {
+        ArrayList<Objeto> listaCascos = new ArrayList<>();
+        for (Objeto objeto : ElementosPrincipales.inventario.objetos) {
+            if (objeto instanceof ProteccionAlta) {
+                listaCascos.add(objeto);
+            }
+        }
+        return listaCascos;
     }
 }

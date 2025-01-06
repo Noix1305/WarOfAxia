@@ -168,7 +168,6 @@ public class Inventario implements Serializable {
         }
         if (!objetoExiste(out.getObjeto())) {
             objetos.add(out.getObjeto());
-            System.out.println("Objeto añadido");
         }
 
     }

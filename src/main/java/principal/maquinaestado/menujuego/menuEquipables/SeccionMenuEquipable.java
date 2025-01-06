@@ -1,11 +1,19 @@
 package principal.maquinaestado.menujuego.menuEquipables;
 
 import principal.Constantes;
+import principal.ElementosPrincipales;
+import principal.graficos.SuperficieDibujo;
 import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.herramientas.MedidorString;
 import principal.inventario.Objeto;
+import principal.inventario.armaduras.Armadura;
+import principal.inventario.armas.Arma;
+import principal.inventario.joyas.Joya;
+
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class SeccionMenuEquipable {
     protected int margenGeneral = 8;
@@ -47,6 +55,20 @@ public abstract class SeccionMenuEquipable {
     public abstract void actualizarObjetoSeleccionado();
 
     protected abstract void actualizarSeleccionRaton();
+
+    protected void dibujarTooltipEquipo(final Graphics g, final SuperficieDibujo sd, ArrayList<Objeto> listaObjetos) {
+
+    }
+
+    private void dibujarTooltipObjetosEquipados(Graphics g, SuperficieDibujo sd, Objeto objeto) {
+        // Aquí puedes personalizar la apariencia del tooltip según tus necesidades
+
+        if ((objeto instanceof Arma arma)) {
+
+
+
+        }
+    }
 
 
     public void dibujarEtiquetaActiva(Graphics g) {
@@ -127,6 +149,8 @@ public abstract class SeccionMenuEquipable {
                 pi.y + contador / 4 * (lado + margenGeneral), lado, lado);
         objeto.setPosicionMenu(posicion);
     }
+
+
 
     public Rectangle getEtiquetaMenu() {
         return etiquetaMenu;

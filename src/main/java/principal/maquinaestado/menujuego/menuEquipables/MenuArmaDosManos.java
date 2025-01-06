@@ -3,14 +3,19 @@ package principal.maquinaestado.menujuego.menuEquipables;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
+import principal.graficos.SuperficieDibujo;
+import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.inventario.Objeto;
 import principal.inventario.armaduras.ProteccionAlta;
 import principal.inventario.armaduras.ProteccionMedia;
 import principal.inventario.armas.Arma;
 import principal.inventario.armas.ArmaDosManos;
+import principal.inventario.armas.ArmaUnaMano;
 
 import java.awt.*;
+import java.util.Iterator;
 
 public class MenuArmaDosManos extends SeccionMenuEquipable {
     private final Rectangle contenedorArma2;
@@ -32,7 +37,7 @@ public class MenuArmaDosManos extends SeccionMenuEquipable {
     @Override
     public void dibujar(Graphics g) {
         dibujarObjetosEquipables(g);
-
+        dibujarTooltip(g, GestorPrincipal.sd);
     }
 
     @Override
@@ -41,6 +46,23 @@ public class MenuArmaDosManos extends SeccionMenuEquipable {
             super.dibujarObjetoPosicionMenu(g, objetoActual);
         }
         super.dibujarObjetoSeleccionado(g);
+    }
+
+    private void dibujarTooltip(Graphics g, SuperficieDibujo sd) {
+        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
+        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(em.getMargen()))) {
+            for (ArmaDosManos objeto : ElementosPrincipales.inventario.getDosManos()) {
+                if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    dibujarTooltipArma(g, GestorPrincipal.sd, objeto);
+                }
+            }
+        }
+    }
+
+    private void dibujarTooltipArma(Graphics g, SuperficieDibujo sd, ArmaDosManos arma) {
+        DibujoDebug.dibujarRectanguloContorno(g, arma.getPosicionMenu(), Color.DARK_GRAY);
+        GeneradorTooltip.dibujarTooltipMejorado(g, sd, arma.getNombre() + "\nATAQUE: " + arma.getAtaque()
+                + "\nALCANCE: " + arma.getAlcanceInt() + "\nPESO: " + arma.getPeso() + " oz.");
     }
 
     @Override

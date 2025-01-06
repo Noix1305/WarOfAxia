@@ -1,5 +1,6 @@
 package principal.maquinaestado.juego;
 
+import principal.ElementosPrincipales;
 import principal.entes.enemigo.Enemigo;
 import principal.entes.jugador.AccesoRapido;
 import principal.entes.jugador.AlmacenEquipo;

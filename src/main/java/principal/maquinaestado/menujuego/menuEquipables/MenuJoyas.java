@@ -4,7 +4,10 @@ import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
 import principal.entes.jugador.AlmacenEquipo;
+import principal.graficos.SuperficieDibujo;
+import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.inventario.Objeto;
 import principal.inventario.joyas.Accesorio;
 import principal.inventario.joyas.Anillo;
@@ -34,20 +37,39 @@ public class MenuJoyas extends SeccionMenuEquipable {
     @Override
     public void dibujar(Graphics g) {
         dibujarObjetosEquipables(g);
+        dibujarTooltip(g, GestorPrincipal.sd);
     }
 
     @Override
     public void dibujarObjetosEquipables(Graphics g) {
-        for (Objeto objeto : ElementosPrincipales.inventario.getJoyas()) {
+        for (Objeto objeto : obtenerJoyas()) {
             super.dibujarObjetoPosicionMenu(g, objeto);
         }
         super.dibujarObjetoSeleccionado(g);
     }
 
+    private void dibujarTooltip(Graphics g, SuperficieDibujo sd) {
+        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
+        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(em.getMargen()))) {
+            for (Objeto objeto : obtenerJoyas()) {
+                if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
+                    dibujarTooltipJoyas(g, GestorPrincipal.sd, objeto);
+                }
+            }
+        }
+    }
+
+    private void dibujarTooltipJoyas(Graphics g, SuperficieDibujo sd, Objeto objeto) {
+        DibujoDebug.dibujarRectanguloContorno(g, objeto.getPosicionMenu(), Color.DARK_GRAY);
+        String texto = devolverStringJoyas((Joya) objeto);
+        GeneradorTooltip.dibujarTooltipMejorado(g, sd, objeto.getNombre() + texto);
+    }
+
+
     @Override
     public void actualizarPosicionMenu() {
         int contador = 0;
-        for (Objeto objeto : ElementosPrincipales.inventario.getJoyas()) {
+        for (Objeto objeto : obtenerJoyas()) {
             super.actualizarPosicionMenuObjeto(objeto, contador);
             contador++;
         }
@@ -63,7 +85,7 @@ public class MenuJoyas extends SeccionMenuEquipable {
                 return;
             }
 
-            for (Objeto objeto : ElementosPrincipales.inventario.getJoyas()) {
+            for (Objeto objeto : obtenerJoyas()) {
 
                 if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
                         .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
@@ -85,27 +107,16 @@ public class MenuJoyas extends SeccionMenuEquipable {
                 if (ElementosPrincipales.inventario.getJoyas().isEmpty()) {
                     return;
                 }
-                for (Objeto objeto : ElementosPrincipales.inventario.getJoyas()) {
+                for (Objeto objeto : obtenerJoyas()) {
                     if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
                             .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
                         objetoSeleccionado = objeto;
                     }
-
                 }
             } else {
                 objetoSeleccionado = null;
             }
         }
-    }
-
-    private boolean sonMismosAnillos(Joya anillo1, Joya anillo2) {
-        boolean flag = false;
-        if (anillo1 != null && anillo2 != null) {
-            if (anillo1.getId() == anillo2.getId()) {
-                flag = true;
-            }
-        }
-        return flag;
     }
 
     private void actualizarSeleccionJoyas() {
@@ -123,6 +134,7 @@ public class MenuJoyas extends SeccionMenuEquipable {
                 seleccionCollar();
             } else if (GestorPrincipal.sd.getRaton().isDobleClick()) {
                 seleccionCollar();
+                GestorPrincipal.sd.getRaton().setDobleClick(false);
             }
         }
     }
@@ -145,6 +157,7 @@ public class MenuJoyas extends SeccionMenuEquipable {
                 seleccionAccesorio();
             } else if (GestorPrincipal.sd.getRaton().isDobleClick()) {
                 seleccionAccesorio();
+                GestorPrincipal.sd.getRaton().setDobleClick(false);
             }
         }
     }
@@ -162,19 +175,21 @@ public class MenuJoyas extends SeccionMenuEquipable {
     public void actualizarSeleccionAnillo() {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
-        if ((objetoSeleccionado instanceof Anillo)) {
+        if (objetoSeleccionado instanceof Anillo) {
             AlmacenEquipo ae = ElementosPrincipales.jugador.getAlmacenEquipo();
-            if (GestorPrincipal.sd.getRaton().isClick()
-                    && (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedoresJoyas.get(2)))
-                    || posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedoresJoyas.get(3))))) {
+
+            // Manejo de clic simple
+            if (GestorPrincipal.sd.getRaton().isClick() &&
+                    (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedoresJoyas.get(2))) ||
+                            posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedoresJoyas.get(3))))) {
 
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedoresJoyas.get(2)))) {
                     Joya anillo1 = ae.getAnillo1();
                     Joya anillo2 = ae.getAnillo2();
 
                     if (!sonMismosAnillos((Joya) objetoSeleccionado, anillo1)) {
-                        ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(anillo1);
-                        ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo1((Joya) objetoSeleccionado);
+                        ae.equipoActual.remove(anillo1);
+                        ae.setAnillo1((Joya) objetoSeleccionado);
 
                         if (anillo2 != null && sonMismosAnillos(anillo2, (Joya) objetoSeleccionado)) {
                             ae.setAnillo2(null);
@@ -186,8 +201,8 @@ public class MenuJoyas extends SeccionMenuEquipable {
                     Joya anillo2 = ae.getAnillo2();
 
                     if (!sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
-                        ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(anillo2);
-                        ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2((Joya) objetoSeleccionado);
+                        ae.equipoActual.remove(anillo2);
+                        ae.setAnillo2((Joya) objetoSeleccionado);
 
                         if (anillo1 != null && sonMismosAnillos(anillo1, (Joya) objetoSeleccionado)) {
                             ae.setAnillo1(null);
@@ -195,27 +210,75 @@ public class MenuJoyas extends SeccionMenuEquipable {
                         }
                     }
                 }
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
+
+                // Limpiar objetoSeleccionado en caso de clic en contenedor
                 objetoSeleccionado = null;
+
+                // Manejo de doble clic
             } else if (GestorPrincipal.sd.getRaton().isDobleClick()) {
                 Joya anillo1 = ae.getAnillo1();
                 Joya anillo2 = ae.getAnillo2();
+
                 if (anillo1 == null && !sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo1((Joya) objetoSeleccionado);
+                    ae.setAnillo1((Joya) objetoSeleccionado);
                 } else if (anillo2 == null && !sonMismosAnillos((Joya) objetoSeleccionado, anillo1)) {
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2((Joya) objetoSeleccionado);
+                    ae.setAnillo2((Joya) objetoSeleccionado);
                 } else if (anillo1 != null && !sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
                     ae.equipoActual.remove(anillo1);
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo1((Joya) objetoSeleccionado);
-                } else if (anillo1 != null && sonMismosAnillos((Joya) objetoSeleccionado, anillo1)
-                        && !sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
+                    ae.setAnillo1((Joya) objetoSeleccionado);
+                } else if (anillo1 != null && sonMismosAnillos((Joya) objetoSeleccionado, anillo1) &&
+                        !sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
                     ae.equipoActual.remove(anillo2);
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2((Joya) objetoSeleccionado);
+                    ae.setAnillo2((Joya) objetoSeleccionado);
                 }
 
+                // Limpiar objetoSeleccionado en caso de doble clic
+                objetoSeleccionado = null;
                 GestorPrincipal.sd.getRaton().setDobleClick(false);
             }
+
+            // Agregar a equipoActual solo si no existe
+            if (!ae.equipoActual.contains(objetoSeleccionado)) {
+                ae.equipoActual.add(objetoSeleccionado);
+            }
         }
+    }
+
+
+    private boolean sonMismosAnillos(Joya anillo1, Joya anillo2) {
+        boolean flag = false;
+        if (anillo1 != null && anillo2 != null) {
+            if (anillo1.getId() == anillo2.getId()) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
+    private String devolverStringJoyas(Joya joya) {
+        String[] propiedades = {
+                (joya.getAtkF() > 0) ? "\nATAQUE: " + joya.getAtkF() : "",
+                (joya.getDefensaF() > 0) ? "\nDEF FISICA: " + joya.getDefensaF() : "",
+                (joya.getAtkM() > 0) ? "\nMAGIA: " + joya.getAtkM() : "",
+                (joya.getDefensaM() > 0) ? "\nDEF MAGICA: " + joya.getDefensaM() : "",
+                (joya.getCrit() > 0.0) ? "\nCRITICO: " + joya.getCrit() : "",
+                (joya.getEva() > 0.0) ? "\nEVASION: " + joya.getEva() : "",
+                (joya.getResF() > 0.0) ? "\nRES FISICA: " + joya.getResF() : "",
+                (joya.getResM() > 0.0) ? "\nRES MAGICA: " + joya.getResM() : "",
+                (joya.getPeso() > 0) ? "\nPESO: " + joya.getPeso() + " oz." : ""
+        };
+
+        return String.join("", propiedades);
+    }
+
+    private ArrayList<Joya> obtenerJoyas() {
+        ArrayList<Joya> listaJoyas = new ArrayList<>();
+        for (Objeto objeto : ElementosPrincipales.inventario.getJoyas()) {
+            if (objeto instanceof Joya joya) {
+                listaJoyas.add(joya);
+            }
+        }
+        return listaJoyas;
     }
 }
 

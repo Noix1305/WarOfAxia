@@ -73,7 +73,7 @@ public class GestorPrincipal {
         int framesAcumulados = 0;
 
         final int NS_POR_SEGUNDO = 1000000000;
-        final int APS_OBJETIVO = 60;
+        final int APS_OBJETIVO = 120;
         final double NS_POR_ACTUALIZACION = (double) NS_POR_SEGUNDO / APS_OBJETIVO;
 
         long referenciaActualizacion = System.nanoTime();
