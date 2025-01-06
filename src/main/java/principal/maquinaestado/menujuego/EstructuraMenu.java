@@ -26,7 +26,7 @@ public class EstructuraMenu {
 
     public final int MARGEN_HORIZONTAL_ETIQUETAS;
     public final int MARGEN_VERTICAL_ETIQUETAS;
-    public static int ANCHO_ETIQUETAS;
+    public  int ANCHO_ETIQUETAS;
     public final int ALTO_ETIQUETAS;
 
     public EstructuraMenu() {

@@ -77,7 +77,6 @@ public class Inventario implements Serializable {
             int indice = enemigo.gestorAtributos.getIdEnemigo();
             listaIndices.add(indice);
         }
-        System.out.println(listaIndices);
         return listaIndices;
     }
 
@@ -86,7 +85,6 @@ public class Inventario implements Serializable {
         for (int i : listaIndices) {
             Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(i);
             listaEnemigosCreados.add(enemigo);
-            System.out.println("Enemigo creado: " + enemigo.gestorAtributos.getNombre());
         }
 
         return listaEnemigosCreados;
@@ -100,7 +98,6 @@ public class Inventario implements Serializable {
             Integer[] par = {indice, cantidadObjeto}; // Crear un arreglo con los dos valores
             listaIndices.add(par); // Añadir el arreglo a la lista
         }
-        System.out.println(listaIndices);
         return listaIndices;
     }
 
@@ -119,7 +116,6 @@ public class Inventario implements Serializable {
         for (int i : indices) {
             Habilidad habilidadCreada = GestorHabilidades.obtenerHabilidad(i);
             habilidades.add(habilidadCreada);
-            System.out.println(habilidadCreada.getNombre());
         }
         return habilidades;
     }
@@ -145,7 +141,6 @@ public class Inventario implements Serializable {
 
         // Imprimir los nombres de los objetos actualizados
         for (Objeto objeto : listaObjetos) {
-            System.out.println(objeto.getNombre());
         }
 
         return listaObjetos;
@@ -157,7 +152,6 @@ public class Inventario implements Serializable {
         for (Habilidad habilidad : habilidades) {
             if (habilidad.getId() == habilidadEntrante.getId()) {
                 existe = true;
-                System.out.println("Habilidad Existe");
                 break;
             }
         }
@@ -174,6 +168,7 @@ public class Inventario implements Serializable {
         }
         if (!objetoExiste(out.getObjeto())) {
             objetos.add(out.getObjeto());
+            System.out.println("Objeto añadido");
         }
 
     }
@@ -307,6 +302,17 @@ public class Inventario implements Serializable {
         for (Objeto objeto : objetos) {
             if (objeto instanceof Armadura) {
                 armaduras.add((Armadura) objeto);
+            }
+        }
+        return armaduras;
+    }
+
+    public ArrayList<Objeto> getArmaduras(int i) {
+        ArrayList<Objeto> armaduras = new ArrayList<>();
+
+        for (Objeto objeto : objetos) {
+            if (objeto instanceof Armadura) {
+                armaduras.add(objeto);
             }
         }
         return armaduras;

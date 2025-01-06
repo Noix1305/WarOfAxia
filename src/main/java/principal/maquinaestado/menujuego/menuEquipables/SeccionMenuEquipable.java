@@ -1,15 +1,10 @@
 package principal.maquinaestado.menujuego.menuEquipables;
 
 import principal.Constantes;
-import principal.ElementosPrincipales;
-import principal.GestorPrincipal;
-import principal.graficos.SuperficieDibujo;
 import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
 import principal.herramientas.MedidorString;
 import principal.inventario.Objeto;
-import principal.inventario.armas.Arma;
-
 import java.awt.*;
 
 public abstract class SeccionMenuEquipable {
@@ -48,6 +43,10 @@ public abstract class SeccionMenuEquipable {
     public abstract void dibujarObjetosEquipables(Graphics g);
 
     public abstract void actualizarPosicionMenu();
+
+    public abstract void actualizarObjetoSeleccionado();
+
+    protected abstract void actualizarSeleccionRaton();
 
 
     public void dibujarEtiquetaActiva(Graphics g) {
@@ -116,29 +115,6 @@ public abstract class SeccionMenuEquipable {
         }
     }
 
-    public void actualizarObjetoSeleccionado() {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-        if (objetoSeleccionado != null) {
-
-            if (GestorPrincipal.sd.getRaton().isClick2()) {
-                objetoSeleccionado = null;
-                return;
-            }
-
-            for (Objeto objeto : ElementosPrincipales.inventario.objetos) {
-                if (objeto instanceof Arma) {
-                    if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
-                            .intersects(EscaladorElementos.escalarRectangleArriba(objeto.getPosicionMenu()))) {
-                        objetoSeleccionado = objeto;
-                    }
-                }
-            }
-            Point pr = EscaladorElementos.escalarAbajo(GestorPrincipal.sd.getRaton().getPosicion());
-            objetoSeleccionado.setPosicionFlotante(
-                    new Rectangle(pr.x, pr.y, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE));
-        }
-    }
-
     public void actualizarPosicionMenuObjeto(Objeto objeto, int contador) {
 
         int margenGeneral = 8;
@@ -170,9 +146,5 @@ public abstract class SeccionMenuEquipable {
 
     public int getNumeroSeccion() {
         return numeroSeccion;
-    }
-
-    public void setNumeroSeccion(int numeroSeccion) {
-        this.numeroSeccion = numeroSeccion;
     }
 }

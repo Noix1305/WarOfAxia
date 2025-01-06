@@ -61,7 +61,6 @@ public class AlmacenEquipo implements Serializable {
         for (Objeto objeto : equipoActual) {
             int id = objeto.getId();
             listaEquipo.add(id);
-            System.out.println(objeto.getId());
         }
         return listaEquipo;
     }

@@ -450,7 +450,6 @@ public class MenuInventario extends SeccionMenu {
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(rectangulo))) {
                     // Eliminar el objeto en el índice i
                     ElementosPrincipales.jugador.getAccesoRapido().accesosEquipados[i] = objetoSeleccionado;
-                    System.out.println(ElementosPrincipales.jugador.getAccesoRapido().getAccesoEquipado(i));
                     objetoSeleccionado = null; // Limpiar el objeto seleccionado después de asignarlo
                     break; // Salir del bucle después de realizar la asignación
                 }

@@ -48,7 +48,6 @@ public class MenuEquipo extends SeccionMenu {
     private final int height = Constantes.ALTO_JUEGO - barraPeso.y - barraPeso.height - margenGeneral * 2;
 
     GestorMenuEquipables gestorMenuEquipables;
-    private boolean mostrandoEquipables = false;
     final Rectangle panelEquipo = new Rectangle(x + width + margenGeneral,
             y, 146, height);
 
@@ -116,8 +115,7 @@ public class MenuEquipo extends SeccionMenu {
     public MenuEquipo(String nombreSeccion, Rectangle etiquetaMenu, EstructuraMenu em) {
         super(nombreSeccion, etiquetaMenu, em);
         etiquetaEquipo = 0;
-        EstructuraMenu.ANCHO_ETIQUETAS = 30;
-        gestorMenuEquipables = new GestorMenuEquipables();
+        gestorMenuEquipables = new GestorMenuEquipables(listaContenedores());
     }
 
     @Override
@@ -140,10 +138,10 @@ public class MenuEquipo extends SeccionMenu {
     }
 
     private ArrayList<Rectangle> listaContenedores() {
-        //{arma1:0,arma2:1,armadura1:2,armadura2:3,armadura3:4,armadura4:5,anillo1:6,anillo2:7,accesorio:7,collar:9}
+        //{arma1:0,arma2:1,armadura:2,casco:3,botas:4,guantes:5,collar:6,accesorio:7,anillo1:8,anillo2:9}
         return new ArrayList<>(List.of(contenedorArma1, contenedorArma2, contenedorArmadura1,
-                contenedorArmadura2, contenedorArmadura3, contenedorArmadura4, contenedorAnillo1, contenedorAnillo2,
-                contenedorAccesorio, contenedorCollar));
+                contenedorArmadura2, contenedorArmadura3, contenedorArmadura4, contenedorCollar, contenedorAccesorio,
+                contenedorAnillo1, contenedorAnillo2));
     }
 
 //    private void actualizarSeleccionArma1() {

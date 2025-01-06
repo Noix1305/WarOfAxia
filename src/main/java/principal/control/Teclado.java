@@ -139,7 +139,6 @@ public class Teclado implements KeyListener {
                 break;
             case KeyEvent.VK_SPACE:
                 ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
-                System.out.println("Atacando: " + ElementosPrincipales.jugador.getAccionesJugador().isAtacando());
                 break;
             case KeyEvent.VK_F12:
                 MenuEquipo.mostrarTooltip = !MenuEquipo.mostrarTooltip;

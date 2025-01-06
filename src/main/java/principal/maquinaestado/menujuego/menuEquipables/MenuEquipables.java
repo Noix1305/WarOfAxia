@@ -53,7 +53,6 @@ public class MenuEquipables {
 
         Color colorRelleno = Color.WHITE;
         DibujoDebug.dibujarRectanguloRelleno(g, rectInterno, colorRelleno);
-        dibujarElementosEquipables(g);
     }
 
     public MenuEquipables(ArrayList<Rectangle> contenedores) {
@@ -275,39 +274,11 @@ public class MenuEquipables {
         return flag;
     }
 
-    public void actualizarSeleccionArma2(Rectangle panelEquipo) {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && objetoSeleccionado instanceof Arma
-                && GestorPrincipal.sd.getRaton().isClick()
-                && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(1)))) {
-
-            if (!sonMismasArmas((Arma) objetoSeleccionado, ElementosPrincipales.jugador.getAlmacenEquipo().getArma1())) {
-                // Verifica si el contenedor de arma2 tiene un arma a distancia
-                if (ElementosPrincipales.jugador.getAlmacenEquipo().getArma2() instanceof ArmaDosManos
-                        || ElementosPrincipales.jugador.getAlmacenEquipo().getArma2() == null) {
-                    // Remueve el arma a distancia del contenedor 2 y de la lista de equipo actual
-                    Arma armaEnContenedor2 = ElementosPrincipales.jugador.getAlmacenEquipo().getArma2();
-                    ElementosPrincipales.jugador.getAlmacenEquipo().cambiarArma2(null);
-                    ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(armaEnContenedor2);
-                }
-                Objeto arma2 = (Objeto) ElementosPrincipales.jugador.getAlmacenEquipo().getArma1();
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(arma2);
-                ElementosPrincipales.jugador.getAlmacenEquipo().cambiarArma1((Arma) objetoSeleccionado);
-
-                // Actualiza la lista de equipo actual
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-                objetoSeleccionado = null;
-            }
-
-        }
-    }
 
     public void actualizarSeleccionArmadura(Rectangle contenedor, Rectangle panelEquipo) {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && objetoSeleccionado != null
+        if ( objetoSeleccionado != null
                 && GestorPrincipal.sd.getRaton().isClick()
                 && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedor))) {
 
@@ -334,82 +305,6 @@ public class MenuEquipables {
         }
     }
 
-    public void actualizarSeleccionCollar(Rectangle panelEquipo) {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && (objetoSeleccionado instanceof Collar)
-                && GestorPrincipal.sd.getRaton().isClick()
-                && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(9)))) {
-
-            Objeto collar = (Objeto) ElementosPrincipales.jugador.getAlmacenEquipo().getCollar();
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(collar);
-
-            ElementosPrincipales.jugador.getAlmacenEquipo().setCollar((Joya) objetoSeleccionado);
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-            objetoSeleccionado = null;
-        }
-    }
-
-    public void actualizarSeleccionAccesorio(Rectangle panelEquipo) {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && (objetoSeleccionado instanceof Accesorio)
-                && GestorPrincipal.sd.getRaton().isClick()
-                && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(8)))) {
-
-            Objeto accesorio = ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio();
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(accesorio);
-            ElementosPrincipales.jugador.getAlmacenEquipo().setAccesorio((Joya) objetoSeleccionado);
-
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-            objetoSeleccionado = null;
-        }
-    }
-
-    public void actualizarSeleccionAnillo(Rectangle panelEquipo) {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && (objetoSeleccionado instanceof Anillo)
-                && GestorPrincipal.sd.getRaton().isClick()
-                && (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(6)))
-                || posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(7))))) {
-
-            AlmacenEquipo ae = ElementosPrincipales.jugador.getAlmacenEquipo();
-
-            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(6)))) {
-                Joya anillo1 = ae.getAnillo1();
-                Joya anillo2 = ae.getAnillo2();
-
-                if (!sonMismosAnillos((Joya) objetoSeleccionado, anillo1)) {
-                    ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(anillo1);
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo1((Joya) objetoSeleccionado);
-
-                    if (anillo2 != null && sonMismosAnillos(anillo2, (Joya) objetoSeleccionado)) {
-                        ae.setAnillo2(null);
-                        ae.equipoActual.remove(anillo2);
-                    }
-                }
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(7)))) {
-                Joya anillo1 = ae.getAnillo1();
-                Joya anillo2 = ae.getAnillo2();
-
-                if (!sonMismosAnillos((Joya) objetoSeleccionado, anillo2)) {
-                    ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(anillo2);
-                    ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2((Joya) objetoSeleccionado);
-
-                    if (anillo1 != null && sonMismosAnillos(anillo1, (Joya) objetoSeleccionado)) {
-                        ae.setAnillo1(null);
-                        ae.equipoActual.remove(anillo1);
-                    }
-                }
-            }
-            ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-            objetoSeleccionado = null;
-        }
-    }
 
     public void removerObjetoSeleccionado(Rectangle panelEquipo) {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
@@ -510,116 +405,6 @@ public class MenuEquipables {
                 ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2(null);
 
             }
-        }
-    }
-
-
-    public void dibujarElementosEquipables(Graphics g) {
-        int z = margen.x + 2;
-
-        for (int i = 0; i < 7; i++) {
-            Rectangle rectangulo = new Rectangle(z, margen.y + 14, 19, 10);
-
-        }
-        ArrayList<Objeto> listaObjetos = new ArrayList<>();
-        if (!ElementosPrincipales.inventario.getEquipo().isEmpty()) {
-            int etiquetaEquipo = 2;
-
-            switch (etiquetaEquipo) {
-                case 0:
-                    listaObjetos = ElementosPrincipales.inventario.getUnaMano(0);
-                    break;
-
-                case 1:
-                    listaObjetos = ElementosPrincipales.inventario.getDosManos(0);
-                    break;
-
-                case 2:
-                    for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
-                        if (objetoActual instanceof ProteccionMedia) {
-                            listaObjetos.add(objetoActual);
-                        }
-                    }
-                    break;
-
-                case 3:
-                    for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
-                        if (objetoActual instanceof ProteccionAlta) {
-                            listaObjetos.add(objetoActual);
-                        }
-                    }
-                    break;
-
-                case 4:
-                    for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
-                        if (objetoActual instanceof ProteccionLateral) {
-                            listaObjetos.add(objetoActual);
-                        }
-                    }
-                    break;
-
-                case 5:
-                    for (Objeto objetoActual : ElementosPrincipales.inventario.getArmaduras()) {
-                        if (objetoActual instanceof ProteccionBaja) {
-                            listaObjetos.add(objetoActual);
-                        }
-                    }
-                    break;
-
-                case 6:
-                    listaObjetos = ElementosPrincipales.inventario.getJoyas(0);
-                    break;
-            }
-
-            if (objetoSeleccionado != null) {
-                System.out.println("Dibujando objetoSeleccionado");
-                DibujoDebug.dibujarImagen(g, objetoSeleccionado.getSprite().getImagen(),
-                        new Point(objetoSeleccionado.getPosicionFlotante().x,
-                                objetoSeleccionado.getPosicionFlotante().y));
-            }
-
-        }
-
-        for (Objeto objetoActual : listaObjetos) {
-            DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(),
-                    objetoActual.getPosicionMenu().x, objetoActual.getPosicionMenu().y);
-
-            DibujoDebug.dibujarRectanguloRelleno(g,
-                    objetoActual.getPosicionMenu().x + objetoActual.getPosicionMenu().width - 12,
-                    objetoActual.getPosicionMenu().y + objetoActual.getPosicionMenu().height - 8,
-                    12, 8, Color.black);
-
-            g.setColor(Color.white);
-
-            String texto = (objetoActual.getCantidad() < 10) ? "0" + objetoActual.getCantidad()
-                    : String.valueOf(objetoActual.getCantidad());
-
-            DibujoDebug.dibujarString(g, texto,
-                    objetoActual.getPosicionMenu().x + objetoActual.getPosicionMenu().width
-                            - MedidorString.medirAnchoPixeles(g, texto),
-                    objetoActual.getPosicionMenu().y + objetoActual.getPosicionMenu().height - 1);
-        }
-    }
-
-    public void seleccionArma1(Rectangle panelEquipo) {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo))
-                && objetoSeleccionado instanceof Arma
-                && GestorPrincipal.sd.getRaton().isClick()
-                && posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedores.get(0)))) {
-
-            if (!sonMismasArmas((Arma) objetoSeleccionado, ElementosPrincipales.jugador.getAlmacenEquipo().getArma1())) {
-                Objeto arma1 = (Objeto) ElementosPrincipales.jugador.getAlmacenEquipo().getArma1();
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(arma1);
-                ElementosPrincipales.jugador.getAlmacenEquipo().cambiarArma1((Arma) objetoSeleccionado);
-
-                // Actualiza la lista de equipo actual
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.remove(objetoSeleccionado);
-                ElementosPrincipales.jugador.getAlmacenEquipo().equipoActual.add(objetoSeleccionado);
-                objetoSeleccionado = null;
-            }
-
         }
     }
 }

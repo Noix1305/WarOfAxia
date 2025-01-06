@@ -45,7 +45,6 @@ public class Danho extends Habilidad implements Serializable {
 
         if (cronometro.obtenerTiempoTranscurrido() / 1000 >= getTiempoReutilizacion()) {
             if (objetivo instanceof Enemigo enemigo && atacante instanceof Jugador jugador) {
-                System.out.println("Vida enemigo en Dañar: " + enemigo.gestorAtributos.getVidaEnemigo());
 
                 if (enemigo.gestorAtributos.getVidaEnemigo() > 0 &&
                         atacante.gestorAtributos.getMana() >= getManaUtilizado()) {
@@ -54,7 +53,6 @@ public class Danho extends Habilidad implements Serializable {
                     // Calcular la cantidad total de curación (base + adicional por inteligencia)
                     int cantidadTotalDanho = danhoBase + calcularMontoAdicionalPorInteligencia(jugador);
                     super.setMontoTotal(cantidadTotalDanho);
-                    System.out.println("Daño realizado: " + super.getMontoTotal());
 
                     enemigo.recibirDanho(cantidadTotalDanho, tipoHabilidad);
 

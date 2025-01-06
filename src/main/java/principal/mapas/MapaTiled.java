@@ -103,7 +103,6 @@ public class MapaTiled implements Serializable {
     private boolean musicaIniciada;
 
     public MapaTiled(final String ruta) {
-        System.out.println("Inicializando Mapa");
         this.nombreMapaActual = ruta;
         zonasSalidaOriginales = new ArrayList<>();
         zonasSalidaActualizadas = new ArrayList<>();
@@ -530,7 +529,6 @@ public class MapaTiled implements Serializable {
     private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
         if (rectangulosNode != null) {
-            System.out.println("Rectangulos node es true");
             for (int j = 0; j < rectangulosNode.size(); j++) {
                 JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
                 JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
@@ -775,10 +773,8 @@ public class MapaTiled implements Serializable {
 
         if (ElementosPrincipales.jugador.getAccionesJugador().isUsandoSkill()) {
             Habilidad habilidad = ElementosPrincipales.jugador.getHabilidadActual();
-            System.out.println("Habilidad en mapa: " + habilidad.getNombre());
             // Obtener el alcance de la habilidad basado en la posición y dirección del jugador
             ArrayList<Rectangle> alcanceHabilidad = habilidad.getAlcanceHabilidad(ElementosPrincipales.jugador, habilidad);
-            System.out.println("Alcance Habilidad: " + alcanceHabilidad);
 
             ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
             for (Enemigo enemigo : enemigosMapa) {
@@ -794,10 +790,8 @@ public class MapaTiled implements Serializable {
             // Aplicar el efecto de la habilidad a los enemigos alcanzados
             if (!enemigosAlcanzados.isEmpty()) {
                 for (Enemigo enemigo : enemigosAlcanzados) {
-                    System.out.println("Enemigo alcanzado: " + enemigo.gestorAtributos.getNombre() + "Vida enemigo: " + enemigo.gestorAtributos.getVidaEnemigo());
 
                     habilidad.aplicarEfecto(ElementosPrincipales.jugador, enemigo, habilidad.getTipoHabilidad());
-                    System.out.println("Vida enemigo: " + enemigo.gestorAtributos.getVida());
                 }
             }
             ElementosPrincipales.jugador.getAccionesJugador().setUsandoSkill(false);
@@ -832,6 +826,7 @@ public class MapaTiled implements Serializable {
                     return;
                 }
                 ElementosPrincipales.inventario.recogerObjetos(objetoActual);
+                System.out.println("Objeto recogido: " + objetoActual.getObjeto().getNombre());
                 iterador.remove();
                 break; // Salir del bucle después de recoger un objeto
             }
@@ -951,7 +946,6 @@ public class MapaTiled implements Serializable {
 
             if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) && GestorPrincipal.sd.getRaton().isClick2()) {
                 tiendaActiva = tiendaActual;
-                System.out.println("Tipo: " + tiendaActiva.getTipo());
                 obtenerObjetosMapa(tiendas.get(0).getIdTienda());
                 objetosTiendaActual = verificarTipoTienda(tiendaActiva);
 

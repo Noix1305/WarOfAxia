@@ -258,13 +258,25 @@ public class RegistroObjetos {
                 objeto = new ProteccionLateral(idObjeto, "GUANTE DE HIERRO", 1, 1, 2, "",
                         TipoObjeto.GUANTE, 30, 20);
                 break;
+            case 633:
+                objeto = new ProteccionLateral(idObjeto, "GUANTE DE CUERO", 1, 1, 2, "",
+                        TipoObjeto.GUANTE, 30, 20);
+                break;
             case 648:
                 objeto = new ProteccionBaja(idObjeto, "BOTAS DE CUERO", 1, 1, 1, "",
+                        TipoObjeto.BOTA, 30, 20);
+                break;
+            case 649:
+                objeto = new ProteccionBaja(idObjeto, "BOTAS DE Acero", 1, 1, 1, "",
                         TipoObjeto.BOTA, 30, 20);
                 break;
             case 700:
                 objeto = new Collar(idObjeto, 0, 0, 3, 3, 0, 0, 1, 1,
                         "COLLAR DE PLATA", 0.2, "", TipoObjeto.COLLAR, 30, 20);
+                break;
+            case 701:
+                objeto = new Collar(idObjeto, 0, 0, 3, 3, 0, 0, 1, 1,
+                        "COLLAR DE ORO", 0.2, "", TipoObjeto.COLLAR, 30, 20);
                 break;
             case 716:
                 objeto = new Accesorio(idObjeto, 1, 2, 0, 0, 1, 1, 0, 0,
@@ -277,6 +289,10 @@ public class RegistroObjetos {
             case 733:
                 objeto = new Anillo(idObjeto, 0, 2, 0, 0, 2, 0, 0, 0,
                         "ANILLOS DE PLATA", 0.1, "", TipoObjeto.ANILLO, 30, 20);
+                break;
+            case 734:
+                objeto = new Anillo(idObjeto, 0, 2, 0, 0, 2, 0, 0, 0,
+                        "ANILLOS DE ORO", 0.1, "", TipoObjeto.ANILLO, 30, 20);
                 break;
         }
         return objeto;

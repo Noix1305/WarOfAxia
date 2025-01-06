@@ -34,13 +34,12 @@ public class PantallaTitulo implements EstadoJuego {
     private final EstructuraMenu estructuraMenu;
 
     public PantallaTitulo() {
-        System.out.println("Inicializando Pantalla Titulo");
         estructuraMenu = new EstructuraMenu();
         secciones = new SeccionMenu[5];
 
         final Rectangle etiquetaInventario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS, estructuraMenu.BANNER_LATERAL.y
-                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, EstructuraMenu.ANCHO_ETIQUETAS,
+                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, estructuraMenu.ANCHO_ETIQUETAS,
                 estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);

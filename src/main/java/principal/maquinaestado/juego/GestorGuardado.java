@@ -19,8 +19,6 @@ public class GestorGuardado {
 
     public void guardarJuego() {
         EstadoJuegoGuardar estadoJuego = getEstadoJuegoGuardar();
-        System.out.println(estadoJuego.getMapaActual());
-
         // Guardar el estado del juego
         LocalDateTime fechaActual = LocalDateTime.now();
 
@@ -63,7 +61,6 @@ public class GestorGuardado {
 
         // Seleccionar el más reciente
         File archivoMasReciente = archivosGuardados[0];
-        System.out.println("Cargando archivo: " + archivoMasReciente.getName());
 
         // Cargar el estado del juego
         EstadoJuegoGuardar estadoCargado = JuegoGuardado.cargarEstadoJuego(archivoMasReciente.getPath());
@@ -78,7 +75,6 @@ public class GestorGuardado {
 
 
             GestorJuego.cargarJuego = true;
-            System.out.println("Jugador: " + estadoCargado.getJugador());
             ElementosPrincipales.jugador = estadoCargado.getJugador();
             ElementosPrincipales.inventario.objetos = listaObjetosCreados;
             ElementosPrincipales.inventario.habilidades = listaHabilidadesCreadas;
