@@ -111,9 +111,7 @@ public class MapaTiled implements Serializable {
         objetosTiendaActual = new ArrayList<>();
         tiendaActiva = new Tienda();
         this.musicaIniciada = false;
-
         inicializarMapa(ruta);
-
     }
 
     public void actualizar() {
@@ -136,7 +134,7 @@ public class MapaTiled implements Serializable {
         if (!GestorPrincipal.pantallaTitulo && !musicaIniciada) {
             if (!ElementosPrincipales.reproductor.musica.getFilename().toUpperCase().equalsIgnoreCase(rutaMusica)) {
                 ElementosPrincipales.reproductor.musica.cambiarArchivo(rutaMusica);
-                ElementosPrincipales.reproductor.musica.repetir(0.7f);
+                ElementosPrincipales.reproductor.musica.repetir(0.8f);
                 musicaIniciada = true;
             }
         }
@@ -246,18 +244,18 @@ public class MapaTiled implements Serializable {
             }
         }
 
-        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
-
-            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
-        }
-
-        for (Tienda tiendaActual : tiendas) {
-            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
-
-        }
-        if (habilidad != null) {
-            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
-        }
+//        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
+//
+//            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
+//        }
+//
+//        for (Tienda tiendaActual : tiendas) {
+//            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
+//
+//        }
+//        if (habilidad != null) {
+//            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
+//        }
 
 //        for (Rectangle rectagulo : areasColisionActualizadas) {
 //            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.blue);
@@ -323,7 +321,6 @@ public class MapaTiled implements Serializable {
                         obtenerInformacionSiguienteMapa(capaNode);
                 }
             }
-
         } else {
             System.err.println("La clave 'layers' no está presente o no es un array en el JSON.");
         }
@@ -527,9 +524,7 @@ public class MapaTiled implements Serializable {
 
     private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
-        System.out.println("Rectangulos node: " + rectangulosNode);
         GestorPrincipal.contadorMapa++;
-        System.out.println(GestorPrincipal.contadorMapa);
 
             for (int j = 0; j < rectangulosNode.size(); j++) {
                 JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
@@ -558,8 +553,6 @@ public class MapaTiled implements Serializable {
                 Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
                 Point puntoSalidaMapa = new Point(x, y);
                 this.zonasSalidaOriginales.add(rectangulo);
-                System.out.println("X: " + rectangulo.x + " Y: " + rectangulo.y);
-
                 int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
                 int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
                 Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);

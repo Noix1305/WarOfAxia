@@ -192,7 +192,6 @@ public class Teclado implements KeyListener {
                 ElementosPrincipales.gestorGuardado.guardarJuego();
                 break;
             case KeyEvent.VK_F11:
-                ElementosPrincipales.gestorGuardado.cargarJuego();
                 break;
 
         }

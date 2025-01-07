@@ -51,7 +51,7 @@ public class GestorGuardado {
 
         // Formatear la fecha y hora actual como cadena para el nuevo archivo
         LocalDateTime fechaActual = LocalDateTime.now();
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yy_HH-mm-ss");
         String fechaFormateada = fechaActual.format(formato);
 
         // Guardar el nuevo estado del juego
@@ -75,28 +75,10 @@ public class GestorGuardado {
                 listaObjetos, listaHabilidades, listaEnemigos, listaAccesos, listaEquipoActual);
     }
 
-    public void cargarJuego() {
-        // Directorio donde se guardan los archivos
-        String carpetaGuardados = "juegosGuardados";
-        mostrarArchivosGuardados();
-
-        // Buscar el archivo más reciente en la carpeta
-        File directorio = new File(carpetaGuardados);
-        File[] archivosGuardados = directorio.listFiles((dir, name) -> name.endsWith(".save"));
-
-        if (archivosGuardados == null || archivosGuardados.length == 0) {
-            System.out.println("No se encontraron archivos de guardado.");
-            return;
-        }
-
-        // Ordenar los archivos por nombre (asumiendo que el formato de fecha garantiza el orden)
-        Arrays.sort(archivosGuardados, Comparator.comparing(File::getName).reversed());
-
-        // Seleccionar el más reciente
-        File archivoMasReciente = archivosGuardados[0];
+    public void cargarJuego(File archivo) {
 
         // Cargar el estado del juego
-        EstadoJuegoGuardar estadoCargado = JuegoGuardado.cargarEstadoJuego(archivoMasReciente.getPath());
+        EstadoJuegoGuardar estadoCargado = JuegoGuardado.cargarEstadoJuego(archivo.getPath());
 
         // Verificar los datos cargados
         if (estadoCargado != null) {
@@ -156,7 +138,7 @@ public class GestorGuardado {
         }
     }
 
-    public void mostrarArchivosGuardados() {
+    public static void mostrarArchivosGuardados() {
         // Directorio donde se guardan los archivos
         String carpetaGuardados = "juegosGuardados";
 

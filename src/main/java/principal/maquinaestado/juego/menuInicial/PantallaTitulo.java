@@ -48,7 +48,7 @@ public class PantallaTitulo implements EstadoJuego {
 //                estructuraMenu.ALTO_ETIQUETAS);
 //
 //        secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
-        ElementosPrincipales.reproductor.musica.repetir(0.7f);
+        ElementosPrincipales.reproductor.musica.repetir(0.8f);
         this.hojaInicio = new HojaSprites("/fondos/Inicio4.png", 640, 360, true);
         this.inicio = hojaInicio.getSprites(0).imagen;
     }
