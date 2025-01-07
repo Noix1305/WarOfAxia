@@ -32,6 +32,7 @@ public class Raton extends MouseAdapter {
 
     private boolean click; // Indica si se ha realizado un clic
     private boolean click2; // Indica si se ha realizado un segundo clic
+    private boolean dobleClick;
     private boolean recogiendo = false; // Indica si se está recogiendo algo
 
     // Constructor
@@ -105,11 +106,13 @@ public class Raton extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
             click = false;
+            dobleClick = e.getClickCount() == 2;
         }
         else if (SwingUtilities.isRightMouseButton(e)) {
             click2 = false;
             recogiendo = false;
-            return;
+
+
         }
     }
 
@@ -148,4 +151,11 @@ public class Raton extends MouseAdapter {
         return recogiendo;
     }
 
+    public boolean isDobleClick() {
+        return dobleClick;
+    }
+
+    public void setDobleClick(boolean dobleClick) {
+        this.dobleClick = dobleClick;
+    }
 }

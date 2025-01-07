@@ -521,7 +521,6 @@ public class Enemigo extends Entidad {
     @Override
     public void recibirDanho(int danho, TipoObjeto tipoDeHabilidad) {
         gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaEnemigo() - danho);
-        System.out.println((gestorAtributos.getVidaEnemigo()));// Reduce la vida del enemigo en función del daño recibido
     }
 
 }

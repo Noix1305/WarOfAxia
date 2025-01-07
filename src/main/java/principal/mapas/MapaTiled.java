@@ -49,7 +49,6 @@ import principal.inventario.consumibles.Claves;
 import principal.inventario.consumibles.Consumible;
 import principal.inventario.joyas.Accesorio;
 import principal.inventario.joyas.Joya;
-import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -103,7 +102,6 @@ public class MapaTiled implements Serializable {
     private boolean musicaIniciada;
 
     public MapaTiled(final String ruta) {
-        System.out.println("Inicializando Mapa");
         this.nombreMapaActual = ruta;
         zonasSalidaOriginales = new ArrayList<>();
         zonasSalidaActualizadas = new ArrayList<>();
@@ -113,9 +111,7 @@ public class MapaTiled implements Serializable {
         objetosTiendaActual = new ArrayList<>();
         tiendaActiva = new Tienda();
         this.musicaIniciada = false;
-
         inicializarMapa(ruta);
-
     }
 
     public void actualizar() {
@@ -138,7 +134,7 @@ public class MapaTiled implements Serializable {
         if (!GestorPrincipal.pantallaTitulo && !musicaIniciada) {
             if (!ElementosPrincipales.reproductor.musica.getFilename().toUpperCase().equalsIgnoreCase(rutaMusica)) {
                 ElementosPrincipales.reproductor.musica.cambiarArchivo(rutaMusica);
-                ElementosPrincipales.reproductor.musica.repetir(0.7f);
+                ElementosPrincipales.reproductor.musica.repetir(0.8f);
                 musicaIniciada = true;
             }
         }
@@ -153,7 +149,7 @@ public class MapaTiled implements Serializable {
 
         assert globalJSON != null;
         this.rutaMusica = globalJSON.get("rutaMusica").getAsString();
-        obtenerInformacionSiguienteMapa(globalJSON);
+
         // Inicializar atributos básicos
         inicializarAtributosBasicos(globalJSON);
         // Inicializar capas
@@ -248,18 +244,18 @@ public class MapaTiled implements Serializable {
             }
         }
 
-        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
-
-            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
-        }
-
-        for (Tienda tiendaActual : tiendas) {
-            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
-
-        }
-        if (habilidad != null) {
-            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
-        }
+//        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
+//
+//            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
+//        }
+//
+//        for (Tienda tiendaActual : tiendas) {
+//            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
+//
+//        }
+//        if (habilidad != null) {
+//            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
+//        }
 
 //        for (Rectangle rectagulo : areasColisionActualizadas) {
 //            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.blue);
@@ -325,7 +321,6 @@ public class MapaTiled implements Serializable {
                         obtenerInformacionSiguienteMapa(capaNode);
                 }
             }
-
         } else {
             System.err.println("La clave 'layers' no está presente o no es un array en el JSON.");
         }
@@ -529,8 +524,8 @@ public class MapaTiled implements Serializable {
 
     private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
-        if (rectangulosNode != null) {
-            System.out.println("Rectangulos node es true");
+        GestorPrincipal.contadorMapa++;
+
             for (int j = 0; j < rectangulosNode.size(); j++) {
                 JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
                 JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
@@ -558,7 +553,6 @@ public class MapaTiled implements Serializable {
                 Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
                 Point puntoSalidaMapa = new Point(x, y);
                 this.zonasSalidaOriginales.add(rectangulo);
-
                 int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
                 int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
                 Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
@@ -566,10 +560,8 @@ public class MapaTiled implements Serializable {
 
                 Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa, nombreSalida);
                 Salida.getSalidas().add(nuevaSalida);
+
             }
-        } else {
-            System.err.println("No se encontraron datos válidos en la capa de salidas.");
-        }
     }
 
     private void inicializarCapaSprites1(JsonObject datosCapa) {
@@ -775,10 +767,8 @@ public class MapaTiled implements Serializable {
 
         if (ElementosPrincipales.jugador.getAccionesJugador().isUsandoSkill()) {
             Habilidad habilidad = ElementosPrincipales.jugador.getHabilidadActual();
-            System.out.println("Habilidad en mapa: " + habilidad.getNombre());
             // Obtener el alcance de la habilidad basado en la posición y dirección del jugador
             ArrayList<Rectangle> alcanceHabilidad = habilidad.getAlcanceHabilidad(ElementosPrincipales.jugador, habilidad);
-            System.out.println("Alcance Habilidad: " + alcanceHabilidad);
 
             ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
             for (Enemigo enemigo : enemigosMapa) {
@@ -794,10 +784,8 @@ public class MapaTiled implements Serializable {
             // Aplicar el efecto de la habilidad a los enemigos alcanzados
             if (!enemigosAlcanzados.isEmpty()) {
                 for (Enemigo enemigo : enemigosAlcanzados) {
-                    System.out.println("Enemigo alcanzado: " + enemigo.gestorAtributos.getNombre() + "Vida enemigo: " + enemigo.gestorAtributos.getVidaEnemigo());
 
                     habilidad.aplicarEfecto(ElementosPrincipales.jugador, enemigo, habilidad.getTipoHabilidad());
-                    System.out.println("Vida enemigo: " + enemigo.gestorAtributos.getVida());
                 }
             }
             ElementosPrincipales.jugador.getAccionesJugador().setUsandoSkill(false);
@@ -951,7 +939,6 @@ public class MapaTiled implements Serializable {
 
             if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) && GestorPrincipal.sd.getRaton().isClick2()) {
                 tiendaActiva = tiendaActual;
-                System.out.println("Tipo: " + tiendaActiva.getTipo());
                 obtenerObjetosMapa(tiendas.get(0).getIdTienda());
                 objetosTiendaActual = verificarTipoTienda(tiendaActiva);
 

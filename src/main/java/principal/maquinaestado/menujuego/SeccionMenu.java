@@ -43,6 +43,7 @@ public abstract class SeccionMenu {
 
     public abstract void dibujar(final Graphics g, final SuperficieDibujo sd);
 
+
     public void dibujarEtiquetaInactiva(final Graphics g) {
         DibujoDebug.dibujarRectanguloRelleno(g, etiquetaMenu, Color.white);
         DibujoDebug.dibujarString(g, nombreSeccion, etiquetaMenu.x + 15, etiquetaMenu.y + 12, Color.black);

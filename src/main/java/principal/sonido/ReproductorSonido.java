@@ -9,11 +9,11 @@ public class ReproductorSonido {
     public SoundThread sonidoArma;
 
     public ReproductorSonido() {
-        musica = new SoundThread("FF-I-OST-The-prelude");
+        musica = new SoundThread("Final-Fantasy-Main-Theme-_Orchestral_");
         sonidoCaminar1 = new SoundThread("Step_Grass");
         sonidoCaminar2 = new SoundThread("Step_Grass_2");
         sonidoHeal = new SoundThread("Heal");
         lamentoEnemigo = new SoundThread("Zombie");
-        sonidoArma = new SoundThread("");
+        sonidoArma = new SoundThread("sword_clash.1");
     }
 }

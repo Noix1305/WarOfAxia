@@ -77,7 +77,6 @@ public class Inventario implements Serializable {
             int indice = enemigo.gestorAtributos.getIdEnemigo();
             listaIndices.add(indice);
         }
-        System.out.println(listaIndices);
         return listaIndices;
     }
 
@@ -86,7 +85,6 @@ public class Inventario implements Serializable {
         for (int i : listaIndices) {
             Enemigo enemigo = RegistroEnemigos.obtenerEnemigo(i);
             listaEnemigosCreados.add(enemigo);
-            System.out.println("Enemigo creado: " + enemigo.gestorAtributos.getNombre());
         }
 
         return listaEnemigosCreados;
@@ -100,7 +98,6 @@ public class Inventario implements Serializable {
             Integer[] par = {indice, cantidadObjeto}; // Crear un arreglo con los dos valores
             listaIndices.add(par); // Añadir el arreglo a la lista
         }
-        System.out.println(listaIndices);
         return listaIndices;
     }
 
@@ -119,7 +116,6 @@ public class Inventario implements Serializable {
         for (int i : indices) {
             Habilidad habilidadCreada = GestorHabilidades.obtenerHabilidad(i);
             habilidades.add(habilidadCreada);
-            System.out.println(habilidadCreada.getNombre());
         }
         return habilidades;
     }
@@ -145,7 +141,6 @@ public class Inventario implements Serializable {
 
         // Imprimir los nombres de los objetos actualizados
         for (Objeto objeto : listaObjetos) {
-            System.out.println(objeto.getNombre());
         }
 
         return listaObjetos;
@@ -157,7 +152,6 @@ public class Inventario implements Serializable {
         for (Habilidad habilidad : habilidades) {
             if (habilidad.getId() == habilidadEntrante.getId()) {
                 existe = true;
-                System.out.println("Habilidad Existe");
                 break;
             }
         }
@@ -256,7 +250,18 @@ public class Inventario implements Serializable {
         return armas;
     }
 
-    public ArrayList<Objeto> getUnaMano() {
+    public ArrayList<ArmaUnaMano> getUnaMano() {
+        ArrayList<ArmaUnaMano> armas = new ArrayList<>();
+
+        for (Objeto objeto : objetos) {
+            if (objeto instanceof ArmaUnaMano) {
+                armas.add((ArmaUnaMano) objeto);
+            }
+        }
+        return armas;
+    }
+
+    public ArrayList<Objeto> getUnaMano(int i) {
         ArrayList<Objeto> armas = new ArrayList<>();
 
         for (Objeto objeto : objetos) {
@@ -267,7 +272,19 @@ public class Inventario implements Serializable {
         return armas;
     }
 
-    public ArrayList<Objeto> getDosManos() {
+
+    public ArrayList<ArmaDosManos> getDosManos() {
+        ArrayList<ArmaDosManos> armas = new ArrayList<>();
+
+        for (Objeto objeto : objetos) {
+            if (objeto instanceof ArmaDosManos) {
+                armas.add((ArmaDosManos) objeto);
+            }
+        }
+        return armas;
+    }
+
+    public ArrayList<Objeto> getDosManos(int i) {
         ArrayList<Objeto> armas = new ArrayList<>();
 
         for (Objeto objeto : objetos) {
@@ -278,7 +295,18 @@ public class Inventario implements Serializable {
         return armas;
     }
 
-    public ArrayList<Objeto> getArmaduras() {
+    public ArrayList<Armadura> getArmaduras() {
+        ArrayList<Armadura> armaduras = new ArrayList<>();
+
+        for (Objeto objeto : objetos) {
+            if (objeto instanceof Armadura) {
+                armaduras.add((Armadura) objeto);
+            }
+        }
+        return armaduras;
+    }
+
+    public ArrayList<Objeto> getArmaduras(int i) {
         ArrayList<Objeto> armaduras = new ArrayList<>();
 
         for (Objeto objeto : objetos) {
@@ -289,7 +317,18 @@ public class Inventario implements Serializable {
         return armaduras;
     }
 
-    public ArrayList<Objeto> getJoyas() {
+    public ArrayList<Joya> getJoyas() {
+        ArrayList<Joya> joyas = new ArrayList<>();
+
+        for (Objeto objeto : objetos) {
+            if (objeto instanceof Joya) {
+                joyas.add((Joya) objeto);
+            }
+        }
+        return joyas;
+    }
+
+    public ArrayList<Objeto> getJoyas(int i) {
         ArrayList<Objeto> joyas = new ArrayList<>();
 
         for (Objeto objeto : objetos) {

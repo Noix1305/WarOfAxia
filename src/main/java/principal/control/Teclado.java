@@ -94,7 +94,7 @@ public class Teclado implements KeyListener {
                 if (GestorPrincipal.pantallaTitulo) {
                     // Establece la bandera para iniciar el juego
                     GestorPrincipal.pantallaTitulo = false;
-                    GestorPrincipal.ge.cambiarEstadoActual(0);
+                    GestorPrincipal.ge.cambiarEstadoActual(4);
                 }
                 if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
 
@@ -133,13 +133,13 @@ public class Teclado implements KeyListener {
                 break;
             case KeyEvent.VK_I:
                 inventarioActivo = !inventarioActivo;
+                GestorPrincipal.juegoActivo = !GestorPrincipal.juegoActivo;
                 break;
             case KeyEvent.VK_T:
                 tiendaActiva = !tiendaActiva;
                 break;
             case KeyEvent.VK_SPACE:
                 ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
-                System.out.println("Atacando: " + ElementosPrincipales.jugador.getAccionesJugador().isAtacando());
                 break;
             case KeyEvent.VK_F12:
                 MenuEquipo.mostrarTooltip = !MenuEquipo.mostrarTooltip;
@@ -192,7 +192,6 @@ public class Teclado implements KeyListener {
                 ElementosPrincipales.gestorGuardado.guardarJuego();
                 break;
             case KeyEvent.VK_F11:
-                ElementosPrincipales.gestorGuardado.cargarJuego();
                 break;
 
         }

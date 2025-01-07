@@ -49,7 +49,6 @@ public class GestorJuego implements EstadoJuego {
 
     public void recargarJuego() {
         if (recargar) {
-            System.out.println("Recargar normal");
             ElementosPrincipales.mapa = new MapaTiled("textos/" + ElementosPrincipales.mapa.getSiguienteMapa());
 
             // Establecer la posición del jugador en el nuevo mapa
@@ -61,11 +60,7 @@ public class GestorJuego implements EstadoJuego {
     }
 
     public static void cargarMapa(String rutaMapa) {
-        System.out.println("Ruta mapa Gestor juego: " + rutaMapa);
-        System.out.println("Recargar sobrecargado");
         ElementosPrincipales.mapa = new MapaTiled(rutaMapa);
-        // Establecer la posición del jugador en el nuevo mapa
-
         cargarJuego = false;
 
     }
@@ -94,8 +89,6 @@ public class GestorJuego implements EstadoJuego {
 
                     if (ElementosPrincipales.jugador.getAreaPosicional().intersects(zonaSalida)) {
                         Salida salidaActual = salidas.get(i);
-                        System.out.println("X: " + zonaSalida.x + " Y: " + zonaSalida.y);
-                        System.out.println("Nombre salida: " + salidaActual.getNombreSalida());
 
                         Salida.puntoInicialSiguiente = salidaActual.getPuntoInicioSiguienteMapa();
                         ElementosPrincipales.mapa.setSiguienteMapa(salidaActual.getNombreSiguienteMapa());

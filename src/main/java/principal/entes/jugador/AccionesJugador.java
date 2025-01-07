@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class AccionesJugador implements Serializable{
     private double posicionX;
     private double posicionY;
-    private double velocidadCaminar = 1;
+    private double velocidadCaminar = 3;
     private final double velocidadCorrer = velocidadCaminar * 2;
     private boolean enMovimiento = false;
     private boolean atacando = false;

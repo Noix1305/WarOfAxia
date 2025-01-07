@@ -26,7 +26,7 @@ public class EstructuraMenu {
 
     public final int MARGEN_HORIZONTAL_ETIQUETAS;
     public final int MARGEN_VERTICAL_ETIQUETAS;
-    public final int ANCHO_ETIQUETAS;
+    public  int ANCHO_ETIQUETAS;
     public final int ALTO_ETIQUETAS;
 
     public EstructuraMenu() {
@@ -39,7 +39,6 @@ public class EstructuraMenu {
                 Constantes.ALTO_JUEGO - BANNER_SUPERIOR.height);
         FONDO = new Rectangle(BANNER_LATERAL.x + BANNER_LATERAL.width, BANNER_LATERAL.y,
                 Constantes.ANCHO_JUEGO - BANNER_LATERAL.width, Constantes.ALTO_JUEGO - BANNER_SUPERIOR.height);
-        
 
         MARGEN_HORIZONTAL_ETIQUETAS = 20;
         MARGEN_VERTICAL_ETIQUETAS = 20;

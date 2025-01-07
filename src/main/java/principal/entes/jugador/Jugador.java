@@ -107,7 +107,7 @@ public class Jugador extends Entidad implements Serializable {
         setVelocidad(super.gestorAtributos.getDestreza() * 0.2 - super.gestorAtributos.getPesoActual() * 0.30);
         super.gestorAtributos.setCritico(super.gestorAtributos.getSuerte() * 0.5);
         super.gestorAtributos.setResistenciaMaxima(600 + (int) (super.gestorAtributos.getConstitucion() * 0.1 + super.gestorAtributos.getDestreza() * 0.1));
-        super.gestorAtributos.setLimitePeso(super.gestorAtributos.getFuerza() * 2 + super.gestorAtributos.getConstitucion() * 2);
+        super.gestorAtributos.setLimitePeso(200+super.gestorAtributos.getFuerza() * 2 + super.gestorAtributos.getConstitucion() * 2);
     }
 
     // Método para dibujar el efecto de subir de nivel del jugador
@@ -218,9 +218,7 @@ public class Jugador extends Entidad implements Serializable {
         try {
             try {
                 this.habilidadActual = (Habilidad) getAccesoRapido().getAccesoEquipado(indice);
-                System.out.println("HABILIDAD: " + habilidadActual.getNombre());
                 this.accionesJugador.setUsandoSkill(true);
-                System.out.println("Usando Habilidad: " + this.accionesJugador.isUsandoSkill());
             } catch (ClassCastException c) {
                 objeto = (Objeto) getAccesoRapido().getAccesoEquipado(indice);
             }

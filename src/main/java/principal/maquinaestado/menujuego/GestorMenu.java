@@ -6,12 +6,12 @@ package principal.maquinaestado.menujuego;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+
 import principal.GestorPrincipal;
 import principal.graficos.SuperficieDibujo;
 import principal.maquinaestado.EstadoJuego;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class GestorMenu implements EstadoJuego {
@@ -23,7 +23,7 @@ public class GestorMenu implements EstadoJuego {
     private final EstructuraMenu estructuraMenu;
 
     public GestorMenu() {
-        
+
         estructuraMenu = new EstructuraMenu();
 
         secciones = new SeccionMenu[5]; // Ajusta la longitud del arreglo según la cantidad de secciones
@@ -56,7 +56,7 @@ public class GestorMenu implements EstadoJuego {
                 estructuraMenu.ANCHO_ETIQUETAS, estructuraMenu.ALTO_ETIQUETAS);
 
         secciones[3] = new MenuHabilidades("HABILIDADES", etiquetaHabilidades, estructuraMenu);
-        
+
         final Rectangle etiquetaCrecimiento = new Rectangle(estructuraMenu.BANNER_LATERAL.x
                 + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS,
                 etiquetaHabilidades.y + etiquetaHabilidades.height + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS,
@@ -69,60 +69,58 @@ public class GestorMenu implements EstadoJuego {
 
     @Override
     public void actualizar() {
-        for (int i = 0; i < secciones.length; i++) {
+        // Determinar la sección activa al hacer clic
+        for (SeccionMenu seccion : secciones) {
             if (GestorPrincipal.sd.getRaton().isClick()
-                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-
-                if (secciones[i] instanceof MenuEquipo) {
-                    MenuEquipo seccion = (MenuEquipo) secciones[i];
-                    if(seccion.getObjetoSeleccionado() != null){
-                        seccion.eliminarObjetoSeleccionado();
-                    }
-                }else if(secciones[i] instanceof MenuHabilidades){
-                    MenuHabilidades seccion = (MenuHabilidades) secciones[i];
-                    if(seccion.getHabilidadSeleccionado() != null){
-                        seccion.eliminarHabilidadSeleccionado();
-                    }
-                }else if(secciones[i] instanceof MenuInventario){
-                    MenuInventario seccion = (MenuInventario) secciones[i];
-                    if(seccion.getObjetoSeleccionado() != null){
-                        seccion.eliminarObjetoSeleccionado();
-                    }
-                }
-                seccionActual = secciones[i];
-
+                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccion.getEtiquetaMenuEscalada())) {
+                this.seccionActual = seccion;
             }
         }
-        seccionActual.actualizar();
 
+        // Si la sección activa es MenuEquipo, ajusta las etiquetas de las demás secciones
+        if (seccionActual instanceof MenuEquipo) {
+            for (SeccionMenu seccion : secciones) {
+                if (!(seccion instanceof MenuEquipo) && !(seccion instanceof MenuInventario)) {
+                    seccion.etiquetaMenu.width = 30; // Cambia el ancho de las etiquetas para secciones que no sean Equipo e Inventario
+                }
+            }
+        } else {
+            // Si la sección activa NO es MenuEquipo, restaura el ancho de todas las etiquetas
+            for (SeccionMenu seccion : secciones) {
+                seccion.etiquetaMenu.width = 100; // Ancho predeterminado para todas las etiquetas
+            }
+        }
+
+        // Llama al método `actualizar` de la sección activa
+        if (seccionActual != null) {
+            seccionActual.actualizar();
+        }
     }
+
 
     @Override
     public void dibujar(final Graphics2D g) {
         estructuraMenu.dibujar(g);
 
-        for (int i = 0; i < secciones.length; i++) {
+        for (SeccionMenu seccionActual : secciones) {
 
-            if (seccionActual == secciones[i]) {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaActivaResaltada(g);
+            if (this.seccionActual == seccionActual) {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccionActual.getEtiquetaMenuEscalada())) {
+                    seccionActual.dibujarEtiquetaActivaResaltada(g);
+                } else {
+                    seccionActual.dibujarEtiquetaActiva(g);
                 }
-                else {
-                    secciones[i].dibujarEtiquetaActiva(g);
-                }
-            }
-            else {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaInactResaltada(g);
-                }
-                else {
-                    secciones[i].dibujarEtiquetaInactiva(g);
+            } else {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccionActual.getEtiquetaMenuEscalada())) {
+                    seccionActual.dibujarEtiquetaInactResaltada(g);
+                } else {
+                    seccionActual.dibujarEtiquetaInactiva(g);
 
                 }
 
             }
         }
-        seccionActual.dibujar(g,GestorPrincipal.sd);
+        seccionActual.dibujar(g, GestorPrincipal.sd);
     }
 
 }

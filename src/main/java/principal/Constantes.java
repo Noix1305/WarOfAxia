@@ -21,7 +21,7 @@ public class Constantes {
     public static int LADO_CURSOR = 0; // Inicializa el tamaño del cursor en 0 (quizás se ajuste más tarde)
 
     public static int ANCHO_PANTALLA_COMPLETA = 1280; // Define el ancho de la pantalla completa como 1280 píxeles
-    public static int ALTO_PANTALLA_COMPLETA = 720; // Define el alto de la pantalla completa como 720 píxeles
+    public static int ALTO_PANTALLA_COMPLETA = 720;// Define el alto de la pantalla completa como 720 píxeles
 
     public static double FACTOR_ESCALADO_X = (double) (ANCHO_PANTALLA_COMPLETA / ANCHO_JUEGO); // Calcula el factor de escala en el eje X
     public static double FACTOR_ESCALADO_Y = (double) (ALTO_PANTALLA_COMPLETA / ALTO_JUEGO); // Calcula el factor de escala en el eje Y

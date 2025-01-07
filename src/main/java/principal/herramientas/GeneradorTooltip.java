@@ -8,8 +8,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import principal.Constantes;
 import principal.graficos.SuperficieDibujo;
+import principal.maquinaestado.menujuego.MenuEquipo;
 
 /**
  * Clase que proporciona métodos para generar y dibujar tooltips en la pantalla. Un tooltip es un pequeño cuadro de
@@ -44,18 +46,15 @@ public class GeneradorTooltip {
             if (y <= centroCanvasEscalado.y) {
                 pf.x = x + Constantes.LADO_CURSOR + margenCursor;
                 pf.y = y + Constantes.LADO_CURSOR + margenCursor;
-            }
-            else {
+            } else {
                 pf.x = x + Constantes.LADO_CURSOR + margenCursor;
                 pf.y = y - Constantes.LADO_CURSOR - margenCursor;
             }
-        }
-        else {
+        } else {
             if (y <= centroCanvasEscalado.y) {
                 pf.x = x - Constantes.LADO_CURSOR - margenCursor;
                 pf.y = y + Constantes.LADO_CURSOR + margenCursor;
-            }
-            else {
+            } else {
                 pf.x = x - Constantes.LADO_CURSOR - margenCursor;
                 pf.y = y - Constantes.LADO_CURSOR - margenCursor;
             }
@@ -83,16 +82,13 @@ public class GeneradorTooltip {
         if (x <= centroCanvasEscalado.x) {
             if (y <= centroCanvasEscalado.y) {
                 posicion = "no";
-            }
-            else {
+            } else {
                 posicion = "so";
             }
-        }
-        else {
+        } else {
             if (y <= centroCanvasEscalado.y) {
                 posicion = "ne";
-            }
-            else {
+            } else {
                 posicion = "se";
             }
         }
@@ -103,108 +99,113 @@ public class GeneradorTooltip {
     /**
      * Dibuja un tooltip en la pantalla.
      *
-     * @param g El objeto Graphics utilizado para dibujar.
-     * @param sd La superficie de dibujo donde se dibujará el tooltip.
+     * @param g     El objeto Graphics utilizado para dibujar.
+     * @param sd    La superficie de dibujo donde se dibujará el tooltip.
      * @param texto El texto que se mostrará en el tooltip.
      */
     public static void dibujarTooltip(final Graphics g, final SuperficieDibujo sd, final String texto) {
 
-        final Point posicionRaton = sd.getRaton().getPosicion();
-        final Point posicionTooltip = GeneradorTooltip.generarTooltip(posicionRaton);
-        final String pistaPosicion = GeneradorTooltip.getPosicionTooltip(posicionRaton);
-        final Point posicionTooltipEscalada = EscaladorElementos.escalarAbajo(posicionTooltip);
+        if (MenuEquipo.mostrarTooltip) {
+            final Point posicionRaton = sd.getRaton().getPosicion();
+            final Point posicionTooltip = GeneradorTooltip.generarTooltip(posicionRaton);
+            final String pistaPosicion = GeneradorTooltip.getPosicionTooltip(posicionRaton);
+            final Point posicionTooltipEscalada = EscaladorElementos.escalarAbajo(posicionTooltip);
 
-        final int ancho = MedidorString.medirAnchoPixeles(g, texto);
-        final int alto = MedidorString.medirAltoPixeles(g, texto);
-        final int margenFuente = 2;
-        Rectangle tooltip = null;
+            final int ancho = MedidorString.medirAnchoPixeles(g, texto);
+            final int alto = MedidorString.medirAltoPixeles(g, texto);
+            final int margenFuente = 2;
+            Rectangle tooltip = null;
 
-        switch (pistaPosicion) {
+            switch (pistaPosicion) {
 
-            case "no":
-                tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y,
-                        ancho + margenFuente * 2, alto);
-                break;
-            case "ne":
-                tooltip = new Rectangle(posicionTooltipEscalada.x - ancho, posicionTooltipEscalada.y,
-                        ancho + margenFuente * 2, alto);
-                break;
-            case "so":
-                tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y - alto,
-                        ancho + margenFuente * 2, alto);
-                break;
-            case "se":
-                tooltip = new Rectangle(posicionTooltipEscalada.x - ancho, posicionTooltipEscalada.y - alto,
-                        ancho + margenFuente * 2, alto);
-                break;
+                case "no":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y,
+                            ancho + margenFuente * 2, alto);
+                    break;
+                case "ne":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x - ancho, posicionTooltipEscalada.y,
+                            ancho + margenFuente * 2, alto);
+                    break;
+                case "so":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y - alto,
+                            ancho + margenFuente * 2, alto);
+                    break;
+                case "se":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x - ancho, posicionTooltipEscalada.y - alto,
+                            ancho + margenFuente * 2, alto);
+                    break;
 
+            }
+            DibujoDebug.dibujarRectanguloRelleno(g, tooltip, Color.black);
+            DibujoDebug.dibujarString(g, texto, new Point(tooltip.x + margenFuente, tooltip.y + tooltip.height), Color.white);
         }
-        DibujoDebug.dibujarRectanguloRelleno(g, tooltip, Color.black);
-        DibujoDebug.dibujarString(g, texto, new Point(tooltip.x + margenFuente, tooltip.y + tooltip.height), Color.white);
     }
 
     /**
      * Dibuja un tooltip mejorado en la pantalla, con soporte para texto de varias líneas.
      *
-     * @param g El objeto Graphics utilizado para dibujar.
-     * @param sd La superficie de dibujo donde se dibujará el tooltip.
+     * @param g     El objeto Graphics utilizado para dibujar.
+     * @param sd    La superficie de dibujo donde se dibujará el tooltip.
      * @param texto El texto que se mostrará en el tooltip.
      */
     public static void dibujarTooltipMejorado(Graphics g, SuperficieDibujo sd, String texto) {
-        Point posicionRaton = sd.getRaton().getPosicion();
-        Point posicionTooltip = GeneradorTooltip.generarTooltip(posicionRaton);
-        String pistaPosicion = GeneradorTooltip.getPosicionTooltip(posicionRaton);
-        Point posicionTooltipEscalada = EscaladorElementos.escalarAbajo(posicionTooltip);
+        if (MenuEquipo.mostrarTooltip) {
+            Point posicionRaton = sd.getRaton().getPosicion();
+            Point posicionTooltip = GeneradorTooltip.generarTooltip(posicionRaton);
+            String pistaPosicion = GeneradorTooltip.getPosicionTooltip(posicionRaton);
+            Point posicionTooltipEscalada = EscaladorElementos.escalarAbajo(posicionTooltip);
 
-        int margenFuente = 2;
+            int margenFuente = 2;
 
-        // Dividir el texto en líneas
-        String[] lineas = texto.split("\n");
+            // Dividir el texto en líneas
+            String[] lineas = texto.split("\n");
 
-        // Medir el ancho máximo y alto total del tooltip
-        int anchoMaximoLinea = 0;
-        int altoTotal = 0;
-        for (String linea : lineas) {
-            int anchoLinea = g.getFontMetrics().stringWidth(linea);
-            anchoMaximoLinea = Math.max(anchoMaximoLinea, anchoLinea);
-            altoTotal += g.getFontMetrics().getHeight();
-        }
+            // Medir el ancho máximo y alto total del tooltip
+            int anchoMaximoLinea = 0;
+            int altoTotal = 0;
+            for (String linea : lineas) {
+                int anchoLinea = g.getFontMetrics().stringWidth(linea);
+                anchoMaximoLinea = Math.max(anchoMaximoLinea, anchoLinea);
+                altoTotal += g.getFontMetrics().getHeight();
+            }
 
-        Rectangle tooltip = null;
+            Rectangle tooltip = null;
 
-        switch (pistaPosicion) {
-            case "no":
-                tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y,
-                        anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
-                break;
-            case "ne":
-                tooltip = new Rectangle(posicionTooltipEscalada.x - anchoMaximoLinea, posicionTooltipEscalada.y,
-                        anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
-                break;
-            case "so":
-                tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y - altoTotal - margenFuente * 2,
-                        anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
-                break;
-            case "se":
-                tooltip = new Rectangle(posicionTooltipEscalada.x - anchoMaximoLinea, posicionTooltipEscalada.y - altoTotal - margenFuente * 2,
-                        anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
-                break;
-        }
+            switch (pistaPosicion) {
+                case "no":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y,
+                            anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
+                    break;
+                case "ne":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x - anchoMaximoLinea, posicionTooltipEscalada.y,
+                            anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
+                    break;
+                case "so":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x, posicionTooltipEscalada.y - altoTotal - margenFuente * 2,
+                            anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
+                    break;
+                case "se":
+                    tooltip = new Rectangle(posicionTooltipEscalada.x - anchoMaximoLinea, posicionTooltipEscalada.y - altoTotal - margenFuente * 2,
+                            anchoMaximoLinea + margenFuente * 2, altoTotal + margenFuente * 2);
+                    break;
+            }
 
-        g.setColor(Color.yellow);
-        g.drawRect(tooltip.x - 1, tooltip.y - 1, tooltip.width + 2, tooltip.height + 2);
-        g.setColor(new Color(240, 240, 240));
-        g.fillRect(tooltip.x, tooltip.y, tooltip.width, tooltip.height);
-        g.setColor(Color.black);
+            g.setColor(Color.yellow);
+            assert tooltip != null;
+            g.drawRect(tooltip.x - 1, tooltip.y - 1, tooltip.width + 2, tooltip.height + 2);
+            g.setColor(new Color(240, 240, 240));
+            g.fillRect(tooltip.x, tooltip.y, tooltip.width, tooltip.height);
+            g.setColor(Color.black);
 
-        // Dibujar cada línea de texto en su rectángulo correspondiente
-        int offsetY = tooltip.y + margenFuente;
-        for (String linea : lineas) {
-            int anchoLinea = g.getFontMetrics().stringWidth(linea);
-            Rectangle rectanguloLinea = new Rectangle(tooltip.x + margenFuente, offsetY, anchoLinea, g.getFontMetrics().getHeight());
-            g.drawString(linea, rectanguloLinea.x, rectanguloLinea.y + g.getFontMetrics().getAscent());
+            // Dibujar cada línea de texto en su rectángulo correspondiente
+            int offsetY = tooltip.y + margenFuente;
+            for (String linea : lineas) {
+                int anchoLinea = g.getFontMetrics().stringWidth(linea);
+                Rectangle rectanguloLinea = new Rectangle(tooltip.x + margenFuente, offsetY, anchoLinea, g.getFontMetrics().getHeight());
+                g.drawString(linea, rectanguloLinea.x, rectanguloLinea.y + g.getFontMetrics().getAscent());
 
-            offsetY += g.getFontMetrics().getHeight();
+                offsetY += g.getFontMetrics().getHeight();
+            }
         }
     }
 
