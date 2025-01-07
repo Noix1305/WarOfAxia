@@ -4,14 +4,10 @@
 package principal;
 
 import principal.control.GestorControles; // Importa la clase GestorControles del paquete principal.control
-import principal.entes.enemigo.Enemigo;
-import principal.entes.jugador.Jugador;
 import principal.graficos.SuperficieDibujo; // Importa la clase SuperficieDibujo del paquete principal.graficos
 import principal.graficos.Ventana; // Importa la clase Ventana del paquete principal.graficos
 import principal.maquinaestado.GestorEstados; // Importa la clase GestorEstados del paquete principal.maquinaestado
-import principal.maquinaestado.juego.EstadoJuegoGuardar;
-import principal.maquinaestado.juego.JuegoGuardado;
-import principal.sonido.ReproductorSonido;
+
 
 import java.util.ArrayList;
 
@@ -24,19 +20,22 @@ public class GestorPrincipal {
     private String titulo; // Título de la ventana del juego
     private int ancho; // Ancho de la ventana del juego
     private int alto; // Alto de la ventana del juego
-    public static boolean pantallaTitulo = true;// Variable que indica si se muestra la pantalla de título
+    public static boolean pantallaTitulo = true;
+    public static boolean juegoActivo = false;// Variable que indica si se muestra la pantalla de título
     // Instancias principales del juego
     public static SuperficieDibujo sd; // Superficie de dibujo del juego
     public static GestorEstados ge; // Gestor de estados del juego
 
     private static int fps = 0; // FPS (cuadros por segundo) del juego
     private static int aps = 0; // APS (actualizaciones por segundo) del juego
+    public static int contadorMapa;
 
     // Constructor privado para evitar instanciación externa
     private GestorPrincipal(final String titulo, final int ancho, final int alto) {
         this.titulo = titulo;
         this.alto = alto;
         this.ancho = ancho;
+        contadorMapa =0;
     }
 
 
@@ -73,7 +72,7 @@ public class GestorPrincipal {
         int framesAcumulados = 0;
 
         final int NS_POR_SEGUNDO = 1000000000;
-        final int APS_OBJETIVO = 120;
+        final int APS_OBJETIVO = 60;
         final double NS_POR_ACTUALIZACION = (double) NS_POR_SEGUNDO / APS_OBJETIVO;
 
         long referenciaActualizacion = System.nanoTime();
@@ -121,7 +120,7 @@ public class GestorPrincipal {
             GestorControles.teclado.inventarioActivo = false;
         } else if (pantallaTitulo) {
             ge.cambiarEstadoActual(3);
-        } else {
+        }else if(juegoActivo){
             ge.cambiarEstadoActual(0);
         }
         // Actualiza el estado del juego si no se muestra la pantalla de título

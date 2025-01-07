@@ -5,14 +5,17 @@
 package principal.maquinaestado.juego.menuInicial;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
+import principal.herramientas.DibujoDebug;
 import principal.maquinaestado.EstadoJuego;
 import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.menujuego.EstructuraMenu;
 import principal.maquinaestado.menujuego.MenuInventario;
 import principal.maquinaestado.menujuego.SeccionMenu;
+import principal.sprites.HojaSprites;
 
 /**
  * @author GAMER ARRAX
@@ -28,22 +31,26 @@ public class PantallaTitulo implements EstadoJuego {
 //    private transient static BufferedImage start;
 //    private final Timer timer;
 //    private final SeccionMenu[] secciones;
-    private final SeccionMenu[] secciones;
+    private SeccionMenu[] secciones;
     private SeccionMenu seccionActual;
+    BufferedImage inicio;
+    HojaSprites hojaInicio;
 
-    private final EstructuraMenu estructuraMenu;
+    private EstructuraMenu estructuraMenu;
 
     public PantallaTitulo() {
-        estructuraMenu = new EstructuraMenu();
-        secciones = new SeccionMenu[5];
-
-        final Rectangle etiquetaInventario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
-                + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS, estructuraMenu.BANNER_LATERAL.y
-                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, estructuraMenu.ANCHO_ETIQUETAS,
-                estructuraMenu.ALTO_ETIQUETAS);
-
-        secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
+//        estructuraMenu = new EstructuraMenu();
+//        secciones = new SeccionMenu[5];
+//
+//        final Rectangle etiquetaInventario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
+//                + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS, estructuraMenu.BANNER_LATERAL.y
+//                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, estructuraMenu.ANCHO_ETIQUETAS,
+//                estructuraMenu.ALTO_ETIQUETAS);
+//
+//        secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
         ElementosPrincipales.reproductor.musica.repetir(0.7f);
+        this.hojaInicio = new HojaSprites("/fondos/Inicio4.png", 640, 360, true);
+        this.inicio = hojaInicio.getSprites(0).imagen;
     }
 
 //    private void cambiarImagen() {
@@ -57,17 +64,16 @@ public class PantallaTitulo implements EstadoJuego {
 //    }
 
     public void actualizar() {
-        if (!esperaEnter) {
-            // Aquí podrías agregar lógica de animación o actualización
-        }
+//        if (!esperaEnter) {
+//            // Aquí podrías agregar lógica de animación o actualización
+//        }
     }
 
     public void dibujar(Graphics2D g) {
-        estructuraMenu.dibujar(g);
-
-        if (esperaEnter) {
-            // Dibujar algún indicador para indicar al usuario que presione Enter
-        }
+        DibujoDebug.dibujarImagen(g, this.inicio, 0, 0);
+//        if (esperaEnter) {
+//            // Dibujar algún indicador para indicar al usuario que presione Enter
+//        }
     }
 
     public static void setEsperaEnter(boolean espera) {

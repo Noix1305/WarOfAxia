@@ -22,6 +22,7 @@ import principal.herramientas.MedidorString;
 import principal.inventario.Objeto;
 import principal.inventario.joyas.Joya;
 import principal.maquinaestado.menujuego.MenuEquipo;
+import principal.sonido.SoundThread;
 
 /**
  *
@@ -713,12 +714,12 @@ public class TiendaAccesorios extends SeccionTienda {
 
         // Calcular el peso futuro sumando el peso de cada objeto en el inventario
         for (Objeto objetoInventario : ElementosPrincipales.inventario.getListaObjetos()) {
-            pesoFuturo += objetoInventario.getPeso() * objetoInventario.getCantidad();
+            pesoFuturo += (int) (objetoInventario.getPeso() * objetoInventario.getCantidad());
         }
 
         // Calcular el peso futuro sumando el peso de cada objeto en la canasta de compra
         for (Objeto objetoCanasta : canastaCompra) {
-            pesoFuturo += objetoCanasta.getPeso() * objetoCanasta.getCantidadCompra();
+            pesoFuturo += (int) (objetoCanasta.getPeso() * objetoCanasta.getCantidadCompra());
         }
 
         // Verificar si el peso futuro excede el límite de peso del jugador
@@ -863,9 +864,6 @@ public class TiendaAccesorios extends SeccionTienda {
 
     // Método privado para dibujar los elementos en el panel de inventario
     private void dibujarElementosEnPanelInventario(final Graphics g, List<Objeto> objetos, int lado) {
-        if (objetos.isEmpty()) {
-            return;
-        }
 
         // Iterar sobre los objetos en la lista y dibujar cada uno en la posición correspondiente
         for (Objeto objetoActual : objetos) {

@@ -49,7 +49,6 @@ import principal.inventario.consumibles.Claves;
 import principal.inventario.consumibles.Consumible;
 import principal.inventario.joyas.Accesorio;
 import principal.inventario.joyas.Joya;
-import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -152,7 +151,7 @@ public class MapaTiled implements Serializable {
 
         assert globalJSON != null;
         this.rutaMusica = globalJSON.get("rutaMusica").getAsString();
-        obtenerInformacionSiguienteMapa(globalJSON);
+
         // Inicializar atributos básicos
         inicializarAtributosBasicos(globalJSON);
         // Inicializar capas
@@ -528,7 +527,10 @@ public class MapaTiled implements Serializable {
 
     private void obtenerInformacionSiguienteMapa(JsonObject datosCapa) {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
-        if (rectangulosNode != null) {
+        System.out.println("Rectangulos node: " + rectangulosNode);
+        GestorPrincipal.contadorMapa++;
+        System.out.println(GestorPrincipal.contadorMapa);
+
             for (int j = 0; j < rectangulosNode.size(); j++) {
                 JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
                 JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
@@ -556,6 +558,7 @@ public class MapaTiled implements Serializable {
                 Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
                 Point puntoSalidaMapa = new Point(x, y);
                 this.zonasSalidaOriginales.add(rectangulo);
+                System.out.println("X: " + rectangulo.x + " Y: " + rectangulo.y);
 
                 int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
                 int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
@@ -564,10 +567,8 @@ public class MapaTiled implements Serializable {
 
                 Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa, nombreSalida);
                 Salida.getSalidas().add(nuevaSalida);
+
             }
-        } else {
-            System.err.println("No se encontraron datos válidos en la capa de salidas.");
-        }
     }
 
     private void inicializarCapaSprites1(JsonObject datosCapa) {

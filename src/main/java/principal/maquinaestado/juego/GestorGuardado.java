@@ -113,8 +113,8 @@ public class GestorGuardado {
             ElementosPrincipales.jugador.getAccesoRapido().actualizarAccesos(estadoCargado.getListaAccesos());
             ElementosPrincipales.jugador.getAlmacenEquipo().actualizarEquipoActual(estadoCargado.getListaEquipoActual());
             actualizarEquipo();
-            GestorJuego.cargarMapa(estadoCargado.getMapaActual());
             GestorJuego.cargarJuego = true;
+            GestorJuego.cargarMapa(estadoCargado.getMapaActual());
         }
     }
 

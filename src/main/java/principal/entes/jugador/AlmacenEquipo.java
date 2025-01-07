@@ -61,8 +61,10 @@ public class AlmacenEquipo implements Serializable {
     public ArrayList<Integer> obtenerIndicesEquipo() {
         ArrayList<Integer> listaEquipo = new ArrayList<>();
         for (Objeto objeto : equipoActual) {
-            int id = objeto.getId();
-            listaEquipo.add(id);
+            if (objeto != null) {
+                int id = objeto.getId();
+                listaEquipo.add(id);
+            }
         }
         return listaEquipo;
     }
@@ -80,7 +82,6 @@ public class AlmacenEquipo implements Serializable {
         }
         return equipoActualizado;
     }
-
 
 
     // Métodos para obtener y cambiar los objetos equipados

@@ -94,7 +94,7 @@ public class Teclado implements KeyListener {
                 if (GestorPrincipal.pantallaTitulo) {
                     // Establece la bandera para iniciar el juego
                     GestorPrincipal.pantallaTitulo = false;
-                    GestorPrincipal.ge.cambiarEstadoActual(0);
+                    GestorPrincipal.ge.cambiarEstadoActual(4);
                 }
                 if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
 
@@ -133,6 +133,7 @@ public class Teclado implements KeyListener {
                 break;
             case KeyEvent.VK_I:
                 inventarioActivo = !inventarioActivo;
+                GestorPrincipal.juegoActivo = !GestorPrincipal.juegoActivo;
                 break;
             case KeyEvent.VK_T:
                 tiendaActiva = !tiendaActiva;

@@ -192,7 +192,6 @@ public class MenuJoyas extends SeccionMenuEquipable {
                         ae.setAnillo1((Joya) objetoSeleccionado);
 
                         if (anillo2 != null && sonMismosAnillos(anillo2, (Joya) objetoSeleccionado)) {
-                            ae.setAnillo2(null);
                             ae.equipoActual.remove(anillo2);
                         }
                     }
@@ -205,7 +204,6 @@ public class MenuJoyas extends SeccionMenuEquipable {
                         ae.setAnillo2((Joya) objetoSeleccionado);
 
                         if (anillo1 != null && sonMismosAnillos(anillo1, (Joya) objetoSeleccionado)) {
-                            ae.setAnillo1(null);
                             ae.equipoActual.remove(anillo1);
                         }
                     }

@@ -7,6 +7,7 @@ package principal.maquinaestado;
 import java.awt.Graphics2D;
 import principal.graficos.SuperficieDibujo;
 import principal.maquinaestado.juego.GestorJuego;
+import principal.maquinaestado.juego.menuInicial.MenuInicio;
 import principal.maquinaestado.juego.menu_tienda.GestorTienda;
 import principal.maquinaestado.menujuego.GestorMenu;
 import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
@@ -26,15 +27,16 @@ public class GestorEstados {
 
     private void iniciarEstados() {
 
-        estados = new EstadoJuego[4];
+        estados = new EstadoJuego[5];
         estados[0] = new GestorJuego();
         estados[1] = new GestorMenu();
         estados[2] = new GestorTienda();
         estados[3] = new PantallaTitulo();
+        estados[4] = new MenuInicio();
     }
 
     private void iniciarEstadoActual() {
-        estadoActual = estados[3];
+        estadoActual = estados[4];
     }
     
     public void actualizar(){
