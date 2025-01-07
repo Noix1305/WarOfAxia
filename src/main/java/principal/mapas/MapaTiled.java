@@ -4,7 +4,6 @@
  */
 package principal.mapas;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -52,8 +51,6 @@ import principal.inventario.joyas.Joya;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
-
-import static principal.ElementosPrincipales.jugador;
 
 /**
  * @author GAMER ARRAX
@@ -172,10 +169,7 @@ public class MapaTiled implements Serializable {
         obtenerTiendas(globalJSON);
     }
 
-    public void dibujar(Graphics2D g) {
-
-        // Dibujar sprites del mapa
-        int intentosDibujo = 0;
+    public void dibujarPrimeraCapa(Graphics2D g) {
         for (CapaSprites capaSprites : capaSprites1) {
             int[] spritesCapa = capaSprites.getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
@@ -189,8 +183,6 @@ public class MapaTiled implements Serializable {
                         if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
-
-                        intentosDibujo++;
                         DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
                 }
@@ -216,13 +208,13 @@ public class MapaTiled implements Serializable {
             enemigo.dibujar(g, puntoX, puntoY);
 
         }
-
     }
 
-    public void dibujar2daCapa(Graphics2D g) {
+
+
+    public void dibujarSegundaCapa(Graphics2D g) {
 
         // Dibujar sprites del mapa
-        int intentosDibujo = 0;
         for (CapaSprites capaSprites : capaSprites2) {
             int[] spritesCapa = capaSprites.getSprites();
             for (int y = 0; y < altoMapaTiles; y++) {
@@ -237,7 +229,6 @@ public class MapaTiled implements Serializable {
                             continue;
                         }
 
-                        intentosDibujo++;
                         DibujoDebug.dibujarImagen(g, paletaSprites2[(int) idSpriteActual].getImagen(), puntoX, puntoY);
                     }
                 }
@@ -249,10 +240,10 @@ public class MapaTiled implements Serializable {
 //            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
 //        }
 //
-//        for (Tienda tiendaActual : tiendas) {
-//            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
-//
-//        }
+        for (Tienda tiendaActual : tiendas) {
+            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
+
+        }
 //        if (habilidad != null) {
 //            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
 //        }

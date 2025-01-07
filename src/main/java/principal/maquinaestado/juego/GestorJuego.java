@@ -11,7 +11,6 @@ import java.util.List;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
-import principal.GestorPrincipal;
 import principal.graficos.EfectosVisuales;
 import principal.herramientas.CargadorRecursos;
 import principal.herramientas.DibujoDebug;
@@ -68,9 +67,9 @@ public class GestorJuego implements EstadoJuego {
     @Override
     public void dibujar(Graphics2D g) {
 
-        ElementosPrincipales.mapa.dibujar(g);
+        ElementosPrincipales.mapa.dibujarPrimeraCapa(g);
         ElementosPrincipales.jugador.dibujar(g);
-        ElementosPrincipales.mapa.dibujar2daCapa(g);
+        ElementosPrincipales.mapa.dibujarSegundaCapa(g);
         menuInferior.dibujar(g);
         DibujoDebug.dibujarImagen(g, logo, Constantes.ANCHO_JUEGO - logo.getWidth(), 0);
         if (ElementosPrincipales.jugador.getAnimacionJugador().dibujarHabilidad) {
