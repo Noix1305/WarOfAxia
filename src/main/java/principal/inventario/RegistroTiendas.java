@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class RegistroTiendas {
@@ -19,7 +18,7 @@ public class RegistroTiendas {
             case 1:
                 listaIdsObjetos = new ArrayList<>(List.of("500", "502", "503", "504", "505",
                         "400", "401", "402", "600", "601", "616", "617",
-                        "632", "648", "1", "2", "3", "4"));
+                        "632", "648", "1", "2", "3", "4", "700", "701", "716", "732", "733", "734"));
                 break;
             case 2:
                 listaIdsObjetos = new ArrayList<>(List.of("600", "601", "616", "617", "632", "648"));

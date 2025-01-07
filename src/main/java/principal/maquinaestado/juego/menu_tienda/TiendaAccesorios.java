@@ -733,10 +733,10 @@ public class TiendaAccesorios extends SeccionTienda {
 
     // Método privado para dibujar los paneles de la interfaz de usuario
     private void dibujarPaneles(Graphics g) {
-        dibujarPanel(g, panelComprar, titularPanelComprar, "TIENDA");
-        dibujarPanel(g, panelObjetosComprados, titularPanelComprados, "CANASTA COMPRA");
-        dibujarPanel(g, panelVender, titularPanelVender, "MOCHILA");
-        dibujarPanel(g, panelObjetosVendidos, titularPanelVenta, "CANASTA VENTA");
+        dibujarPanelComprar(g, panelComprar, titularPanelComprar, "TIENDA");
+        dibujarPanelComprados(g, panelObjetosComprados, titularPanelComprados, "CANASTA COMPRA");
+        dibujarPanelVender(g, panelVender, titularPanelVender, "MOCHILA");
+        dibujarPanelObjetosVendidos(g, panelObjetosVendidos, titularPanelVenta, "CANASTA VENTA");
     }
 
     // Método privado para dibujar un panel con un título
@@ -863,10 +863,10 @@ public class TiendaAccesorios extends SeccionTienda {
     }
 
     // Método privado para dibujar los elementos en el panel de inventario
-    private void dibujarElementosEnPanelInventario(final Graphics g, List<Objeto> objetos, int lado) {
+    private void dibujarElementosEnPanelInventario(final Graphics g, int lado) {
 
         // Iterar sobre los objetos en la lista y dibujar cada uno en la posición correspondiente
-        for (Objeto objetoActual : objetos) {
+        for (Objeto objetoActual : ElementosPrincipales.inventario.getJoyas()) {
             if (objetoActual instanceof Joya) {
                 Rectangle posicionMenu = objetoActual.getPosicionMochila();
                 DibujoDebug.dibujarImagen(g, objetoActual.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
@@ -942,17 +942,10 @@ public class TiendaAccesorios extends SeccionTienda {
 
 // Método para dibujar los elementos en el inventario del jugador
     private void dibujarElementosInventario(final Graphics g) {
-        List<Objeto> objetos = new ArrayList<>();
 
-        for (Objeto objetoInventario : ElementosPrincipales.inventario.getJoyas()) {
-            if (objetoNoVendible(objetoInventario.getId())) {
-                continue;
-            }
-            objetos.add(objetoInventario);
-        }
         int lado = Constantes.LADO_SPRITE;
 
-        dibujarElementosEnPanelInventario(g, objetos, lado);
+        dibujarElementosEnPanelInventario(g, lado);
         if (objetoSeleccionadoVenta != null) {
             DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,

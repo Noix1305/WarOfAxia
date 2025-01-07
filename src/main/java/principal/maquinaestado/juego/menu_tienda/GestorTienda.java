@@ -99,10 +99,10 @@ public class GestorTienda implements EstadoJuego {
     // Método para actualizar el estado de la tienda
     @Override
     public void actualizar() {
-        for (int i = 0; i < secciones.length; i++) {
+        for (SeccionTienda seccione : secciones) {
             if (GestorPrincipal.sd.getRaton().isClick()
-                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                seccionActual = secciones[i];
+                    && GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccione.getEtiquetaMenuEscalada())) {
+                seccionActual = seccione;
             }
         }
         seccionActual.actualizar();
@@ -115,21 +115,18 @@ public class GestorTienda implements EstadoJuego {
         estructuraTienda.dibujar(g);
 
         // Dibujar las etiquetas de las secciones de la tienda
-        for (int i = 0; i < secciones.length; i++) {
-            if (seccionActual == secciones[i]) {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaActivaResaltada(g);
+        for (SeccionTienda seccion : secciones) {
+            if (seccionActual == seccion) {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccion.getEtiquetaMenuEscalada())) {
+                    seccion.dibujarEtiquetaActivaResaltada(g);
+                } else {
+                    seccion.dibujarEtiquetaActiva(g);
                 }
-                else {
-                    secciones[i].dibujarEtiquetaActiva(g);
-                }
-            }
-            else {
-                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(secciones[i].getEtiquetaMenuEscalada())) {
-                    secciones[i].dibujarEtiquetaInactResaltada(g);
-                }
-                else {
-                    secciones[i].dibujarEtiquetaInactiva(g);
+            } else {
+                if (GestorPrincipal.sd.getRaton().getPosicionRectangle().intersects(seccion.getEtiquetaMenuEscalada())) {
+                    seccion.dibujarEtiquetaInactResaltada(g);
+                } else {
+                    seccion.dibujarEtiquetaInactiva(g);
                 }
             }
         }
