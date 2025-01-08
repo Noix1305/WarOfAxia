@@ -9,11 +9,15 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import principal.Constantes;
+import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
 import principal.control.GestorControles;
 import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
 import principal.maquinaestado.EstadoJuego;
+import principal.maquinaestado.menujuego.MenuEquipo;
+import principal.maquinaestado.menujuego.MenuInventario;
+import principal.maquinaestado.menujuego.SeccionMenu;
 
 public class GestorTienda implements EstadoJuego {
 
@@ -29,6 +33,7 @@ public class GestorTienda implements EstadoJuego {
     private final Rectangle etiquetaMateriales;
     private final Rectangle etiquetaPociones;
     public final Rectangle salir;
+    public static int seccion;
 
     // Constructor
     public GestorTienda() {
@@ -105,6 +110,8 @@ public class GestorTienda implements EstadoJuego {
                 seccionActual = seccione;
             }
         }
+
+
         seccionActual.actualizar();
     }
 
@@ -144,10 +151,10 @@ public class GestorTienda implements EstadoJuego {
             final Rectangle etiquetaResaltadaSalir = new Rectangle(salir.x + salir.width - 10, salir.y + 5, 5, salir.height - 10);
             DibujoDebug.dibujarRectanguloRelleno(g, etiquetaResaltadaSalir, Color.RED);
             if (GestorPrincipal.sd.getRaton().isClick()) {
-                GestorControles.teclado.tiendaActiva = false;
+                GestorPrincipal.tiendaActiva = false;
+                GestorPrincipal.juegoActivo = true;
             }
-        }
-        else {
+        } else {
             g.setFont(g.getFont().deriveFont(12f));
             DibujoDebug.dibujarString(g, "SALIR", salir.x + Constantes.LADO_SPRITE / 2,
                     salir.y + salir.height - Constantes.LADO_SPRITE / 4, Color.black);

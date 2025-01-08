@@ -35,8 +35,10 @@ public class PantallaTitulo implements EstadoJuego {
     private SeccionMenu seccionActual;
     BufferedImage inicio;
     HojaSprites hojaInicio;
+    public static String musicaInicio = "Final-Fantasy-Main-Theme-_Orchestral_";
 
     private EstructuraMenu estructuraMenu;
+    public static boolean musicaIniciada = false;
 
     public PantallaTitulo() {
 //        estructuraMenu = new EstructuraMenu();
@@ -64,9 +66,13 @@ public class PantallaTitulo implements EstadoJuego {
 //    }
 
     public void actualizar() {
-//        if (!esperaEnter) {
-//            // Aquí podrías agregar lógica de animación o actualización
-//        }
+        if (GestorPrincipal.pantallaTitulo && !musicaIniciada) {
+            if (!ElementosPrincipales.reproductor.musica.getFilename().toUpperCase().equalsIgnoreCase(musicaInicio)) {
+                ElementosPrincipales.reproductor.musica.cambiarArchivo(musicaInicio);
+                ElementosPrincipales.reproductor.musica.repetir(0.8f);
+                musicaIniciada = true;
+            }
+        }
     }
 
     public void dibujar(Graphics2D g) {

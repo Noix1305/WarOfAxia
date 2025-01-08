@@ -21,7 +21,10 @@ public class GestorPrincipal {
     private int ancho; // Ancho de la ventana del juego
     private int alto; // Alto de la ventana del juego
     public static boolean pantallaTitulo = true;
-    public static boolean juegoActivo = false;// Variable que indica si se muestra la pantalla de título
+    public static boolean juegoActivo = false;
+    public static boolean tiendaActiva = false;
+    public static boolean inventarioActivo = false;
+    public static boolean menuInicio = false;// Variable que indica si se muestra la pantalla de título
     // Instancias principales del juego
     public static SuperficieDibujo sd; // Superficie de dibujo del juego
     public static GestorEstados ge; // Gestor de estados del juego
@@ -35,7 +38,7 @@ public class GestorPrincipal {
         this.titulo = titulo;
         this.alto = alto;
         this.ancho = ancho;
-        contadorMapa =0;
+        contadorMapa = 0;
     }
 
 
@@ -112,22 +115,21 @@ public class GestorPrincipal {
     // Método para actualizar el estado del juego
     private void actualizar() throws InterruptedException {
         // Cambia el estado del juego según la interacción del jugador
-        if (GestorControles.teclado.inventarioActivo) {
+        if (inventarioActivo && !juegoActivo && !tiendaActiva && !pantallaTitulo && !menuInicio) {
             ge.cambiarEstadoActual(1);
-            GestorControles.teclado.tiendaActiva = false;
-        } else if (GestorControles.teclado.tiendaActiva) {
+        } else if (tiendaActiva && !juegoActivo && !inventarioActivo && !pantallaTitulo && !menuInicio) {
             ge.cambiarEstadoActual(2);
-            GestorControles.teclado.inventarioActivo = false;
-        } else if (pantallaTitulo) {
+        } else if (pantallaTitulo && !juegoActivo && !inventarioActivo && !tiendaActiva && !menuInicio) {
             ge.cambiarEstadoActual(3);
-        }else if(juegoActivo){
+        } else if (juegoActivo && !pantallaTitulo && !inventarioActivo && !tiendaActiva && !menuInicio) {
             ge.cambiarEstadoActual(0);
+        } else if (menuInicio && !pantallaTitulo && !inventarioActivo && !tiendaActiva && !juegoActivo) {
+            ge.cambiarEstadoActual(4);
         }
         // Actualiza el estado del juego si no se muestra la pantalla de título
-        if (!pantallaTitulo) {
-            ge.actualizar();
-            sd.actualizar();
-        }
+        ge.actualizar();
+        sd.actualizar();
+
     }
 
     // Método para dibujar el estado del juego
@@ -144,7 +146,6 @@ public class GestorPrincipal {
     public static int getAps() {
         return aps;
     }
-
 
 
 }

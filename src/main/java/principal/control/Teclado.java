@@ -22,6 +22,7 @@ import principal.maquinaestado.GestorEstados;
 import principal.maquinaestado.juego.EstadoJuegoGuardar;
 import principal.maquinaestado.juego.GestorJuego;
 import principal.maquinaestado.juego.JuegoGuardado;
+import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
 import principal.maquinaestado.menujuego.MenuEquipo;
 
 /**
@@ -40,14 +41,10 @@ public class Teclado implements KeyListener {
     public GestorHabilidades gh = new GestorHabilidades();
 
     // Variables para controlar el estado del juego y otras acciones
-    public boolean recogiendo = false;
     public boolean corriendo = false;
     public boolean debug = false;
-    public boolean inventarioActivo = false;
-    public boolean tiendaActiva = false;
 
     private int ultimaTeclaPulsada = KeyEvent.VK_UNDEFINED; // Última tecla pulsada
-
     // Teclas utilizadas en el juego
     private final int[] teclas = {KeyEvent.VK_ENTER, KeyEvent.VK_SPACE, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT};
 
@@ -94,13 +91,14 @@ public class Teclado implements KeyListener {
                 if (GestorPrincipal.pantallaTitulo) {
                     // Establece la bandera para iniciar el juego
                     GestorPrincipal.pantallaTitulo = false;
-                    GestorPrincipal.ge.cambiarEstadoActual(4);
+                    GestorPrincipal.menuInicio = true;
+                    PantallaTitulo.musicaIniciada = false;
                 }
                 if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
-
                     ElementosPrincipales.jugador.getGestorAt().setVida(100);
                     ElementosPrincipales.jugador.getAnimacionJugador().setEstaVivo(true);
                     GestorJuego.cargarMapa(ElementosPrincipales.mapa.getNombreMapaActual());
+                    GestorPrincipal.juegoActivo = false;
                     GestorPrincipal.pantallaTitulo = true;
 
                 }
@@ -132,12 +130,17 @@ public class Teclado implements KeyListener {
                 debug = !debug;
                 break;
             case KeyEvent.VK_I:
-                inventarioActivo = !inventarioActivo;
-                GestorPrincipal.juegoActivo = !GestorPrincipal.juegoActivo;
+                if (GestorPrincipal.juegoActivo && !GestorPrincipal.pantallaTitulo && !GestorPrincipal.tiendaActiva) {
+                    GestorPrincipal.inventarioActivo = !GestorPrincipal.inventarioActivo;
+                    GestorPrincipal.juegoActivo = false;
+                } else {
+                    GestorPrincipal.inventarioActivo = false;
+                    GestorPrincipal.juegoActivo = true;
+                }
                 break;
-            case KeyEvent.VK_T:
-                tiendaActiva = !tiendaActiva;
-                break;
+//            case KeyEvent.VK_T:
+//                GestorPrincipal.tiendaActiva = !GestorPrincipal.tiendaActiva;
+//                break;
             case KeyEvent.VK_SPACE:
                 ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
                 break;

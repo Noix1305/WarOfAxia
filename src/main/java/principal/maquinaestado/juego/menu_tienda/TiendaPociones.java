@@ -6,7 +6,10 @@ package principal.maquinaestado.juego.menu_tienda;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+
 import principal.graficos.SuperficieDibujo;
+import principal.inventario.Objeto;
 
 /**
  *
@@ -26,6 +29,18 @@ public class TiendaPociones extends SeccionTienda{
 
     @Override
     public void dibujar(Graphics g, SuperficieDibujo sd) {
+        super.dibujarPaneles(g);
+        super.dibujarLimitePeso(g);
     }
-    
+
+    @Override
+    protected void dibujarTooltipPaneles(Graphics g, SuperficieDibujo sd, ArrayList<Objeto> objetosTienda, ArrayList<Objeto> objetos) {
+
+    }
+
+    @Override
+    protected void dibujarTooltipObjeto(Graphics g, SuperficieDibujo sd, Objeto objeto) {
+
+    }
+
 }

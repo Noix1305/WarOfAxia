@@ -26,7 +26,6 @@ public class MenuInicio implements EstadoJuego {
     private final Rectangle etiquetaOpciones;
     private final Rectangle ventanaCargarJuego;
     private boolean musicaIniciada;
-    private int anchoPantallaInicio;
     private HojaSprites fondo;
     private boolean mostrarVentanaCargarJuego;
     private File[] archivosGuardados;
@@ -36,6 +35,7 @@ public class MenuInicio implements EstadoJuego {
 
     public MenuInicio() {
 
+
         etiquetaNuevoJuego = new Rectangle(Constantes.ANCHO_JUEGO / 2 - 30, Constantes.ALTO_JUEGO / 2 - 20, 70, 15);
         etiquetaCargarJuego = new Rectangle(etiquetaNuevoJuego.x, etiquetaNuevoJuego.y + 20, etiquetaNuevoJuego.width, etiquetaNuevoJuego.height);
         etiquetaOpciones = new Rectangle(etiquetaCargarJuego.x, etiquetaCargarJuego.y + 20, etiquetaNuevoJuego.width, etiquetaNuevoJuego.height);
@@ -44,7 +44,6 @@ public class MenuInicio implements EstadoJuego {
                 Constantes.ALTO_JUEGO);
         ventanaCargarJuego = new Rectangle(etiquetaNuevoJuego.x + etiquetaNuevoJuego.width + 20, 50, 100, 160);
         musicaIniciada = false;
-        anchoPantallaInicio = Constantes.ANCHO_JUEGO - (BANNER_LATERAL.width * 2);
         fondo = new HojaSprites("/fondos/fondoInicio.png", 360, 360, true);
         mostrarVentanaCargarJuego = false;
         sd = GestorPrincipal.sd;
@@ -54,7 +53,6 @@ public class MenuInicio implements EstadoJuego {
 
     @Override
     public void actualizar() {
-        GestorPrincipal.pantallaTitulo = false;
         iniciarMusica();
         iniciarNuevaPartida(GestorPrincipal.sd);
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
@@ -111,6 +109,7 @@ public class MenuInicio implements EstadoJuego {
         if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(etiquetaNuevoJuego)) && sd.getRaton().isClick()) {
             musicaIniciada = false;
             GestorPrincipal.juegoActivo = true;
+            GestorPrincipal.menuInicio = false;
             GestorJuego.cargarMapa(ElementosPrincipales.mapa.getNombreMapaActual());
         }
     }
@@ -123,6 +122,7 @@ public class MenuInicio implements EstadoJuego {
             System.out.println("Juego cargado desde: " + archivo.getName());
             musicaIniciada = false;
             mostrarVentanaCargarJuego = false;
+            GestorPrincipal.menuInicio = false;
             GestorPrincipal.juegoActivo = true;
             gestorGuardado.cargarJuego(archivo);
         } else {
