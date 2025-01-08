@@ -211,7 +211,6 @@ public class MapaTiled implements Serializable {
     }
 
 
-
     public void dibujarSegundaCapa(Graphics2D g) {
 
         // Dibujar sprites del mapa
@@ -517,42 +516,42 @@ public class MapaTiled implements Serializable {
         JsonArray rectangulosNode = datosCapa.getAsJsonArray("objects");
         GestorPrincipal.contadorMapa++;
 
-            for (int j = 0; j < rectangulosNode.size(); j++) {
-                JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
-                JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
-                String siguienteMapa = datosRectangulo.get("mapaDestino").getAsString();
+        for (int j = 0; j < rectangulosNode.size(); j++) {
+            JsonObject datosRectangulo = rectangulosNode.get(j).getAsJsonObject();
+            JsonObject puntoInicialJSON = datosRectangulo.getAsJsonObject("punto inicial");
+            String siguienteMapa = datosRectangulo.get("mapaDestino").getAsString();
 
-                int x = getIntJson(datosRectangulo, "x");
-                int y = getIntJson(datosRectangulo, "y");
-                int ancho = getIntJson(datosRectangulo, "width");
-                int alto = getIntJson(datosRectangulo, "height");
+            int x = getIntJson(datosRectangulo, "x");
+            int y = getIntJson(datosRectangulo, "y");
+            int ancho = getIntJson(datosRectangulo, "width");
+            int alto = getIntJson(datosRectangulo, "height");
 
-                // Asegurar que los valores no sean cero
-                if (x == 0) {
-                    x = 1;
-                }
-                if (y == 0) {
-                    y = 1;
-                }
-                if (ancho == 0) {
-                    ancho = 1;
-                }
-                if (alto == 0) {
-                    alto = 1;
-                }
-
-                Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
-                Point puntoSalidaMapa = new Point(x, y);
-                this.zonasSalidaOriginales.add(rectangulo);
-                int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
-                int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
-                Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
-                String nombreSalida = datosRectangulo.get("name").getAsString();
-
-                Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa, nombreSalida);
-                Salida.getSalidas().add(nuevaSalida);
-
+            // Asegurar que los valores no sean cero
+            if (x == 0) {
+                x = 1;
             }
+            if (y == 0) {
+                y = 1;
+            }
+            if (ancho == 0) {
+                ancho = 1;
+            }
+            if (alto == 0) {
+                alto = 1;
+            }
+
+            Rectangle rectangulo = new Rectangle(x, y, ancho, alto);
+            Point puntoSalidaMapa = new Point(x, y);
+            this.zonasSalidaOriginales.add(rectangulo);
+            int xInicioSiguienteMapa = puntoInicialJSON.get("x").getAsInt();
+            int yInicioSiguienteMapa = puntoInicialJSON.get("y").getAsInt();
+            Point puntoInicioSiguienteMapa = new Point(xInicioSiguienteMapa, yInicioSiguienteMapa);
+            String nombreSalida = datosRectangulo.get("name").getAsString();
+
+            Salida nuevaSalida = new Salida(puntoInicioSiguienteMapa, puntoSalidaMapa, siguienteMapa, nombreSalida);
+            Salida.getSalidas().add(nuevaSalida);
+
+        }
     }
 
     private void inicializarCapaSprites1(JsonObject datosCapa) {
@@ -930,10 +929,13 @@ public class MapaTiled implements Serializable {
 
             if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) && GestorPrincipal.sd.getRaton().isClick2()) {
                 tiendaActiva = tiendaActual;
-                obtenerObjetosMapa(tiendas.get(0).getIdTienda());
+                obtenerObjetosMapa(tiendaActual.getIdTienda());
                 objetosTiendaActual = verificarTipoTienda(tiendaActiva);
 
-                GestorControles.teclado.tiendaActiva = true;
+                GestorPrincipal.tiendaActiva = true;
+                GestorPrincipal.juegoActivo = false;
+                GestorPrincipal.inventarioActivo = false;
+                GestorPrincipal.pantallaTitulo = false;
             }
         }
     }
@@ -1035,7 +1037,7 @@ public class MapaTiled implements Serializable {
                 break;
             case 3:
                 for (Objeto objetoMapa : objetosTiendaMapa) {
-                    if (objetoMapa instanceof Accesorio) {
+                    if (objetoMapa instanceof Joya) {
                         objetosTiendaActual.add(objetoMapa);
                     }
                 }
