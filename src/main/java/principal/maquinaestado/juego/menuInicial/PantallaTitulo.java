@@ -24,32 +24,12 @@ public class PantallaTitulo implements EstadoJuego {
 
     private static boolean esperaEnter = true;
 
-    //    private transient static BufferedImage titulo;
-//    private final HojaSprites ht;
-//    private final HojaSprites s1;
-//    private final HojaSprites s2;
-//    private transient static BufferedImage start;
-//    private final Timer timer;
-//    private final SeccionMenu[] secciones;
-    private SeccionMenu[] secciones;
-    private SeccionMenu seccionActual;
-    BufferedImage inicio;
-    HojaSprites hojaInicio;
-    public static String musicaInicio = "Final-Fantasy-Main-Theme-_Orchestral_";
-
-    private EstructuraMenu estructuraMenu;
+    private final BufferedImage inicio;
+    private final HojaSprites hojaInicio;
+    private final String musicaInicio = "Final-Fantasy-Main-Theme-_Orchestral_";
     public static boolean musicaIniciada = false;
 
     public PantallaTitulo() {
-//        estructuraMenu = new EstructuraMenu();
-//        secciones = new SeccionMenu[5];
-//
-//        final Rectangle etiquetaInventario = new Rectangle(estructuraMenu.BANNER_LATERAL.x
-//                + estructuraMenu.MARGEN_HORIZONTAL_ETIQUETAS, estructuraMenu.BANNER_LATERAL.y
-//                + estructuraMenu.MARGEN_VERTICAL_ETIQUETAS, estructuraMenu.ANCHO_ETIQUETAS,
-//                estructuraMenu.ALTO_ETIQUETAS);
-//
-//        secciones[0] = new MenuInventario("INVENTARIO", etiquetaInventario, estructuraMenu);
         ElementosPrincipales.reproductor.musica.repetir(0.8f);
         this.hojaInicio = new HojaSprites("/fondos/Inicio4.png", 640, 360, true);
         this.inicio = hojaInicio.getSprites(0).imagen;
