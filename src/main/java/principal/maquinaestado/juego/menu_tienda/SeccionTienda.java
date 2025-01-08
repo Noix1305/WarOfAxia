@@ -152,7 +152,6 @@ public abstract class SeccionTienda {
         if (!objetos.isEmpty()) {
 
             for (Objeto objetoActual : objetos) {
-
                 // Cálculo de la posición X ajustado para el margen desde el borde del panel
                 int posX = piObjetosTienda.x + margenX + (contadorObjetosTienda % 3) * (lado + margenGeneral / 2);
                 int posY = piObjetosTienda.y + contadorObjetosTienda / 3 * (lado + margenGeneral / 2);
@@ -333,17 +332,14 @@ public abstract class SeccionTienda {
                     cantidadObjetos++;
                     System.out.println(cantidadObjetos);
 
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(subirDecena))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(subirDecena))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos += 10;
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarUnidad))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarUnidad))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos--;
 
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarDecena))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarDecena))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos -= 10;
 
@@ -365,24 +361,20 @@ public abstract class SeccionTienda {
                     objetoSeleccionadoCompra = null;
                     cantidadObjetos = 0;
                 }
-            }
-            else {
+            } else {
                 if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(subirUnidad))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos++;
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(subirDecena))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(subirDecena))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos += 10;
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarUnidad))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarUnidad))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos--;
                     if (cantidadObjetos < 0) {
                         cantidadObjetos = 0;
                     }
-                }
-                else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarDecena))
+                } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(bajarDecena))
                         && GestorPrincipal.sd.getRaton().isClick()) {
                     cantidadObjetos -= 10;
                     if (cantidadObjetos < 0) {
@@ -406,8 +398,7 @@ public abstract class SeccionTienda {
                 }
             }
 
-        }
-        else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(comprar))
+        } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(comprar))
                 && !canastaCompra.isEmpty() && GestorPrincipal.sd.getRaton().isClick()) {
 
             if (excederiaPeso) {
@@ -418,8 +409,7 @@ public abstract class SeccionTienda {
                 System.out.println("Dinero Insuficiente");
                 sinDinero = true;
                 return;
-            }
-            else {
+            } else {
                 sinDinero = false;
             }
 
@@ -445,15 +435,13 @@ public abstract class SeccionTienda {
             comprando = false;
             totalTransaccionCompra = 0;
             canastaCompra.clear();
-        }
-        else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(cancelarCompra))
+        } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(cancelarCompra))
                 && !canastaCompra.isEmpty() && GestorPrincipal.sd.getRaton().isClick()) {
             comprando = false;
             sinDinero = false;
             totalTransaccionCompra = 0;
             canastaCompra.clear();
-        }
-        else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelObjetosComprados))
+        } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelObjetosComprados))
                 && !canastaCompra.isEmpty()) {
 
             if (tiempoActual - tiempoUltimaAccion < tiempoDebouncing) {
@@ -760,9 +748,11 @@ public abstract class SeccionTienda {
     public boolean objetoNoVendible(int idObjeto) {
         boolean flag = false;
         for (Objeto objetoEquipado : ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual()) {
-            if (objetoEquipado.getId() == idObjeto) {
-                flag = true;
-                break;
+            if (objetoEquipado != null) {
+                if (objetoEquipado.getId() == idObjeto) {
+                    flag = true;
+                    break;
+                }
             }
         }
         return flag;
@@ -880,9 +870,7 @@ public abstract class SeccionTienda {
     }
 
     private void dibujarElementosInventario(final Graphics g, ArrayList<Objeto> objetos) {
-        int lado = Constantes.LADO_SPRITE;
-
-        dibujarElementosEnPanelInventario(g, objetos, lado);
+        dibujarElementosEnPanelInventario(g, objetos);
         if (objetoSeleccionadoVenta != null) {
             DibujoDebug.dibujarImagen(g, objetoSeleccionadoVenta.getSprite().getImagen(),
                     new Point(objetoSeleccionadoVenta.getPosicionFlotante().x,
@@ -890,19 +878,26 @@ public abstract class SeccionTienda {
         }
     }
 
-    private void dibujarElementosEnPanelInventario(final Graphics g, ArrayList<Objeto> objetos, int lado) {
+    private void dibujarElementosEnPanelInventario(final Graphics g, ArrayList<Objeto> objetos) {
 
+        int lado = Constantes.LADO_SPRITE;
         for (Objeto objeto : objetos) {
-            Rectangle posicionMenu = objeto.getPosicionMochila();
-            DibujoDebug.dibujarImagen(g, objeto.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
-            String texto = objeto.getCantidad() < 10 ? "0" + objeto.getCantidad() : String.valueOf(objeto.getCantidad());
-            g.setColor(Color.BLACK);
-            DibujoDebug.dibujarRectanguloRelleno(g, posicionMenu.x + lado - 12, posicionMenu.y + 32 - 8, 12, 8);
-            g.setColor(Color.WHITE);
-            int xTexto = posicionMenu.x + lado - MedidorString.medirAnchoPixeles(g, texto) - 2;
-            int yTexto = posicionMenu.y + 31;
-            DibujoDebug.dibujarString(g, texto, xTexto, yTexto);
+            if (objeto.getPosicionMochila().x != 0) {
+                dibujarObjetoInventario(g, objeto, lado);
+            }
         }
+    }
+
+    private void dibujarObjetoInventario(Graphics g, Objeto objeto, int lado) {
+        Rectangle posicionMenu = objeto.getPosicionMochila();
+        DibujoDebug.dibujarImagen(g, objeto.getSprite().getImagen(), posicionMenu.x, posicionMenu.y);
+        String texto = objeto.getCantidad() < 10 ? "0" + objeto.getCantidad() : String.valueOf(objeto.getCantidad());
+        g.setColor(Color.BLACK);
+        DibujoDebug.dibujarRectanguloRelleno(g, posicionMenu.x + lado - 12, posicionMenu.y + 32 - 8, 12, 8);
+        g.setColor(Color.WHITE);
+        int xTexto = posicionMenu.x + lado - MedidorString.medirAnchoPixeles(g, texto) - 2;
+        int yTexto = posicionMenu.y + 31;
+        DibujoDebug.dibujarString(g, texto, xTexto, yTexto);
     }
 
     private void dibujarElementosCanastaCompra(final Graphics g, ArrayList<Objeto> objetos) {

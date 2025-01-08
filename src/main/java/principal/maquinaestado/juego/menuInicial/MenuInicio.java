@@ -280,6 +280,7 @@ public class MenuInicio implements EstadoJuego {
         int ancho = ventanaCargarJuego.width - 10;
         int alto = 20;
 
+
         for (File archivo : archivosGuardados) {
             Rectangle slot = new Rectangle(x, y + 10, ancho, alto);
             SlotCargarJuego slotNuevo = new SlotCargarJuego(archivo, slot);
