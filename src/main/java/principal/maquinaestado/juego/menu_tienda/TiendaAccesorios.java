@@ -32,15 +32,15 @@ public class TiendaAccesorios extends SeccionTienda {
     @Override
     public void dibujar(Graphics g, SuperficieDibujo sd) {
         // Dibujar el límite de peso
-
         super.dibujarLimitePeso(g);
         super.dibujarPaneles(g);
 
         // Dibujar los paneles de la tienda
         if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 3) {
-            dibujarElementos(g, objetosTienda, ElementosPrincipales.inventario.getJoyas(0));
+
             super.dibujarVentanaParaCompra(g, GestorPrincipal.sd);
             super.dibujarVentanaParaVenta(g, GestorPrincipal.sd);
+            dibujarElementos(g, objetosTienda, ElementosPrincipales.inventario.getJoyas(0));
 
             // Si se muestra el tooltip, dibujar tooltips de peso y paneles
             if (MenuEquipo.mostrarTooltip) {

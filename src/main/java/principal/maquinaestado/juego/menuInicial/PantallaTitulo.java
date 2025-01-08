@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
+import principal.control.GestorControles;
 import principal.herramientas.DibujoDebug;
 import principal.maquinaestado.EstadoJuego;
 import principal.maquinaestado.juego.GestorJuego;
@@ -28,6 +29,7 @@ public class PantallaTitulo implements EstadoJuego {
     private final HojaSprites hojaInicio;
     private final String musicaInicio = "Final-Fantasy-Main-Theme-_Orchestral_";
     public static boolean musicaIniciada = false;
+    private long tiempoUltimaPulsacion = 0;
 
     public PantallaTitulo() {
         ElementosPrincipales.reproductor.musica.repetir(0.8f);
@@ -51,6 +53,19 @@ public class PantallaTitulo implements EstadoJuego {
                 ElementosPrincipales.reproductor.musica.cambiarArchivo(musicaInicio);
                 ElementosPrincipales.reproductor.musica.repetir(0.8f);
                 musicaIniciada = true;
+            }
+        }
+        long tiempoActual = System.currentTimeMillis(); // Tiempo actual en milisegundos
+
+        if (GestorPrincipal.pantallaTitulo && tiempoActual - tiempoUltimaPulsacion > 300) {
+            if (GestorControles.teclado.enter.puedeProcesarse()) {
+                GestorControles.teclado.enter.marcarComoProcesada();
+                GestorControles.teclado.enter.teclaLiberada();
+                System.out.println("Enter pulsada en pantalla título");
+                tiempoUltimaPulsacion = tiempoActual;
+                GestorPrincipal.menuInicio = true;
+                GestorPrincipal.pantallaTitulo = false;
+                 // Actualiza el tiempo
             }
         }
     }

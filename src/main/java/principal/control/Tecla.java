@@ -1,34 +1,37 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
 package principal.control;
 
-/**
- * Clase que representa el estado de una tecla en el teclado.
- */
 public class Tecla {
 
     private boolean pulsada = false; // Indica si la tecla está pulsada o no
+    private boolean procesada = false; // Indica si la pulsación ya ha sido procesada
     private long ultimaPulsacion = System.nanoTime(); // Tiempo de la última pulsación
 
-    // Método para marcar que la tecla ha sido pulsada
     public void teclaPulsada() {
-        pulsada = true; // Establece que la tecla está pulsada
-        ultimaPulsacion = System.nanoTime(); // Actualiza el tiempo de la última pulsación
+        if (!pulsada) {
+            pulsada = true;
+            procesada = false; // Permite procesar la pulsación
+            ultimaPulsacion = System.nanoTime();
+        }
     }
 
-    // Método para marcar que la tecla ha sido liberada
     public void teclaLiberada() {
-        pulsada = false; // Establece que la tecla ha sido liberada
+        pulsada = false;
+        procesada = false; // Resetea el estado para la próxima pulsación
     }
 
-    // Método para verificar si la tecla está pulsada
     public boolean estaPulsada() {
-        return pulsada; // Devuelve el estado de la tecla
+        return pulsada;
     }
 
-    // Método para obtener el tiempo de la última pulsación
+    public boolean puedeProcesarse() {
+        return pulsada && !procesada; // Solo se procesa si no ha sido manejada
+    }
+
+    public void marcarComoProcesada() {
+        procesada = true;
+    }
+
     public long getUltimaPulsacion() {
-        return ultimaPulsacion; // Devuelve el tiempo de la última pulsación
+        return ultimaPulsacion;
     }
 }
