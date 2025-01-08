@@ -3,6 +3,7 @@ package principal.maquinaestado.juego.menuInicial;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
+import principal.control.GestorControles;
 import principal.graficos.SuperficieDibujo;
 import principal.herramientas.DibujoDebug;
 import principal.herramientas.EscaladorElementos;
@@ -31,6 +32,8 @@ public class MenuInicio implements EstadoJuego {
     private File[] archivosGuardados;
     private ArrayList<SlotCargarJuego> slots;
     private SuperficieDibujo sd;
+    private int botonSeleccionado = 0;
+    private long tiempoUltimaPulsacion = 0;// Índice del botón seleccionado (0 = Nuevo Juego, 1 = Cargar Partida, 2 = Opciones)
 
 
     public MenuInicio() {
@@ -56,6 +59,8 @@ public class MenuInicio implements EstadoJuego {
         iniciarMusica();
         iniciarNuevaPartida(GestorPrincipal.sd);
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
+        long tiempoActual = System.currentTimeMillis();
+
         if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(etiquetaCargarJuego)) &&
                 GestorPrincipal.sd.getRaton().isClick()) {
             mostrarVentanaCargarJuego = true;
@@ -65,7 +70,46 @@ public class MenuInicio implements EstadoJuego {
             gestionarSeleccionArchivo(GestorPrincipal.sd);
         }
 
+        if (GestorControles.teclado.teclaArriba.puedeProcesarse()) {
+            botonSeleccionado = (botonSeleccionado - 1 + 3) % 3; // Navegar hacia arriba
+            GestorControles.teclado.teclaArriba.marcarComoProcesada();
+            System.out.println("boton: " + botonSeleccionado);// Marca la tecla como procesada
+        }
+
+        if (GestorControles.teclado.teclaAbajo.puedeProcesarse()) {
+            botonSeleccionado = (botonSeleccionado + 1) % 3; // Navegar hacia abajo
+            GestorControles.teclado.teclaAbajo.marcarComoProcesada();
+            System.out.println("boton: " + botonSeleccionado);// Marca la tecla como procesada
+        }
+
+        if (GestorPrincipal.menuInicio && tiempoActual - tiempoUltimaPulsacion > 300) {
+            if (GestorControles.teclado.enter.puedeProcesarse()) {
+                GestorControles.teclado.enter.marcarComoProcesada();
+                GestorControles.teclado.enter.teclaLiberada();
+                System.out.println("Enter pulsada en menú inicio");
+
+                switch (botonSeleccionado) {
+                    case 0: // Nuevo Juego
+                        if (!mostrarVentanaCargarJuego) {
+                            musicaIniciada = false;
+                            GestorPrincipal.juegoActivo = true;
+                            GestorPrincipal.menuInicio = false;
+                            GestorJuego.cargarMapa(ElementosPrincipales.mapa.getNombreMapaActual());
+                        }
+                        break;
+                    case 1: // Cargar Partida
+                        mostrarVentanaCargarJuego = true;
+                        break;
+                    case 2: // Opciones
+                        System.out.println("Opciones seleccionadas");
+                        break;
+                }
+                tiempoUltimaPulsacion = tiempoActual; // Actualiza el tiempo
+            }
+        }
+
     }
+
 
     @Override
     public void dibujar(Graphics2D g) {
@@ -78,6 +122,7 @@ public class MenuInicio implements EstadoJuego {
 
 
     }
+
 
     private void iniciarMusica() {
         if (!GestorPrincipal.pantallaTitulo && !musicaIniciada) {
@@ -136,15 +181,20 @@ public class MenuInicio implements EstadoJuego {
     }
 
     private void dibujarContornoEtiquetas(Graphics g, SuperficieDibujo sd) {
-        Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(etiquetaNuevoJuego))) {
-            DibujoDebug.dibujarRectanguloContorno(g, etiquetaNuevoJuego, Color.cyan);
-        } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(etiquetaCargarJuego))) {
-            DibujoDebug.dibujarRectanguloContorno(g, etiquetaCargarJuego, Color.cyan);
-        } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(etiquetaOpciones))) {
-            DibujoDebug.dibujarRectanguloContorno(g, etiquetaOpciones, Color.cyan);
+        // Dibujar contorno según el índice seleccionado
+        switch (botonSeleccionado) {
+            case 0: // Nuevo Juego
+                DibujoDebug.dibujarRectanguloContorno(g, etiquetaNuevoJuego, Color.cyan);
+                break;
+            case 1: // Cargar Partida
+                DibujoDebug.dibujarRectanguloContorno(g, etiquetaCargarJuego, Color.cyan);
+                break;
+            case 2: // Opciones
+                DibujoDebug.dibujarRectanguloContorno(g, etiquetaOpciones, Color.cyan);
+                break;
         }
     }
+
 
     private void dibujarSlots(Graphics g, SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();

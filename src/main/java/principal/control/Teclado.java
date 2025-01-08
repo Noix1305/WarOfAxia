@@ -35,9 +35,9 @@ public class Teclado implements KeyListener {
     public Tecla abajo = new Tecla();
     public Tecla izquierda = new Tecla();
     public Tecla derecha = new Tecla();
-    public Tecla aumentar = new Tecla();
-    public Tecla disminuir = new Tecla();
     public Tecla enter = new Tecla();
+    public Tecla teclaArriba = new Tecla();
+    public Tecla teclaAbajo = new Tecla();
     public GestorHabilidades gh = new GestorHabilidades();
 
     // Variables para controlar el estado del juego y otras acciones
@@ -88,19 +88,13 @@ public class Teclado implements KeyListener {
         // Manejo de eventos para diferentes teclas
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ENTER:
-                if (GestorPrincipal.pantallaTitulo) {
-                    // Establece la bandera para iniciar el juego
-                    GestorPrincipal.pantallaTitulo = false;
-                    GestorPrincipal.menuInicio = true;
-                    PantallaTitulo.musicaIniciada = false;
-                }
+                enter.teclaPulsada();
                 if (!ElementosPrincipales.jugador.getAnimacionJugador().isEstaVivo()) {
                     ElementosPrincipales.jugador.getGestorAt().setVida(100);
                     ElementosPrincipales.jugador.getAnimacionJugador().setEstaVivo(true);
                     GestorJuego.cargarMapa(ElementosPrincipales.mapa.getNombreMapaActual());
                     GestorPrincipal.juegoActivo = false;
                     GestorPrincipal.pantallaTitulo = true;
-
                 }
                 break;
             case KeyEvent.VK_W:
@@ -121,10 +115,10 @@ public class Teclado implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_UP:
-                aumentar.teclaPulsada();
+                teclaArriba.teclaPulsada();
                 break;
             case KeyEvent.VK_DOWN:
-                disminuir.teclaPulsada();
+                teclaAbajo.teclaPulsada();
                 break;
             case KeyEvent.VK_F1:
                 debug = !debug;
@@ -226,11 +220,12 @@ public class Teclado implements KeyListener {
                 ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
                 break;
             case KeyEvent.VK_UP:
-                aumentar.teclaLiberada();
+                teclaArriba.teclaLiberada();
                 break;
             case KeyEvent.VK_DOWN:
-                disminuir.teclaLiberada();
+                teclaAbajo.teclaLiberada();
                 break;
+
 
         }
 

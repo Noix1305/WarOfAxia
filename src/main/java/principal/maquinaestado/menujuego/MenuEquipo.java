@@ -141,10 +141,10 @@ public class MenuEquipo extends SeccionMenu {
     public void removerObjetoEquipado() {
         Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
 
-        if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(panelEquipo)) && objetoSeleccionado == null) {
+        if (GestorPrincipal.sd.getRaton().isClick2() && objetoSeleccionado == null) {
 
-            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArma1))
-                    && GestorPrincipal.sd.getRaton().isClick2()) {
+            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArma1)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getArma1() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto armaEquipada = iterator.next();
                     // Verifica si getArma1() no es null
@@ -157,9 +157,9 @@ public class MenuEquipo extends SeccionMenu {
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().cambiarArma1(null);
 
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura1))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getArmaduraMedia()
-                    != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura1)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getArmaduraMedia()
+                            != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto armaduraMedia = iterator.next();
                     if (armaduraMedia.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getArmaduraMedia().getId()) {
@@ -168,8 +168,8 @@ public class MenuEquipo extends SeccionMenu {
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setArmaduraMedia(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura2))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getCasco() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura2)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getCasco() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto casco = iterator.next();
                     if (casco.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getCasco().getId()) {
@@ -178,8 +178,8 @@ public class MenuEquipo extends SeccionMenu {
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setCasco(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura3))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getGuante() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura3)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getGuante() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto guantes = iterator.next();
                     if (guantes.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getGuante().getId()) {
@@ -188,8 +188,8 @@ public class MenuEquipo extends SeccionMenu {
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setGuante(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura4))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getBota() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorArmadura4)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getBota() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto bota = iterator.next();
                     if (bota.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getBota().getId()) {
@@ -198,8 +198,8 @@ public class MenuEquipo extends SeccionMenu {
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setBota(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorCollar))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getCollar() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorCollar)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getCollar() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto collar = iterator.next();
                     if (collar.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getCollar().getId()) {
@@ -209,7 +209,7 @@ public class MenuEquipo extends SeccionMenu {
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setCollar(null);
             } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorAccesorio))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio() != null) {
+                    && ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto accesorio = iterator.next();
                     if (accesorio.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getAccesorio().getId()) {
@@ -218,27 +218,26 @@ public class MenuEquipo extends SeccionMenu {
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setAccesorio(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorAnillo1))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorAnillo1)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto anillo1 = iterator.next();
-                    if (anillo1.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1().getId()) {
+                    if (anillo1 != null && anillo1.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo1().getId()) {
                         iterator.remove();
                         break;
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo1(null);
-            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorAnillo2))
-                    && GestorPrincipal.sd.getRaton().isClick2() && ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2() != null) {
+            } else if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(contenedorAnillo2)) &&
+                    ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2() != null) {
                 for (Iterator<Objeto> iterator = ElementosPrincipales.jugador.getAlmacenEquipo().getEquipoActual().iterator(); iterator.hasNext(); ) {
                     Objeto anillo2 = iterator.next();
-                    if (anillo2.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2().getId()) {
+                    if (anillo2 != null && anillo2.getId() == ElementosPrincipales.jugador.getAlmacenEquipo().getAnillo2().getId()) {
                         iterator.remove();
                         break;
                     }
                 }
                 ElementosPrincipales.jugador.getAlmacenEquipo().setAnillo2(null);
-
             }
         }
     }
