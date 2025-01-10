@@ -54,6 +54,7 @@ public class AccionesJugador implements Serializable{
         // Indicar que el personaje está en movimiento
         setEnMovimiento(true);
 
+
         // Cambiar la dirección del personaje según la velocidad en los ejes X e Y
         cambiarDireccion(velocidadX, velocidadY, animacionJugador);
 
@@ -105,8 +106,6 @@ public class AccionesJugador implements Serializable{
         else if (velocidadY == -1) {
             animacionJugador.setDireccion(3);
         }
-
-        ElementosPrincipales.reproductor.sonidoCaminar1.reproducir(0.7f);
     }
 
 

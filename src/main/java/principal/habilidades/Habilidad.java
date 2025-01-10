@@ -65,7 +65,7 @@ public abstract class Habilidad {
     }
 
     // Método abstracto que debe ser implementado por las subclases
-    public abstract void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad);
+    public abstract void aplicarEfecto(Entidad atacante, Entidad objetivo);
 
     public ArrayList<Rectangle> getAlcanceHabilidad(final Jugador jugador, final Habilidad habilidad) {
         final ArrayList<Rectangle> alcance = new ArrayList<>();

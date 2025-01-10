@@ -107,7 +107,7 @@ public class Jugador extends Entidad implements Serializable {
         setVelocidad(super.gestorAtributos.getDestreza() * 0.2 - super.gestorAtributos.getPesoActual() * 0.30);
         super.gestorAtributos.setCritico(super.gestorAtributos.getSuerte() * 0.5);
         super.gestorAtributos.setResistenciaMaxima(600 + (int) (super.gestorAtributos.getConstitucion() * 0.1 + super.gestorAtributos.getDestreza() * 0.1));
-        super.gestorAtributos.setLimitePeso(200+super.gestorAtributos.getFuerza() * 2 + super.gestorAtributos.getConstitucion() * 2);
+        super.gestorAtributos.setLimitePeso(200 + super.gestorAtributos.getFuerza() * 2 + super.gestorAtributos.getConstitucion() * 2);
     }
 
     // Método para dibujar el efecto de subir de nivel del jugador
@@ -166,9 +166,13 @@ public class Jugador extends Entidad implements Serializable {
 
         accionesJugador.setEnMovimiento(false);
         gestionarVelocidadResistencia();
-        this.accionesJugador.determinarDireccion(super.gestorAtributos, animacionJugador);
-        actualizarAnimacion();
+        this.accionesJugador.determinarDireccion(gestorAtributos, animacionJugador);
+        animacionJugador.actualizarAnimacion(accionesJugador);
         //transparentar();
+        if (GestorControles.teclado.spaceBar.puedeProcesarse()) {
+            accionesJugador.setAtacando(true);
+            GestorControles.teclado.spaceBar.teclaLiberada();
+        }
         actualizarArmas();
         subirNivel();
         morir();
@@ -177,6 +181,9 @@ public class Jugador extends Entidad implements Serializable {
         calcularPesoActual();
         actualizarAtaque();
         cambiarHojaSprites();
+        if (accionesJugador.isEnMovimiento()) {
+            ElementosPrincipales.reproductor.sonidoCaminar2.reproducir(0.8f);
+        }
     }
 
 
@@ -186,16 +193,15 @@ public class Jugador extends Entidad implements Serializable {
 
         if (!this.accionesJugador.isPreparado()) {
             DibujoDebug.dibujarImagen(g, this.animacionJugador.getImagenActual(), centroX, centroY);
+        } else {
+            this.animacionJugador.dibujarVestimenta(g, centroX, centroY, this.accionesJugador);
         }
-        this.animacionJugador.dibujarVestimenta(g, centroX, centroY, this.accionesJugador);
 
         /*DibujoDebug.dibujarRectanguloContorno(g, LIMITE_ARRIBA);
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_ABAJO);
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_IZQUIERDA);
         DibujoDebug.dibujarRectanguloContorno(g, LIMITE_DERECHA);*/
         //DibujoDebug.dibujarRectanguloContorno(g, areaPosicional, Color.BLUE);
-
-
         animacionJugador.dibujarDanhoRecibido(g, centroX, centroY + 20);
 
         this.animacionJugador.dibujarCuracionRecibida(g, centroX, centroY + 20);
@@ -218,7 +224,9 @@ public class Jugador extends Entidad implements Serializable {
         try {
             try {
                 this.habilidadActual = (Habilidad) getAccesoRapido().getAccesoEquipado(indice);
+                System.out.println(getAccesoRapido().getAccesoEquipado(indice));
                 this.accionesJugador.setUsandoSkill(true);
+                habilidadActual.aplicarEfecto(this, this);
             } catch (ClassCastException c) {
                 objeto = (Objeto) getAccesoRapido().getAccesoEquipado(indice);
             }
@@ -338,50 +346,7 @@ public class Jugador extends Entidad implements Serializable {
         this.animacionJugador.setDanhoRecibido(danho);
     }
 
-    private void actualizarAnimacion() {
-        // Lógica para determinar la animación del jugador
-        if (!accionesJugador.isEnMovimiento()) {
-            accionesJugador.setAnimacion(1);
-        } else {
-            // Ajusta la velocidad de la animación aquí
-            int velocidadAnimacion = 1; // Ajusta este valor según sea necesario
 
-            // Incrementa la animación en cada ciclo
-            accionesJugador.setAnimacion(accionesJugador.getAnimacion() + velocidadAnimacion);
-
-            // Ajusta la animación para que esté dentro del rango adecuado
-            accionesJugador.setAnimacion(accionesJugador.getAnimacion() % 60);
-
-            // Determina el estado de la animación basado en la animación actual
-            if (accionesJugador.getAnimacion() <= 60 && accionesJugador.getAnimacion() > 50) {
-                accionesJugador.setEstado(0); // Estado normal
-            } else if (accionesJugador.getAnimacion() <= 50 && accionesJugador.getAnimacion() > 40) {
-                accionesJugador.setEstado(1); // Estado normal
-            } else if (accionesJugador.getAnimacion() <= 40 && accionesJugador.getAnimacion() > 30) {
-                accionesJugador.setEstado(2); // Estado normal
-            } else if (accionesJugador.getAnimacion() <= 30 && accionesJugador.getAnimacion() > 20) {
-                accionesJugador.setEstado(0);
-            } else if (accionesJugador.getAnimacion() <= 20 && accionesJugador.getAnimacion() > 10) {
-                accionesJugador.setEstado(1);
-            } else {
-                accionesJugador.setEstado(2);
-            }
-
-            // Obtiene el sprite correspondiente basado en el estado y la dirección
-            Sprite sprite = this.animacionJugador.getHojaPersonaje().getSprites(accionesJugador.getEstado(),
-                    this.animacionJugador.getDireccion()); // Sprite normal
-
-            // Actualiza la imagen actual del jugador
-            if (sprite != null) {
-                this.animacionJugador.setImagenActual(sprite.getImagen());
-            } else {
-                // Manejo de caso en el que sprite es null
-                // Puedes asignar una imagen por defecto, lanzar una excepción, etc.
-                // En este ejemplo, asignaremos una imagen nula
-                this.animacionJugador.setImagenActual(null);
-            }
-        }
-    }
 
 
     /*private void cambiarAnimacionEstado() {

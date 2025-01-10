@@ -5,6 +5,7 @@ import principal.herramientas.CargadorRecursos;
 import principal.herramientas.Cronometro;
 import principal.herramientas.DibujoDebug;
 import principal.sprites.HojaSprites;
+import principal.sprites.Sprite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -32,6 +33,8 @@ public class AnimacionJugador implements Serializable {
     private transient BufferedImage habilidad;
     private final HojaSprites hojaCuracion;
     private transient BufferedImage imagenActual;
+    private Cronometro cronometro = new Cronometro(); // Declarar el cronómetro como atributo de clase
+
 
     public AnimacionJugador(AccionesJugador accionesJugador) {
         this.setDireccion(0);
@@ -71,50 +74,38 @@ public class AnimacionJugador implements Serializable {
         }
     }
 
+
+
     public void dibujarVestimenta(Graphics g, int centroX, int centroY, AccionesJugador accionesJugador) {
-
-        /*if (getAe().getCasco() != null) {
-            ProteccionAlta armadura = (ProteccionAlta) getAe().getCasco();
-            DibujoDebug.dibujarImagen(g, armadura.getHojaCasco().getSprites(estado, direccion).getImagen(), centroX, centroY);
-        }
-        else {
-            HojaSprites hojaCabello = new HojaSprites(Constantes.RUTA_PERSONAJE_CABELLO, 32, false);
-            DibujoDebug.dibujarImagen(g, hojaCabello.getSprites(estado, direccion).getImagen(), centroX, centroY);
-        }*/
-        Cronometro cronometro = new Cronometro();
-
+        // Verificar si el jugador está preparado para la animación
         if (accionesJugador.isPreparado()) {
+            if (!cronometro.estaIniciado()) {
+                cronometro.iniciar(); // Iniciar el cronómetro solo al comienzo de la animación
+            }
 
             int tiempoTranscurrido = (int) cronometro.getTiempoTranscurridoMili();
 
-            // Verificar si han pasado menos de 1 segundo desde el inicio de la animación
-            if (tiempoTranscurrido < 300) { // 1000 milisegundos = 1 segundo
-                // Determinar qué imagen mostrar basándose en el índice
+            // Verificar si han pasado menos de 300 ms desde el inicio de la animación
+            if (tiempoTranscurrido < 300) {
+                // Determinar qué imagen mostrar basándose en el tiempo transcurrido
                 if (tiempoTranscurrido <= 100) {
                     accionesJugador.setEstado(3);
-                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion)
-                            .getImagen(), centroX, centroY);
-
-                } else if (tiempoTranscurrido < 200) {
+                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), direccion).getImagen(), centroX, centroY);
+                } else if (tiempoTranscurrido <= 200) {
                     accionesJugador.setEstado(4);
-                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion).
-                            getImagen(), centroX, centroY);
+                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), direccion).getImagen(), centroX, centroY);
                 } else {
                     accionesJugador.setEstado(5);
-                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), this.direccion).
-                            getImagen(), centroX, centroY);
-
+                    DibujoDebug.dibujarImagen(g, hojaPersonaje.getSprites(accionesJugador.getEstado(), direccion).getImagen(), centroX, centroY);
                 }
-
             } else {
-                // Si han pasado 3 segundos o más, detener la animación
+                // Si han pasado 300 ms, detener la animación y reiniciar el cronómetro
                 accionesJugador.setPreparado(false);
-
+                cronometro.parar();
             }
-
         }
-
     }
+
 
     public void dibujarHabilidad(Graphics g) {
         Cronometro cronometro = new Cronometro();
@@ -227,6 +218,53 @@ public class AnimacionJugador implements Serializable {
                 // Si ha pasado el tiempo de duración o el texto ha subido lo suficiente, deja de mostrar la información
                 if (tiempoTranscurrido >= DURACION_MOSTRAR_DANHO || posY <= puntoY - DURACION_MOSTRAR_DANHO * VELOCIDAD_SUBIDA_DANHO - 20) {
                     this.setMostrarCuracion(false);
+                }
+            }
+        }
+    }
+
+    public void actualizarAnimacion(AccionesJugador accionesJugador) {
+        // Lógica para determinar la animación del jugador
+        if (!accionesJugador.isPreparado()) {
+            if (!accionesJugador.isEnMovimiento()) {
+                accionesJugador.setAnimacion(1);
+            } else {
+                // Ajusta la velocidad de la animación aquí
+                int velocidadAnimacion = 1; // Ajusta este valor según sea necesario
+
+                // Incrementa la animación en cada ciclo
+                accionesJugador.setAnimacion(accionesJugador.getAnimacion() + velocidadAnimacion);
+
+                // Ajusta la animación para que esté dentro del rango adecuado
+                accionesJugador.setAnimacion(accionesJugador.getAnimacion() % 60);
+
+                // Determina el estado de la animación basado en la animación actual
+                if (accionesJugador.getAnimacion() <= 60 && accionesJugador.getAnimacion() > 50) {
+                    accionesJugador.setEstado(0); // Estado normal
+                } else if (accionesJugador.getAnimacion() <= 50 && accionesJugador.getAnimacion() > 40) {
+                    accionesJugador.setEstado(1); // Estado normal
+                } else if (accionesJugador.getAnimacion() <= 40 && accionesJugador.getAnimacion() > 30) {
+                    accionesJugador.setEstado(2); // Estado normal
+                } else if (accionesJugador.getAnimacion() <= 30 && accionesJugador.getAnimacion() > 20) {
+                    accionesJugador.setEstado(0);
+                } else if (accionesJugador.getAnimacion() <= 20 && accionesJugador.getAnimacion() > 10) {
+                    accionesJugador.setEstado(1);
+                } else {
+                    accionesJugador.setEstado(2);
+                }
+
+                // Obtiene el sprite correspondiente basado en el estado y la dirección
+                Sprite sprite = this.getHojaPersonaje().getSprites(accionesJugador.getEstado(),
+                        this.getDireccion()); // Sprite normal
+
+                // Actualiza la imagen actual del jugador
+                if (sprite != null) {
+                    this.setImagenActual(sprite.getImagen());
+                } else {
+                    // Manejo de caso en el que sprite es null
+                    // Puedes asignar una imagen por defecto, lanzar una excepción, etc.
+                    // En este ejemplo, asignaremos una imagen nula
+                    this.setImagenActual(null);
                 }
             }
         }

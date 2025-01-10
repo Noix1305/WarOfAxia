@@ -1,5 +1,6 @@
 package principal.herramientas;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -8,9 +9,13 @@ import java.io.Serializable;
  */
 public class Cronometro implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 123456789L;
     private long tiempoInicio; // Tiempo en milisegundos en el que se inició el cronómetro
     private long tiempoTranscurrido; // Tiempo en milisegundos transcurrido desde el inicio del cronómetro
-    private int tiempoRestante; // Tiempo restante en segundos
+    private int tiempoRestante;
+    private long tiempoPausado;// Tiempo restante en segundos
+    private boolean iniciado = false;
 
     /**
      * Constructor de la clase Cronometro. Inicia el cronómetro.
@@ -24,6 +29,7 @@ public class Cronometro implements Serializable {
      */
     public void iniciar() {
         tiempoInicio = System.currentTimeMillis();
+        iniciado = true;
     }
 
     /**
@@ -87,5 +93,16 @@ public class Cronometro implements Serializable {
     public long getTiempoTranscurridoMili() {
         actualizar(); // Actualiza el tiempo transcurrido desde un momento inicial
         return tiempoTranscurrido;
+    }
+
+    public boolean estaIniciado() {
+        return iniciado;
+    }
+
+    public void parar() {
+        if (iniciado) {
+            tiempoPausado = System.currentTimeMillis() - tiempoInicio;
+            iniciado = false;
+        }
     }
 }

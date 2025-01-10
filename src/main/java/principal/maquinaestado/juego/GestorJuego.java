@@ -11,6 +11,7 @@ import java.util.List;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
+import principal.GestorPrincipal;
 import principal.graficos.EfectosVisuales;
 import principal.herramientas.CargadorRecursos;
 import principal.herramientas.DibujoDebug;
@@ -18,6 +19,7 @@ import principal.interfaz_usuario.MenuInferior;
 import principal.mapas.MapaTiled;
 import principal.mapas.Salida;
 import principal.maquinaestado.EstadoJuego;
+import principal.sprites.HojaSprites;
 
 /**
  * @author GAMER ARRAX
@@ -29,12 +31,14 @@ public class GestorJuego implements EstadoJuego {
     EfectosVisuales ev;
     public static boolean recargar;
     public static boolean cargarJuego;
+    private HojaSprites enPausa;
 
     public GestorJuego() {
         menuInferior = new MenuInferior();
         logo = CargadorRecursos.cargarImagenCompatibleTranslucida(Constantes.RUTA_LOGO);
         this.ev = new EfectosVisuales();
         recargar = false;
+        enPausa = new HojaSprites(Constantes.RUTA_HUD_PAUSA, 100, 50, true);
     }
 
     @Override
@@ -74,6 +78,10 @@ public class GestorJuego implements EstadoJuego {
         DibujoDebug.dibujarImagen(g, logo, Constantes.ANCHO_JUEGO - logo.getWidth(), 0);
         if (ElementosPrincipales.jugador.getAnimacionJugador().dibujarHabilidad) {
             ElementosPrincipales.jugador.getAnimacionJugador().dibujarHabilidad(g);
+        }
+        if (GestorPrincipal.enPausa) {
+            DibujoDebug.dibujarImagen(g, enPausa.getSprites(0).imagen, ElementosPrincipales.jugador.areaPosicional.x,
+                    ElementosPrincipales.jugador.areaPosicional.y);
         }
         //g.fillRect((int) ElementosPrincipales.mapa.getZonaSalida().getX(), (int) ElementosPrincipales.mapa.getZonaSalida().getY(), (int) ElementosPrincipales.mapa.getZonaSalida().getWidth(), (int) ElementosPrincipales.mapa.getZonaSalida().getHeight());
     }

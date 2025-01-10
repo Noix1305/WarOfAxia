@@ -52,6 +52,9 @@ public class Constantes {
     public static String RUTA_ORC_AXE = "/personajes/enemigos/AxeOrc.png";
     public static String RUTA_SATIRO = "/personajes/enemigos/Satiro.png";
     public static String RUTA_CURACION = "/personajes/enemigos/animacionesJugador/BrilloCuracion.png";
+    public static String RUTA_HUD_ENEMIGOS = "/fondos/hudenemigos2.png";
+    public static String RUTA_HUD_PAUSA = "/fondos/enPausa.png";
+    public static String RUTA_PUNTO_GUARDADO = "/hojasObjetos/objetosMapa/SaveCrystal5.png";
 
     public static String RUTA_PERSONAJE = "/personajes/personajesJugables/pj2.png";
     public static String RUTA_PERSONAJE_TRANSPARENTE = "/personajes/personajesJugables/pj2T.png";
@@ -71,6 +74,7 @@ public class Constantes {
     public static String RUTA_HOJA_BOTA = "/hojasObjetos/armaduras/Botas.png";
     public static String RUTA_HOJA_HABILIDADES = "/habilidades/skills.png";
     public static String RUTA_HOJA_CONTENEDORES = "/hojasObjetos/armaduras/cofre1.png";
+    public static String RUTA_HOJA_HUD = "/personajes/enemigos/skeletonhud.png";
 
     public static final Font FUENTE_POR_DEFECTO = CargadorRecursos.cargarFuente("fuentes/EXEPixelPerfectNoVenta.ttf", 12f);
 }

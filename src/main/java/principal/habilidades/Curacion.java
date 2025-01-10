@@ -54,7 +54,7 @@ public class Curacion extends Habilidad implements Serializable {
      * @param tipoCuracion El tipo de curación (no utilizado en este caso).
      */
     @Override
-    public void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoCuracion) {
+    public void aplicarEfecto(Entidad atacante, Entidad objetivo) {
         curacionAutomatica(objetivo); // Aplicar curación automática
     }
 

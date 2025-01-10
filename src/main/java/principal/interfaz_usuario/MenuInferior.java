@@ -70,7 +70,6 @@ public class MenuInferior {
     }
 
     public void dibujar(final Graphics2D g) {
-
         dibujarAreaInventario(g);
         dibujarBarraVitalidad(g);
         dibujarBarraMana(g);

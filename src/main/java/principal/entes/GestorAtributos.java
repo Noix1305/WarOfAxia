@@ -44,21 +44,24 @@ public class GestorAtributos implements Serializable {
     private double pesoActual;
     private int puntosAtributos;
     private int vidaMaximaEnemigo; // Vida máxima del enemigo
-    private float vidaEnemigo; // Vida actual del enemigo
+    private int vidaEnemigo; // Vida actual del enemigo
     private int ataqueEnemigo;// Poder de ataque del enemigo
     private int idEnemigo;
     private String nombre;
+    private double probabilidadSueltaObjeto;
 
-    // Constructor
-    public GestorAtributos(int idEnemigo, String nombreEnemigo, int vidaMaxima, int ataque, int experiencia) {
+    // Constructor para enemigos
+    public GestorAtributos(int idEnemigo, String nombreEnemigo, int vidaMaxima, int ataque, int experiencia, double probDrop) {
         this.idEnemigo = idEnemigo;
         this.nombre = nombreEnemigo;
         this.vidaMaximaEnemigo = vidaMaxima;
         this.vidaEnemigo = vidaMaximaEnemigo;
         this.ataqueEnemigo = ataque;
         this.experiencia = experiencia;
+        this.probabilidadSueltaObjeto = probDrop;
     }
 
+    //Constructor para Jugador
     public GestorAtributos(int nivel, int fuerza, int destreza, int constitutcion,
                            int inteligencia, int suerte, int experiencia, int experienciaMaxima, int puntosAtributos) {
         this.nivel = nivel;
@@ -282,11 +285,11 @@ public class GestorAtributos implements Serializable {
         this.vidaMaximaEnemigo = vidaMaximaEnemigo;
     }
 
-    public float getVidaEnemigo() {
+    public int getVidaEnemigo() {
         return vidaEnemigo;
     }
 
-    public void setVidaEnemigo(float vidaEnemigo) {
+    public void setVidaEnemigo(int vidaEnemigo) {
         this.vidaEnemigo = vidaEnemigo;
     }
 
@@ -316,5 +319,13 @@ public class GestorAtributos implements Serializable {
 
     public int getVidaActual() {
         return vida;
+    }
+
+    public double getProbabilidadSueltaObjeto() {
+        return probabilidadSueltaObjeto;
+    }
+
+    public void setProbabilidadSueltaObjeto(double probabilidadSueltaObjeto) {
+        this.probabilidadSueltaObjeto = probabilidadSueltaObjeto;
     }
 }

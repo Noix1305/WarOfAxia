@@ -24,7 +24,6 @@ import java.util.Iterator;
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
-import principal.control.GestorControles;
 import principal.dijkstra.Dijkstra;
 import principal.dijkstra.Nodo;
 import principal.entes.enemigo.Enemigo;
@@ -46,7 +45,6 @@ import principal.inventario.armaduras.Armadura;
 import principal.inventario.armas.Arma;
 import principal.inventario.consumibles.Claves;
 import principal.inventario.consumibles.Consumible;
-import principal.inventario.joyas.Accesorio;
 import principal.inventario.joyas.Joya;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
 import principal.sprites.HojaSprites;
@@ -62,7 +60,7 @@ public class MapaTiled implements Serializable {
     private int anchoMapaTiles;
     private int altoMapaTiles;
     private String siguienteMapa;
-    private String nombreMapaActual;
+    private final String nombreMapaActual;
     private Point puntoInicial;
     public Tienda tiendaActiva;
 
@@ -83,7 +81,9 @@ public class MapaTiled implements Serializable {
     private Sprite[] paletaSprites2;
     public ArrayList<Objeto> objetosTiendaMapa;
     public ArrayList<Objeto> objetosTiendaActual;
+    private HudEnemigos hudEnemigos;
     private boolean contenedorAbierto = false;
+    private ArrayList<PuntoGuardado> puntosguardado;
 
     private Dijkstra dijkstra;
 
@@ -166,6 +166,8 @@ public class MapaTiled implements Serializable {
 
         obtenerContenedoresMapa(globalJSON);
 
+        obtenerPuntosGuardado(globalJSON);
+
         obtenerTiendas(globalJSON);
     }
 
@@ -176,11 +178,15 @@ public class MapaTiled implements Serializable {
                 for (int x = 0; x < anchoMapaTiles; x++) {
                     long idSpriteActual = spritesCapa[x + y * anchoMapaTiles];
                     if (idSpriteActual != -1) {
-                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+                        int puntoX = x * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().
+                                getPosicionXInt() + Constantes.MARGEN_X;
+                        int puntoY = y * Constantes.LADO_SPRITE - ElementosPrincipales.jugador.getAccionesJugador().
+                                getPosicionYInt() +
+                                Constantes.MARGEN_Y;
 
                         // OPTIMIZACION DIBUJADO
-                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO || puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
+                        if (puntoX < -Constantes.LADO_SPRITE || puntoX > Constantes.ANCHO_JUEGO ||
+                                puntoY < -Constantes.LADO_SPRITE || puntoY > Constantes.ANCHO_JUEGO - 65) {
                             continue;
                         }
                         DibujoDebug.dibujarImagen(g, paletaSprites1[(int) idSpriteActual].getImagen(), puntoX, puntoY);
@@ -189,25 +195,54 @@ public class MapaTiled implements Serializable {
             }
         }
 
+        dibujarObjetoTiled(g);
+        dibujarcontenedores(g);
+        dibujarEnemigos(g);
+        dibujarPuntosGuardado(g);
+
+    }
+
+    private void dibujarObjetoTiled(Graphics g) {
         for (ObjetoUnicoTiled objetoActual : objetosMapa) {
-            int puntoX = objetoActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = objetoActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = retornarX(objetoActual.getPosicion().x);
+            int puntoY = retornarY(objetoActual.getPosicion().y);
             DibujoDebug.dibujarImagen(g, objetoActual.getObjeto().getSprite().getImagen(), puntoX, puntoY);
         }
+    }
 
+    private void dibujarcontenedores(Graphics g) {
         for (ContenedorObjetos contenedorAct : listaContenedores) {
-            int puntoX = (int) contenedorAct.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) contenedorAct.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = retornarX(contenedorAct.getPosicion().x);
+            int puntoY = retornarY(contenedorAct.getPosicion().y);
 
             contenedorAct.dibujar(g, puntoX, puntoY);
         }
+    }
 
+    private void dibujarEnemigos(Graphics g) {
         for (Enemigo enemigo : enemigosMapa) {
-            int puntoX = (int) enemigo.getPosicionX() - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) enemigo.getPosicionY() - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = retornarX((int) enemigo.getPosicionX());
+            int puntoY = retornarY((int) enemigo.getPosicionY());
             enemigo.dibujar(g, puntoX, puntoY);
 
         }
+    }
+
+    private void dibujarPuntosGuardado(Graphics g) {
+
+        for (PuntoGuardado puntoGuardado : puntosguardado) {
+            int puntoX = retornarX(puntoGuardado.getX());
+            int puntoY = retornarY(puntoGuardado.getY());
+            puntoGuardado.dibujar(g, puntoX, puntoY);
+        }
+    }
+
+    private int retornarX(int valor) {
+        return valor - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+    }
+
+    private int retornarY(int valor) {
+        return valor - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
     }
 
 
@@ -255,6 +290,7 @@ public class MapaTiled implements Serializable {
 //            DibujoDebug.dibujarRectanguloContorno(g, rectagulo, Color.white);
 //        }
         dibujarTooltipObjetosMapa(g, GestorPrincipal.sd);
+        hudEnemigos.dibujar(g);
     }
 
     private void inicializarAtributosBasicos(JsonObject globalJSON) {
@@ -452,6 +488,7 @@ public class MapaTiled implements Serializable {
         } else {
             System.err.println("La clave 'enemigos' no está presente o no es un array en el JSON.");
         }
+        this.hudEnemigos = new HudEnemigos(enemigosMapa);
     }
 
     private void obtenerContenedoresMapa(JsonObject globalJSON) {
@@ -509,6 +546,27 @@ public class MapaTiled implements Serializable {
             }
         } else {
             System.err.println("La clave 'tiendas' no está presente o no es un array en el JSON.");
+        }
+    }
+
+    private void obtenerPuntosGuardado(JsonObject globalJSON) {
+        puntosguardado = new ArrayList<>();
+        System.out.println("Obteniendo punto guardado");
+        JsonArray coleccionPuntosGuardado = globalJSON.getAsJsonArray("puntoGuardado");
+
+        if (coleccionPuntosGuardado != null) {
+            for (JsonElement element : coleccionPuntosGuardado) {
+                JsonObject guardadoNode = element.getAsJsonObject();
+                int xPuntoGuardado = getIntJson(guardadoNode, "x");
+                int yPuntoGuardado = getIntJson(guardadoNode, "y");
+
+                PuntoGuardado puntoGuardado = new PuntoGuardado(xPuntoGuardado, yPuntoGuardado);
+
+                puntosguardado.add(puntoGuardado);
+                areaColisionOriginales.add(puntoGuardado.getArea());
+            }
+        } else {
+            System.err.println("La clave 'puntoGuardado' no está presente o no es un array en el JSON.");
         }
     }
 
@@ -700,10 +758,13 @@ public class MapaTiled implements Serializable {
 
             if (ElementosPrincipales.jugador.getAccionesJugador().isAtacando()) {
                 ArrayList<Enemigo> enemigosAlcanzados = new ArrayList<>();
-                if (ElementosPrincipales.jugador.getAlmacenEquipo().getArma1() != null && ElementosPrincipales.jugador.getAlmacenEquipo().getArma1().isPenetrante()) {
+                if (ElementosPrincipales.jugador.getAlmacenEquipo().getArma1() != null &&
+                        ElementosPrincipales.jugador.getAlmacenEquipo().getArma1().isPenetrante()) {
                     for (Enemigo enemigo : enemigosMapa) {
                         if (ElementosPrincipales.jugador.getAlcanceActual().get(0).intersects(enemigo.getArea())) {
                             enemigosAlcanzados.add(enemigo);
+                            ElementosPrincipales.jugador.getAccionesJugador().setAtacando(false);
+
                         }
                     }
                 } else {
@@ -721,7 +782,7 @@ public class MapaTiled implements Serializable {
                             Point puntoJugador = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() / 32, ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() / 32);
 
                             Point puntoEnemigo = new Point((int) enemigo.getPosicionX() / 32, (int) enemigo.getPosicionY());
-                            Double distanciaActual = CalculadoraDistancia.getDistanciaEntrePuntos(puntoJugador, puntoEnemigo);
+                            double distanciaActual = CalculadoraDistancia.getDistanciaEntrePuntos(puntoJugador, puntoEnemigo);
 
                             if (enemigoCercano == null) {
                                 enemigoCercano = enemigo;
@@ -741,13 +802,13 @@ public class MapaTiled implements Serializable {
                     atributo = ElementosPrincipales.jugador.getGestorAt().getDestreza();
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_LIGERA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() / 2 + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
+                    atributo = ElementosPrincipales.jugador.getGestorAt().getFuerza() / 2 + ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_MEDIA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza();
+                    atributo = ElementosPrincipales.jugador.getGestorAt().getFuerza();
 
                 } else if (arma.getTipoObjeto() == TipoObjeto.ESPADA_PESADA) {
-                    atributo = (int) ElementosPrincipales.jugador.getGestorAt().getFuerza() + (int) ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
+                    atributo = ElementosPrincipales.jugador.getGestorAt().getFuerza() + ElementosPrincipales.jugador.getGestorAt().getDestreza() / 2;
 
                 }
                 arma.atacar(enemigosAlcanzados, atributo);
@@ -774,15 +835,31 @@ public class MapaTiled implements Serializable {
             // Aplicar el efecto de la habilidad a los enemigos alcanzados
             if (!enemigosAlcanzados.isEmpty()) {
                 for (Enemigo enemigo : enemigosAlcanzados) {
-
-                    habilidad.aplicarEfecto(ElementosPrincipales.jugador, enemigo, habilidad.getTipoHabilidad());
+                    habilidad.aplicarEfecto(ElementosPrincipales.jugador, enemigo);
                 }
             }
             ElementosPrincipales.jugador.getAccionesJugador().setUsandoSkill(false);
 
         }
 
-        enemigosMapa.removeIf(enemigo -> enemigo.gestorAtributos.getVidaEnemigo() <= 0);
+        enemigosMapa.removeIf(enemigo -> {
+            // Verificar si el enemigo está muerto
+            if (enemigo.gestorAtributos.getVidaEnemigo() <= 0) {
+                // Llamar a la función que calcula la probabilidad de soltar un objeto
+                if (enemigo.comprobarSueltaObjeto()) {
+                    Point p = new Point((int) enemigo.getPosicionX(), (int) enemigo.getPosicionY());
+                    ContenedorObjetos contenedor = new ContenedorObjetos(p, 0, new Rectangle(p.x, p.y, 32, 32));
+                    Objeto objeto = RegistroObjetos.obtenerObjeto(0);
+                    contenedor.getObjetos().add(objeto);
+                    listaContenedores.add(contenedor);
+                    areaColisionOriginales.add(contenedor.getArea());
+                }
+                // Devolver true para eliminar el enemigo
+                return true;
+            }
+            // No eliminar al enemigo si no está muerto
+            return false;
+        });
         ElementosPrincipales.jugador.getAccionesJugador().setAtacando(false);
     }
 
@@ -800,6 +877,7 @@ public class MapaTiled implements Serializable {
         Iterator<ObjetoUnicoTiled> iterador = objetosMapa.iterator();
         Iterator<ContenedorObjetos> iterador2 = listaContenedores.iterator();
         Rectangle areaJugador = ElementosPrincipales.jugador.getAccionesJugador().getArea();
+
 
         while (iterador.hasNext()) {
             ObjetoUnicoTiled objetoActual = iterador.next();
@@ -828,6 +906,10 @@ public class MapaTiled implements Serializable {
     private void abrirContenedor(ContenedorObjetos contenedor) {
         contenedorAbierto = true;
         contenedorActual = contenedor;
+
+
+        areaColisionOriginales.removeIf(colision -> contenedorActual.getArea().intersects(colision));
+
     }
 
     private void mostrarElementoscontenedor() {
@@ -849,11 +931,9 @@ public class MapaTiled implements Serializable {
     }
 
     private void recogerObjetosDelContenedor(ContenedorObjetos contenedor) {
-        int x = ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt();
-        int y = ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt();
 
         for (Objeto objetoActual : contenedor.getObjetos()) {
-            ObjetoUnicoTiled objeto = new ObjetoUnicoTiled(new Point(x, y), objetoActual, objetoActual.getCantidad());
+            ObjetoUnicoTiled objeto = new ObjetoUnicoTiled(contenedor.getPosicion(), objetoActual, objetoActual.getCantidad());
             objetosMapa.add(objeto);
         }
 

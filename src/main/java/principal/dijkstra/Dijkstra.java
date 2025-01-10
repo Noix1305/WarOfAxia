@@ -68,8 +68,8 @@ public final class Dijkstra {
 
     // Método para obtener las coordenadas del nodo coincidente con un punto
     public Point getCoordenadasNodoCoincidente(final Point puntoJugador) {
-        Rectangle rectanguloPuntoExacto = new Rectangle(puntoJugador.x / Constantes.LADO_SPRITE,
-                puntoJugador.y / Constantes.LADO_SPRITE, 1, 1);
+        Rectangle rectanguloPuntoExacto = new Rectangle((puntoJugador.x / Constantes.LADO_SPRITE),
+                (puntoJugador.y / Constantes.LADO_SPRITE), 1, 1);
         Point puntoExacto = null;
 
         // Buscar el nodo cuya área intersecta con el punto
@@ -249,6 +249,8 @@ public final class Dijkstra {
                 }
             }
         }
+
+
         return siguienteNodo;
     }
 
