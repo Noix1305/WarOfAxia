@@ -23,6 +23,7 @@ import principal.herramientas.DibujoDebug;
 import principal.inventario.ContenedorObjetos;
 import principal.inventario.Objeto;
 import principal.inventario.TipoObjeto;
+import principal.sonido.ReproductorSonido;
 import principal.sonido.SoundThread;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -436,7 +437,7 @@ public class Enemigo extends Entidad {
 
     // Método para reducir la vida del enemigo y mostrar el daño recibido
     public void perderVida(float danhoRecibido, boolean critico) {
-        ElementosPrincipales.reproductor.lamentoEnemigo.reproducir(0.8f); // Reproduce un sonido de lamento
+        ReproductorSonido.lamentoEnemigo.reproducir(0.8f); // Reproduce un sonido de lamento
 
         // Establece el daño recibido y si fue un golpe crítico
         danhoPorGolpe = (int) danhoRecibido;
@@ -484,9 +485,9 @@ public class Enemigo extends Entidad {
 
     // Método para obtener el área del enemigo relativa a la posición del jugador
     public Rectangle getArea() {
-        final int puntoX = (int) posicionX - ElementosPrincipales.jugador.
+        final int puntoX =  posicionX - ElementosPrincipales.jugador.
                 getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-        final int puntoY = (int) posicionY - ElementosPrincipales.jugador.
+        final int puntoY =  posicionY - ElementosPrincipales.jugador.
                 getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
         return new Rectangle(puntoX, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);

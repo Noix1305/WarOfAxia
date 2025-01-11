@@ -129,6 +129,10 @@ public class MenuEquipo extends SeccionMenu {
         dibujarPaginador(g);
         gestorMenuEquipables.dibujar(g);
         dibujarToolTips(g, sd);
+
+        if (MenuEquipo.mostrarTooltip) {
+            super.dibujarTooltipPeso(g, sd);
+        }
     }
 
     private ArrayList<Rectangle> listaContenedores() {
@@ -668,6 +672,8 @@ public class MenuEquipo extends SeccionMenu {
         DibujoDebug.dibujarString(g, "<<", anterior.x + anterior.width - 18, anterior.y + anterior.height - 5);
         DibujoDebug.dibujarString(g, ">>", siguiente.x + siguiente.width - 18, siguiente.y + siguiente.height - 5);
     }
+
+
 
     public Objeto getObjetoSeleccionado() {
         return objetoSeleccionado;

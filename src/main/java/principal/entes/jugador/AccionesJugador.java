@@ -185,8 +185,8 @@ public class AccionesJugador implements Serializable{
 
     private boolean enColisionArriba(int velocidadY) {
         // Iterar sobre las áreas de colisión del mapa
-        for (int r = 0; r < ElementosPrincipales.mapa.areasColisionActualizadas.size(); r++) {
-            final Rectangle area = ElementosPrincipales.mapa.areasColisionActualizadas.get(r);
+        for (int r = 0; r < ElementosPrincipales.mapa.getAreasColisionActualizadas().size(); r++) {
+            final Rectangle area = ElementosPrincipales.mapa.getAreasColisionActualizadas().get(r);
 
             // Calcular la posición futura en el eje Y
             int origenX = area.x;
@@ -205,8 +205,8 @@ public class AccionesJugador implements Serializable{
 
     private boolean enColisionAbajo(int velocidadY) {
         // Iterar sobre las áreas de colisión del mapa
-        for (int r = 0; r < ElementosPrincipales.mapa.areasColisionActualizadas.size(); r++) {
-            final Rectangle area = ElementosPrincipales.mapa.areasColisionActualizadas.get(r);
+        for (int r = 0; r < ElementosPrincipales.mapa.getAreasColisionActualizadas().size(); r++) {
+            final Rectangle area = ElementosPrincipales.mapa.getAreasColisionActualizadas().get(r);
 
             // Calcular la posición futura en el eje Y
             int origenX = area.x;
@@ -225,8 +225,8 @@ public class AccionesJugador implements Serializable{
 
     private boolean enColisionIzquierda(int velocidadX) {
         // Iterar sobre las áreas de colisión del mapa
-        for (int r = 0; r < ElementosPrincipales.mapa.areasColisionActualizadas.size(); r++) {
-            final Rectangle area = ElementosPrincipales.mapa.areasColisionActualizadas.get(r);
+        for (int r = 0; r < ElementosPrincipales.mapa.getAreasColisionActualizadas().size(); r++) {
+            final Rectangle area = ElementosPrincipales.mapa.getAreasColisionActualizadas().get(r);
 
             // Calcular la posición futura en el eje X
             int origenX = area.x + velocidadX * (int) this.getVelocidadCaminar() + 3 * (int) this.getVelocidadCaminar();
@@ -245,8 +245,8 @@ public class AccionesJugador implements Serializable{
 
     private boolean enColisionDerecha(int velocidadX) {
         // Iterar sobre las áreas de colisión del mapa
-        for (int r = 0; r < ElementosPrincipales.mapa.areasColisionActualizadas.size(); r++) {
-            final Rectangle area = ElementosPrincipales.mapa.areasColisionActualizadas.get(r);
+        for (int r = 0; r < ElementosPrincipales.mapa.getAreasColisionActualizadas().size(); r++) {
+            final Rectangle area = ElementosPrincipales.mapa.getAreasColisionActualizadas().get(r);
 
             // Calcular la posición futura en el eje X
             int origenX = area.x + velocidadX * (int) this.getVelocidadCaminar() - 3 * (int) this.getVelocidadCaminar();

@@ -9,18 +9,19 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
 import principal.Constantes;
 import principal.herramientas.DibujoDebug;
+import principal.sonido.ReproductorSonido;
 import principal.sprites.HojaSprites;
 
 public class ContenedorObjetos {
 
     private Point posicion; // Posición del contenedor en la pantalla
     private ArrayList<Objeto> objetos; // Lista de objetos contenidos en el contenedor
-    private int indiceSprite; // Índice del sprite que representa el contenedor
     private HojaSprites hs; // Hoja de sprites que contiene las imágenes de los contenedores
-    private transient BufferedImage imagen; // Imagen del contenedor
-    private Rectangle area; // Área del contenedor en la pantalla
+    private Rectangle area;
+    private boolean abierto;// Área del contenedor en la pantalla
 
     // Constructor por defecto
     public ContenedorObjetos() {
@@ -28,19 +29,22 @@ public class ContenedorObjetos {
     }
 
     // Constructor con parámetros
-    public ContenedorObjetos(Point posicion, int indiceSprite, Rectangle area) {
+    public ContenedorObjetos(Point posicion) {
         // Carga de la hoja de sprites y configuración de parámetros iniciales
         hs = new HojaSprites(Constantes.RUTA_HOJA_CONTENEDORES, 32, false);
         this.posicion = posicion;
-        this.indiceSprite = indiceSprite;
-        this.imagen = hs.getSprites(indiceSprite).getImagen();
         this.objetos = new ArrayList<>();
-        this.area = area;
+        this.area = new Rectangle(posicion.x, posicion.y, 32, 32);
+        this.abierto = false;
     }
 
     // Método para dibujar el contenedor en la pantalla
     public void dibujar(final Graphics g, final int puntoX, final int puntoY) {
-        DibujoDebug.dibujarImagen(g, imagen, puntoX, puntoY);
+        if (!abierto) {
+            DibujoDebug.dibujarImagen(g, hs.getSprites(0).imagen, puntoX, puntoY);
+        } else {
+            DibujoDebug.dibujarImagen(g, hs.getSprites(1).imagen, puntoX, puntoY);
+        }
     }
 
     // Getters y setters para los atributos de la clase
@@ -60,13 +64,6 @@ public class ContenedorObjetos {
         this.objetos.add(objeto);
     }
 
-    public int getIndiceSprite() {
-        return indiceSprite;
-    }
-
-    public void setIndiceSprite(int indiceSprite) {
-        this.indiceSprite = indiceSprite;
-    }
 
     public HojaSprites getHs() {
         return hs;
@@ -76,13 +73,6 @@ public class ContenedorObjetos {
         this.hs = hs;
     }
 
-    public BufferedImage getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(BufferedImage imagen) {
-        this.imagen = imagen;
-    }
 
     public Rectangle getArea() {
         return area;
@@ -90,5 +80,18 @@ public class ContenedorObjetos {
 
     public void setArea(Rectangle area) {
         this.area = area;
+    }
+
+    public void setObjetos(ArrayList<Objeto> objetos) {
+        this.objetos = objetos;
+    }
+
+    public boolean isAbierto() {
+        return abierto;
+    }
+
+    public void setAbierto(boolean abierto) {
+        ReproductorSonido.chestSound.reproducir(0.8f);
+        this.abierto = abierto;
     }
 }

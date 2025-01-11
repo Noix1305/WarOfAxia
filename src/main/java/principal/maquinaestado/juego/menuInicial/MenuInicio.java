@@ -250,14 +250,21 @@ public class MenuInicio implements EstadoJuego {
 
 
     private void cargarListaArchivosGuardados() {
-        String carpetaGuardados = "juegosGuardados";
+        // Obtener el directorio de "Documents" del sistema
+        String carpetaGuardados = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "juegosGuardados";
+
+        // Crear un objeto File para el directorio
         File directorio = new File(carpetaGuardados);
+        // Verificar si el directorio existe y si es un directorio
         if (directorio.exists() && directorio.isDirectory()) {
             archivosGuardados = directorio.listFiles((dir, name) -> name.endsWith(".save"));
         } else {
+            // Si no existe o no es un directorio, inicializamos el arreglo vacío
             archivosGuardados = new File[0];
+            System.out.println("El directorio de guardados no existe o no es un directorio.");
         }
     }
+
 
     private void gestionarSeleccionArchivo(SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();

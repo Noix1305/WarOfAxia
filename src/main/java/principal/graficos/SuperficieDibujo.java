@@ -21,8 +21,6 @@ import principal.control.Raton;
 import principal.herramientas.DatosDebug;
 import principal.herramientas.DibujoDebug;
 import principal.maquinaestado.GestorEstados;
-import principal.maquinaestado.juego.GestorJuego;
-import principal.maquinaestado.juego.menuInicial.PantallaTitulo;
 import principal.sprites.HojaSprites;
 
 /**
@@ -142,33 +140,6 @@ public class SuperficieDibujo extends Canvas {
             }
         }
     }
-
-
-    /**
-     * Método para dibujar la pantalla de título.
-     *
-     * @param pantallaTitulo La pantalla de título a dibujar.
-     */
-//    public void dibujarPantallaTitulo(PantallaTitulo pantallaTitulo) {
-//        // Obtener la estrategia de buffer
-//        BufferStrategy buffer = getBufferStrategy();
-//        if (buffer == null) {
-//            createBufferStrategy(3);
-//            return;
-//        }
-//
-//        // Obtener el contexto gráfico
-//        final Graphics2D g = (Graphics2D) buffer.getDrawGraphics();
-//
-//        // Escalar la pantalla de título
-//        g.scale(2, 2);
-//
-//        // Liberar recursos
-//        g.dispose();
-//
-//        // Mostrar la siguiente imagen del buffer
-//        buffer.show();
-//    }
 
     /**
      * Método para cargar una imagen desde una ruta.

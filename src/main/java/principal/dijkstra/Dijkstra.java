@@ -3,10 +3,11 @@
  */
 package principal.dijkstra;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import principal.Constantes;
 import principal.entes.enemigo.Enemigo;
 
@@ -22,55 +23,38 @@ public final class Dijkstra {
     private int altoMapaTiles;
 
     // Listas de nodos del mapa
-    private ArrayList<Nodo> nodosMapa;
+    private final ArrayList<Nodo> nodosMapa;
     private ArrayList<Nodo> pendientes;
     private ArrayList<Nodo> visitados;
+    private final ArrayList<Nodo> noDisponibles;
     private boolean constructor = true;
+    private Point puntoExacto;
 
     // Constructor de la clase
-    public Dijkstra(final Point centroCalculo, int anchoMapaTiles, int altoMapaTiles, ArrayList<Rectangle> zonasSolidas) {
+    public Dijkstra(final Point centroCalculo, final int anchoMapaTiles, final int altoMapaTiles, ArrayList<Rectangle> zonasSolidas) {
         this.anchoMapaTiles = anchoMapaTiles;
         this.altoMapaTiles = altoMapaTiles;
         nodosMapa = new ArrayList<>();
-
+        noDisponibles = new ArrayList<>();
         // Crear nodos para cada posición en el mapa
-        for (int y = 0; y < altoMapaTiles; y++) {
-            for (int x = 0; x < anchoMapaTiles; x++) {
-                final int lado = Constantes.LADO_SPRITE;
-                final Rectangle ubicacionNodo = new Rectangle(x * lado, y * lado, lado, lado);
-
-                boolean transitable = true;
-
-                // Comprobar si la posición del nodo está dentro de una zona sólida
-                for (Rectangle area : zonasSolidas) {
-                    if (ubicacionNodo.intersects(area)) {
-                        transitable = false;
-                        break;
-                    }
-                }
-
-                // Si el nodo es transitable, se añade a la lista de nodos del mapa
-                if (!transitable) {
-                    continue;
-                }
-                Nodo nodo = new Nodo(new Point(x, y), Double.MAX_VALUE);
-                nodosMapa.add(nodo);
-            }
-        }
-
+        crearNodos(zonasSolidas);
         // Inicializar listas de nodos pendientes y visitados
         pendientes = new ArrayList<>(nodosMapa);
+
 
         // Reiniciar y evaluar el algoritmo de Dijkstra
         reiniciarYEvaluar(centroCalculo);
         constructor = false;
     }
 
+    public void dibujar(Graphics g) {
+
+    }
+
     // Método para obtener las coordenadas del nodo coincidente con un punto
     public Point getCoordenadasNodoCoincidente(final Point puntoJugador) {
         Rectangle rectanguloPuntoExacto = new Rectangle((puntoJugador.x / Constantes.LADO_SPRITE),
                 (puntoJugador.y / Constantes.LADO_SPRITE), 1, 1);
-        Point puntoExacto = null;
 
         // Buscar el nodo cuya área intersecta con el punto
         for (Nodo nodo : nodosMapa) {
@@ -82,6 +66,34 @@ public final class Dijkstra {
         return puntoExacto;
     }
 
+    private void crearNodos(ArrayList<Rectangle> zonasSolidas) {
+        for (int y = 0; y < altoMapaTiles; y++) {
+            for (int x = 0; x < anchoMapaTiles; x++) {
+                final int lado = Constantes.LADO_SPRITE;
+                final Rectangle ubicacionNodo = new Rectangle(x * lado, y * lado, 32, 32);
+
+                boolean transitable = true;
+
+                // Comprobar si la posición del nodo está dentro de una zona sólida
+                for (Rectangle area : zonasSolidas) {
+                    if (ubicacionNodo.intersects(area)) {
+                        System.out.println("Zona Solida x: " + area.x + " Zona Solida Y: " + area.y);
+                        System.out.println("Nodo X: " + ubicacionNodo.x + " Nodo Y: " + ubicacionNodo.y);
+                        transitable = false;
+                        break;
+                    }
+                }
+
+                // Si el nodo es transitable, se añade a la lista de nodos del mapa
+                if (!transitable) {
+                    continue;
+                }
+                Nodo nodo = new Nodo(new Point(x, y), Double.MAX_VALUE, 32, 32);
+                nodosMapa.add(nodo);
+            }
+        }
+    }
+
     // Método para clonar los nodos del mapa a los nodos pendientes
     private ArrayList<Nodo> clonarNodosMapaANodosPendientes() {
         ArrayList<Nodo> nodosClonados = new ArrayList<>();
@@ -90,8 +102,9 @@ public final class Dijkstra {
             Point posicion = nodo.getPosicion();
             double distancia = nodo.getDistancia();
 
-            Nodo nodoClonado = new Nodo(posicion, distancia);
+            Nodo nodoClonado = new Nodo(posicion, distancia,32,32);
             nodosClonados.add(nodoClonado);
+
         }
         return nodosClonados;
     }
@@ -101,8 +114,7 @@ public final class Dijkstra {
         if (!constructor) {
             if (visitados.isEmpty()) {
                 clonarNodosMapaANodosPendientes();
-            }
-            else {
+            } else {
                 pendientes = new ArrayList<>(visitados);
                 for (Nodo nodo : pendientes) {
                     nodo.setDistancia(Double.MAX_VALUE);
@@ -128,13 +140,12 @@ public final class Dijkstra {
         while (!pendientes.isEmpty()) {
             int cambios = 0;
 
-            for (Iterator<Nodo> iterador = pendientes.iterator(); iterador.hasNext();) {
+            for (Iterator<Nodo> iterador = pendientes.iterator(); iterador.hasNext(); ) {
                 Nodo nodo = iterador.next();
 
                 if (nodo.getDistancia() == Double.MAX_VALUE) {
                     continue;
-                }
-                else {
+                } else {
                     evaluarEuristicaVecinos(nodo);
                     visitados.add(nodo);
                     iterador.remove();
@@ -178,8 +189,7 @@ public final class Dijkstra {
                     // Distancia recta vs diagonal
                     if (inicialX != x && inicialY != y) {
                         distancia = DISTANCIA_DIAGONAL;
-                    }
-                    else {
+                    } else {
                         distancia = 1;
                     }
 
@@ -242,8 +252,7 @@ public final class Dijkstra {
         for (int i = 0; i < nodosAfectados.size(); i++) {
             if (i == 0) {
                 siguienteNodo = nodosAfectados.get(0);
-            }
-            else {
+            } else {
                 if (siguienteNodo.getDistancia() > nodosAfectados.get(i).getDistancia()) {
                     siguienteNodo = nodosAfectados.get(i);
                 }
@@ -285,5 +294,17 @@ public final class Dijkstra {
 
     public ArrayList<Nodo> getNodosMapa() {
         return nodosMapa;
+    }
+
+    public ArrayList<Nodo> getNoDisponibles() {
+        return noDisponibles;
+    }
+
+    public Point getPuntoExacto() {
+        return puntoExacto;
+    }
+
+    public void setPuntoExacto(Point puntoExacto) {
+        this.puntoExacto = puntoExacto;
     }
 }

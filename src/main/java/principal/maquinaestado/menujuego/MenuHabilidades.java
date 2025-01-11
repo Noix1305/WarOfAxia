@@ -326,8 +326,7 @@ public class MenuHabilidades extends SeccionMenu {
             return;
         }
 
-        for (int i = 0; i < habilidades.size(); i++) {
-            Habilidad habilidadActual = habilidades.get(i);
+        for (Habilidad habilidadActual : habilidades) {
             Rectangle posicionMenu = habilidadActual.getPosicionMenu();
 
             DibujoDebug.dibujarImagen(g, habilidadActual.getImagenActual(), posicionMenu.x, posicionMenu.y);
@@ -400,16 +399,6 @@ public class MenuHabilidades extends SeccionMenu {
 
     }
 
-    private void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
-        String textoFinal = textoCarga + "/" + textoCargaTotal;
-        if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
-            GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
-        }
-
-    }
-
     private void dibujarTooltipHabilidades(final Graphics g, final SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
@@ -422,7 +411,7 @@ public class MenuHabilidades extends SeccionMenu {
                         // Dibuja el tooltip solo si objetoSeleccionado no es null
                         dibujarTooltipHabilidad(g, sd, habilidadActual);
                     }
-                    else if (habilidadSeleccionada != null) {
+                    else {
                         dibujarTooltipHabilidad(g, sd, habilidadSeleccionada);
                     }
                 }
@@ -451,12 +440,10 @@ public class MenuHabilidades extends SeccionMenu {
 
     private void dibujarTooltipObjetosAccRapido(Graphics g, SuperficieDibujo sd, Object objeto) {
         // Aquí puedes personalizar la apariencia del tooltip según tus necesidades
-        if (objeto instanceof Consumible) {
-            Consumible consumible = (Consumible) objeto;
+        if (objeto instanceof Consumible consumible) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, consumible.getNombre() + "\nCANTIDAD: " + consumible.getCantidad());
         }
-        else if (objeto instanceof Habilidad) {
-            Habilidad habilidad = (Habilidad) objeto;
+        else if (objeto instanceof Habilidad habilidad) {
             GeneradorTooltip.dibujarTooltipMejorado(g, sd, habilidad.getNombre());
         }
     }

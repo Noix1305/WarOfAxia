@@ -72,6 +72,7 @@ public class GestorJuego implements EstadoJuego {
     public void dibujar(Graphics2D g) {
 
         ElementosPrincipales.mapa.dibujarPrimeraCapa(g);
+        ElementosPrincipales.mapa.dibujarEnemigos(g);
         ElementosPrincipales.jugador.dibujar(g);
         ElementosPrincipales.mapa.dibujarSegundaCapa(g);
         menuInferior.dibujar(g);
@@ -90,9 +91,9 @@ public class GestorJuego implements EstadoJuego {
         if (!cargarJuego) {
             List<Salida> salidas = Salida.getSalidas();
 
-            if (!ElementosPrincipales.mapa.zonasSalidaActualizadas.isEmpty()) {
+            if (!ElementosPrincipales.mapa.getZonasSalidaActualizadas().isEmpty()) {
                 for (int i = 0; i < salidas.size(); i++) {
-                    Rectangle zonaSalida = ElementosPrincipales.mapa.zonasSalidaActualizadas.get(i);
+                    Rectangle zonaSalida = ElementosPrincipales.mapa.getZonasSalidaActualizadas().get(i);
 
                     if (ElementosPrincipales.jugador.getAreaPosicional().intersects(zonaSalida)) {
                         Salida salidaActual = salidas.get(i);

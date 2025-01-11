@@ -55,7 +55,7 @@ public class TiendaAccesorios extends SeccionTienda {
     @Override
     public void actualizar() {
         if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 3) {
-            objetosTienda = ElementosPrincipales.mapa.objetosTiendaActual;
+            objetosTienda = ElementosPrincipales.mapa.getObjetosTiendaActual();
             super.actualizarPosicionesMenu(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));
             super.actualizarPosicionesCompraVenta();
             super.actualizarSeleccionRaton(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));

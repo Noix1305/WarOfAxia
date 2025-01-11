@@ -15,24 +15,28 @@ import principal.Constantes;
 public class Nodo {
 
     private Point posicion; // Posición del nodo en el mapa
-    private double distancia; // Distancia desde el nodo de inicio hasta este nodo
+    private double distancia;
+    private int ancho;
+    private int alto;// Distancia desde el nodo de inicio hasta este nodo
 
     // Constructor de la clase Nodo
-    public Nodo(Point posicion, double distancia) {
+    public Nodo(final Point posicion, final double distancia, int ancho, int alto) {
         this.posicion = posicion;
         this.distancia = distancia;
+        this.ancho = ancho;
+        this.alto = alto;
     }
 
     // Método para obtener el área del nodo en píxeles
     public Rectangle getAreaPixeles() {
         return new Rectangle(posicion.x * Constantes.LADO_SPRITE, posicion.y * Constantes.LADO_SPRITE,
-                Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                ancho, alto);
     }
 
     // Método para obtener el área del nodo
     public Rectangle getArea() {
         return new Rectangle(posicion.x, posicion.y,
-                Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                ancho, alto);
     }
 
     // Métodos para obtener y establecer la posición del nodo

@@ -19,7 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
@@ -47,6 +47,7 @@ import principal.inventario.consumibles.Claves;
 import principal.inventario.consumibles.Consumible;
 import principal.inventario.joyas.Joya;
 import principal.maquinaestado.juego.menu_tienda.Tienda;
+import principal.sonido.ReproductorSonido;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
 
@@ -61,40 +62,40 @@ public class MapaTiled implements Serializable {
     private int altoMapaTiles;
     private String siguienteMapa;
     private final String nombreMapaActual;
-    private Point puntoInicial;
     public Tienda tiendaActiva;
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
-    private Habilidad habilidad = null;
-    public ArrayList<Rectangle> zonasSalidaOriginales;
-    public ArrayList<Rectangle> zonasSalidaActualizadas;
 
+    private final ArrayList<Rectangle> zonasSalidaOriginales;
+    private final ArrayList<Rectangle> zonasSalidaActualizadas;
     private ArrayList<CapaSprites> capaSprites1;
     private ArrayList<CapaSprites> capaSprites2;
     private ArrayList<CapaSprites> capasprites3;
     private ArrayList<CapaColisiones> capaColisiones;
-    private ArrayList<CapaTransparencias> capaTransparencias;
-    private ArrayList<Rectangle> areaTransparenciaOriginales;
+    private ArrayList<CapaColisionEnemigo> capaColisionesEnemigos;
+    private ArrayList<Rectangle> areaColisionesEnemigosOriginales;
     private ArrayList<Rectangle> areaColisionOriginales;
+    private ArrayList<PuntoGuardado> puntosguardado;
+    private final ArrayList<Objeto> objetosTiendaMapa;
+    private ArrayList<Objeto> objetosTiendaActual;
+    private ArrayList<ObjetoUnicoTiled> objetosMapa;
+    private ArrayList<Objeto> objetosTienda;
+    private ArrayList<Enemigo> enemigosMapa;
+    private final ArrayList<Rectangle> areasColisionActualizadas;
+    private ArrayList<ContenedorObjetos> listaContenedores;
+    private final ArrayList<ContenedorObjetos> contenedoresAbiertos;
+    private ArrayList<Tienda> tiendas;
+
     private Sprite[] paletaSprites1;
     private Sprite[] paletaSprites2;
-    public ArrayList<Objeto> objetosTiendaMapa;
-    public ArrayList<Objeto> objetosTiendaActual;
+
     private HudEnemigos hudEnemigos;
-    private boolean contenedorAbierto = false;
-    private ArrayList<PuntoGuardado> puntosguardado;
-
     private Dijkstra dijkstra;
-
-    private ArrayList<ObjetoUnicoTiled> objetosMapa;
-    public ArrayList<Objeto> objetosTienda;
-    private ArrayList<Enemigo> enemigosMapa;
-    public ArrayList<Rectangle> areasColisionActualizadas;
-    public ArrayList<Rectangle> areasTransparenciaActualizadas;
-    public ArrayList<ContenedorObjetos> listaContenedores;
     private ContenedorObjetos contenedorActual;
-    public ArrayList<Tienda> tiendas;
+    private Habilidad habilidad = null;
+    private Point puntoInicial;
+
     private String rutaMusica;
     private boolean musicaIniciada;
 
@@ -103,19 +104,19 @@ public class MapaTiled implements Serializable {
         zonasSalidaOriginales = new ArrayList<>();
         zonasSalidaActualizadas = new ArrayList<>();
         areasColisionActualizadas = new ArrayList<>();
-        areasTransparenciaActualizadas = new ArrayList<>();
         objetosTiendaMapa = new ArrayList<>();
         objetosTiendaActual = new ArrayList<>();
+        contenedoresAbiertos = new ArrayList<>();
         tiendaActiva = new Tienda();
         this.musicaIniciada = false;
         inicializarMapa(ruta);
     }
 
     public void actualizar() {
-        Point punto = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(), ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
+        Point punto = new Point(ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + 16,
+                ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + 16);
         actualizarEnemigos();
         actualizarAreasColision();
-        actualizarAreasTransparencia();
         actualizarRecogidaObjeto();
         actualizarAtaques();
         actualizarZonaSalida();
@@ -123,15 +124,15 @@ public class MapaTiled implements Serializable {
 
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
-        mostrarElementoscontenedor();
+        mostrarElementosContenedor();
         iniciarMusica();
     }
 
     private void iniciarMusica() {
         if (!GestorPrincipal.pantallaTitulo && !musicaIniciada) {
-            if (!ElementosPrincipales.reproductor.musica.getFilename().toUpperCase().equalsIgnoreCase(rutaMusica)) {
-                ElementosPrincipales.reproductor.musica.cambiarArchivo(rutaMusica);
-                ElementosPrincipales.reproductor.musica.repetir(0.8f);
+            if (!ReproductorSonido.musica.getFilename().toUpperCase().equalsIgnoreCase(rutaMusica)) {
+                ReproductorSonido.musica.cambiarArchivo(rutaMusica);
+                ReproductorSonido.musica.repetir(0.8f);
                 musicaIniciada = true;
             }
         }
@@ -154,7 +155,6 @@ public class MapaTiled implements Serializable {
         // Combinar colisiones en un solo ArrayList
         combinarColisiones();
         // Combinar transparencias en un solo ArrayList
-        combinarTransparencias();
         // Inicializar Dijkstra
         inicializarDijkstra();
         // Inicializar paleta de sprites
@@ -197,7 +197,6 @@ public class MapaTiled implements Serializable {
 
         dibujarObjetoTiled(g);
         dibujarcontenedores(g);
-        dibujarEnemigos(g);
         dibujarPuntosGuardado(g);
 
     }
@@ -219,7 +218,7 @@ public class MapaTiled implements Serializable {
         }
     }
 
-    private void dibujarEnemigos(Graphics g) {
+    public void dibujarEnemigos(Graphics g) {
         for (Enemigo enemigo : enemigosMapa) {
             int puntoX = retornarX((int) enemigo.getPosicionX());
             int puntoY = retornarY((int) enemigo.getPosicionY());
@@ -291,6 +290,14 @@ public class MapaTiled implements Serializable {
 //        }
         dibujarTooltipObjetosMapa(g, GestorPrincipal.sd);
         hudEnemigos.dibujar(g);
+//        for (Nodo nodo : dijkstra.getNodosMapa()) {
+//
+//            DibujoDebug.dibujarRectanguloContorno(g, nodo.getAreaPixeles(), Color.red);
+//        }
+//        for (Nodo nodo : dijkstra.getNoDisponibles()) {
+//
+//            DibujoDebug.dibujarRectanguloContorno(g, nodo.getAreaPixeles(), Color.blue);
+//        }
     }
 
     private void inicializarAtributosBasicos(JsonObject globalJSON) {
@@ -319,7 +326,7 @@ public class MapaTiled implements Serializable {
         this.capaSprites1 = new ArrayList<>();
         this.capaSprites2 = new ArrayList<>();
         this.capaColisiones = new ArrayList<>();
-        this.capaTransparencias = new ArrayList<>();
+        this.capaColisionesEnemigos = new ArrayList<>();
 
         if (capas != null) {
             for (JsonElement capaElement : capas) {
@@ -341,7 +348,7 @@ public class MapaTiled implements Serializable {
                         inicializarCapaColisiones(capaNode);
                         break;
                     case "objectgroup1":
-                        inicializarCapaTransparencia(capaNode);
+                        inicializarCapaColisionesEnemigos(capaNode);
                         break;
                     case "objectgroup2":
                         obtenerInformacionSiguienteMapa(capaNode);
@@ -355,26 +362,22 @@ public class MapaTiled implements Serializable {
     private void combinarColisiones() {
         // Lógica para combinar colisiones en un solo ArrayList
         areaColisionOriginales = new ArrayList<>();
+        areaColisionesEnemigosOriginales = new ArrayList<>();
 
         for (CapaColisiones capaColisiones : capaColisiones) {
             Rectangle[] rectangulos = capaColisiones.getColisionables();
             Collections.addAll(areaColisionOriginales, rectangulos);
         }
-    }
 
-    private void combinarTransparencias() {
-        // Lógica para combinar colisiones en un solo ArrayList
-        areaTransparenciaOriginales = new ArrayList<>();
+        for (CapaColisionEnemigo capaColisionEnemigo : capaColisionesEnemigos) {
+            Rectangle[] rectangulos = capaColisionEnemigo.getColisionables();
 
-        for (CapaTransparencias capaTransparencia : capaTransparencias) {
-            Rectangle[] rectangulos = capaTransparencia.getColisionables();
-
-            Collections.addAll(areaTransparenciaOriginales, rectangulos);
+            Collections.addAll(areaColisionesEnemigosOriginales, rectangulos);
         }
     }
 
     private void inicializarDijkstra() {
-        dijkstra = new Dijkstra(new Point(10, 10), anchoMapaTiles, altoMapaTiles, areaColisionOriginales);
+        dijkstra = new Dijkstra(new Point(10, 10), anchoMapaTiles, altoMapaTiles, areaColisionesEnemigosOriginales);
     }
 
     private void inicializarPaletaSprites(JsonObject globalJSON) {
@@ -498,13 +501,12 @@ public class MapaTiled implements Serializable {
         if (coleccionContenedores != null) {
             for (JsonElement contenedorElement : coleccionContenedores) {
                 JsonObject contenedorNode = contenedorElement.getAsJsonObject();
-                int idContenedor = getIntJson(contenedorNode, "idContenedor");
                 int xContenedor = getIntJson(contenedorNode, "x");
                 int yContenedor = getIntJson(contenedorNode, "y");
 
                 Point posicionContenedor = new Point(xContenedor, yContenedor);
-                Rectangle areaContenedor = new Rectangle(xContenedor, yContenedor, 32, 32);
-                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor, idContenedor, areaContenedor);
+
+                ContenedorObjetos contenedor = new ContenedorObjetos(posicionContenedor);
 
                 JsonArray coleccionObjetos = contenedorNode.getAsJsonArray("objetos");
                 if (coleccionObjetos != null) {
@@ -694,7 +696,7 @@ public class MapaTiled implements Serializable {
         }
     }
 
-    private void inicializarCapaTransparencia(JsonObject datosCapa) {
+    private void inicializarCapaColisionesEnemigos(JsonObject datosCapa) {
         int anchoCapa = getIntJson(datosCapa, "width");
         int altoCapa = getIntJson(datosCapa, "height");
         int xCapa = getIntJson(datosCapa, "x");
@@ -730,9 +732,9 @@ public class MapaTiled implements Serializable {
                 rectangulosCapa[j] = rectangulo;
             }
 
-            this.capaTransparencias.add(new CapaTransparencias(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
+            this.capaColisionesEnemigos.add(new CapaColisionEnemigo(anchoCapa, altoCapa, xCapa, yCapa, rectangulosCapa));
         } else {
-            System.err.println("No se encontraron datos válidos en la capa de transparencia.");
+            System.err.println("No se encontraron datos válidos en la capa de colisiones.");
         }
     }
 
@@ -848,7 +850,7 @@ public class MapaTiled implements Serializable {
                 // Llamar a la función que calcula la probabilidad de soltar un objeto
                 if (enemigo.comprobarSueltaObjeto()) {
                     Point p = new Point((int) enemigo.getPosicionX(), (int) enemigo.getPosicionY());
-                    ContenedorObjetos contenedor = new ContenedorObjetos(p, 0, new Rectangle(p.x, p.y, 32, 32));
+                    ContenedorObjetos contenedor = new ContenedorObjetos(p);
                     Objeto objeto = RegistroObjetos.obtenerObjeto(0);
                     contenedor.getObjetos().add(objeto);
                     listaContenedores.add(contenedor);
@@ -874,70 +876,43 @@ public class MapaTiled implements Serializable {
 
         // Actualiza el tiempo de la última recogida
         ultimoTiempoRecogida = tiempoActual;
-        Iterator<ObjetoUnicoTiled> iterador = objetosMapa.iterator();
-        Iterator<ContenedorObjetos> iterador2 = listaContenedores.iterator();
         Rectangle areaJugador = ElementosPrincipales.jugador.getAccionesJugador().getArea();
 
-
-        while (iterador.hasNext()) {
-            ObjetoUnicoTiled objetoActual = iterador.next();
-            Rectangle posicionObjetoActual = new Rectangle(objetoActual.getPosicion().x, objetoActual.getPosicion().y, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
-
-            if (areaJugador.intersects(posicionObjetoActual) && GestorPrincipal.sd.getRaton().isRecogiendo()) {
+        for (ObjetoUnicoTiled objeto : objetosMapa) {
+            if (areaJugador.intersects(objeto.getArea()) && GestorPrincipal.sd.getRaton().isRecogiendo()) {
                 if (ElementosPrincipales.jugador.getAccionesJugador().isSobrepeso()) {
                     return;
                 }
-                ElementosPrincipales.inventario.recogerObjetos(objetoActual);
-                iterador.remove();
+                ElementosPrincipales.inventario.recogerObjetos(objeto);
+                objetosMapa.remove(objeto);
                 break; // Salir del bucle después de recoger un objeto
             }
         }
 
-        while (iterador2.hasNext()) {
-            ContenedorObjetos contenedor = iterador2.next();
-            if (contenedor.getObjetos().isEmpty()) {
-                iterador2.remove();
-            } else if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
-                abrirContenedor(contenedor);
+        for (ContenedorObjetos contenedor : listaContenedores) {
+            if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
+                contenedor.setAbierto(true);
+                contenedoresAbiertos.add(contenedor);
             }
         }
     }
 
-    private void abrirContenedor(ContenedorObjetos contenedor) {
-        contenedorAbierto = true;
-        contenedorActual = contenedor;
 
-
-        areaColisionOriginales.removeIf(colision -> contenedorActual.getArea().intersects(colision));
-
-    }
-
-    private void mostrarElementoscontenedor() {
-        Rectangle posicionRaton = GestorPrincipal.sd.getRaton().getPosicionRectangle();
-
-        if (contenedorAbierto && contenedorActual != null) {
-            int puntoX = contenedorActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = contenedorActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
-            Rectangle areaContenedor = new Rectangle(puntoX, puntoY, 32, 32);
-            contenedorActual.setArea(areaContenedor);
-
-            if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(areaContenedor)) && GestorPrincipal.sd.getRaton().isClick()) {
-                recogerObjetosDelContenedor(contenedorActual);
-            } else {
-                contenedorActual = null;
-                contenedorAbierto = false;
+    private void mostrarElementosContenedor() {
+        if (!contenedoresAbiertos.isEmpty()) {
+            for (ContenedorObjetos contenedor : contenedoresAbiertos) {
+                if (!contenedor.getObjetos().isEmpty()) {
+                    List<Objeto> objetosAEliminar = new ArrayList<>();
+                    for (Objeto objeto : contenedor.getObjetos()) {
+                        Point p = new Point(contenedor.getPosicion().x, contenedor.getPosicion().y + 32);
+                        ObjetoUnicoTiled objetoUnicoTiled = new ObjetoUnicoTiled(p, objeto, objeto.getCantidad());
+                        objetosMapa.add(objetoUnicoTiled);
+                        objetosAEliminar.add(objeto);
+                    }
+                    contenedor.getObjetos().removeAll(objetosAEliminar);
+                }
             }
         }
-    }
-
-    private void recogerObjetosDelContenedor(ContenedorObjetos contenedor) {
-
-        for (Objeto objetoActual : contenedor.getObjetos()) {
-            ObjetoUnicoTiled objeto = new ObjetoUnicoTiled(contenedor.getPosicion(), objetoActual, objetoActual.getCantidad());
-            objetosMapa.add(objeto);
-        }
-
-        contenedor.getObjetos().clear();
     }
 
     private void actualizarEnemigos() {
@@ -1031,20 +1006,6 @@ public class MapaTiled implements Serializable {
 
             final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
             areasColisionActualizadas.add(rFinal);
-        }
-    }
-
-    private void actualizarAreasTransparencia() {
-        if (!areasTransparenciaActualizadas.isEmpty()) {
-            areasTransparenciaActualizadas.clear();
-        }
-
-        for (Rectangle rInicial : areaTransparenciaOriginales) {
-            int puntoX = rInicial.x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = rInicial.y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
-
-            final Rectangle rFinal = new Rectangle(puntoX, puntoY, rInicial.width, rInicial.height);
-            areasTransparenciaActualizadas.add(rFinal);
         }
     }
 
@@ -1159,5 +1120,237 @@ public class MapaTiled implements Serializable {
 
     public String getNombreMapaActual() {
         return nombreMapaActual;
+    }
+
+    public int getAnchoMapaTiles() {
+        return anchoMapaTiles;
+    }
+
+    public void setAnchoMapaTiles(int anchoMapaTiles) {
+        this.anchoMapaTiles = anchoMapaTiles;
+    }
+
+    public int getAltoMapaTiles() {
+        return altoMapaTiles;
+    }
+
+    public void setAltoMapaTiles(int altoMapaTiles) {
+        this.altoMapaTiles = altoMapaTiles;
+    }
+
+    public Tienda getTiendaActiva() {
+        return tiendaActiva;
+    }
+
+    public void setTiendaActiva(Tienda tiendaActiva) {
+        this.tiendaActiva = tiendaActiva;
+    }
+
+    public long getUltimoTiempoRecogida() {
+        return ultimoTiempoRecogida;
+    }
+
+    public void setUltimoTiempoRecogida(long ultimoTiempoRecogida) {
+        this.ultimoTiempoRecogida = ultimoTiempoRecogida;
+    }
+
+    public long getTiempoDebouncing() {
+        return tiempoDebouncing;
+    }
+
+    public void setTiempoDebouncing(long tiempoDebouncing) {
+        this.tiempoDebouncing = tiempoDebouncing;
+    }
+
+    public ArrayList<Rectangle> getZonasSalidaOriginales() {
+        return zonasSalidaOriginales;
+    }
+
+    public ArrayList<Rectangle> getZonasSalidaActualizadas() {
+        return zonasSalidaActualizadas;
+    }
+
+    public ArrayList<CapaSprites> getCapaSprites1() {
+        return capaSprites1;
+    }
+
+    public void setCapaSprites1(ArrayList<CapaSprites> capaSprites1) {
+        this.capaSprites1 = capaSprites1;
+    }
+
+    public ArrayList<CapaSprites> getCapaSprites2() {
+        return capaSprites2;
+    }
+
+    public void setCapaSprites2(ArrayList<CapaSprites> capaSprites2) {
+        this.capaSprites2 = capaSprites2;
+    }
+
+    public ArrayList<CapaSprites> getCapasprites3() {
+        return capasprites3;
+    }
+
+    public void setCapasprites3(ArrayList<CapaSprites> capasprites3) {
+        this.capasprites3 = capasprites3;
+    }
+
+    public ArrayList<CapaColisiones> getCapaColisiones() {
+        return capaColisiones;
+    }
+
+    public void setCapaColisiones(ArrayList<CapaColisiones> capaColisiones) {
+        this.capaColisiones = capaColisiones;
+    }
+
+    public ArrayList<CapaColisionEnemigo> getCapaColisionesEnemigos() {
+        return capaColisionesEnemigos;
+    }
+
+    public void setCapaColisionesEnemigos(ArrayList<CapaColisionEnemigo> capaColisionesEnemigos) {
+        this.capaColisionesEnemigos = capaColisionesEnemigos;
+    }
+
+    public ArrayList<Rectangle> getAreaColisionesEnemigosOriginales() {
+        return areaColisionesEnemigosOriginales;
+    }
+
+    public void setAreaColisionesEnemigosOriginales(ArrayList<Rectangle> areaColisionesEnemigosOriginales) {
+        this.areaColisionesEnemigosOriginales = areaColisionesEnemigosOriginales;
+    }
+
+    public ArrayList<Rectangle> getAreaColisionOriginales() {
+        return areaColisionOriginales;
+    }
+
+    public void setAreaColisionOriginales(ArrayList<Rectangle> areaColisionOriginales) {
+        this.areaColisionOriginales = areaColisionOriginales;
+    }
+
+    public ArrayList<PuntoGuardado> getPuntosguardado() {
+        return puntosguardado;
+    }
+
+    public void setPuntosguardado(ArrayList<PuntoGuardado> puntosguardado) {
+        this.puntosguardado = puntosguardado;
+    }
+
+    public ArrayList<Objeto> getObjetosTiendaMapa() {
+        return objetosTiendaMapa;
+    }
+
+    public ArrayList<Objeto> getObjetosTiendaActual() {
+        return objetosTiendaActual;
+    }
+
+    public void setObjetosTiendaActual(ArrayList<Objeto> objetosTiendaActual) {
+        this.objetosTiendaActual = objetosTiendaActual;
+    }
+
+    public ArrayList<ObjetoUnicoTiled> getObjetosMapa() {
+        return objetosMapa;
+    }
+
+    public void setObjetosMapa(ArrayList<ObjetoUnicoTiled> objetosMapa) {
+        this.objetosMapa = objetosMapa;
+    }
+
+    public ArrayList<Objeto> getObjetosTienda() {
+        return objetosTienda;
+    }
+
+    public void setObjetosTienda(ArrayList<Objeto> objetosTienda) {
+        this.objetosTienda = objetosTienda;
+    }
+
+    public void setEnemigosMapa(ArrayList<Enemigo> enemigosMapa) {
+        this.enemigosMapa = enemigosMapa;
+    }
+
+    public ArrayList<Rectangle> getAreasColisionActualizadas() {
+        return areasColisionActualizadas;
+    }
+
+    public ArrayList<ContenedorObjetos> getListaContenedores() {
+        return listaContenedores;
+    }
+
+    public void setListaContenedores(ArrayList<ContenedorObjetos> listaContenedores) {
+        this.listaContenedores = listaContenedores;
+    }
+
+    public ArrayList<ContenedorObjetos> getContenedoresAbiertos() {
+        return contenedoresAbiertos;
+    }
+
+    public ArrayList<Tienda> getTiendas() {
+        return tiendas;
+    }
+
+    public void setTiendas(ArrayList<Tienda> tiendas) {
+        this.tiendas = tiendas;
+    }
+
+    public Sprite[] getPaletaSprites1() {
+        return paletaSprites1;
+    }
+
+    public void setPaletaSprites1(Sprite[] paletaSprites1) {
+        this.paletaSprites1 = paletaSprites1;
+    }
+
+    public Sprite[] getPaletaSprites2() {
+        return paletaSprites2;
+    }
+
+    public void setPaletaSprites2(Sprite[] paletaSprites2) {
+        this.paletaSprites2 = paletaSprites2;
+    }
+
+    public HudEnemigos getHudEnemigos() {
+        return hudEnemigos;
+    }
+
+    public void setHudEnemigos(HudEnemigos hudEnemigos) {
+        this.hudEnemigos = hudEnemigos;
+    }
+
+    public Dijkstra getDijkstra() {
+        return dijkstra;
+    }
+
+    public void setDijkstra(Dijkstra dijkstra) {
+        this.dijkstra = dijkstra;
+    }
+
+    public ContenedorObjetos getContenedorActual() {
+        return contenedorActual;
+    }
+
+    public void setContenedorActual(ContenedorObjetos contenedorActual) {
+        this.contenedorActual = contenedorActual;
+    }
+
+    public Habilidad getHabilidad() {
+        return habilidad;
+    }
+
+    public void setHabilidad(Habilidad habilidad) {
+        this.habilidad = habilidad;
+    }
+
+    public String getRutaMusica() {
+        return rutaMusica;
+    }
+
+    public void setRutaMusica(String rutaMusica) {
+        this.rutaMusica = rutaMusica;
+    }
+
+    public boolean isMusicaIniciada() {
+        return musicaIniciada;
+    }
+
+    public void setMusicaIniciada(boolean musicaIniciada) {
+        this.musicaIniciada = musicaIniciada;
     }
 }

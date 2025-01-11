@@ -36,7 +36,7 @@ public class Constantes {
 
     // Rutas de los archivos de recursos
     public static int MAX_OBJETOS_POR_HOJA = 52;
-    public static String RUTA_MAPA_TILED = "textos/Ciudad1.json";
+    public static String RUTA_MAPA_TILED = "textos/Ciudad2.json";
     public static String RUTA_MAPA = "textos/prueba";
     public static String RUTA_MAPA2 = "textos/mapa3";
     public static String RUTA_RATON = "/icons/cursor.png";
@@ -73,7 +73,7 @@ public class Constantes {
     public static String RUTA_HOJA_GUANTE = "/hojasObjetos/armaduras/Guantes.png";
     public static String RUTA_HOJA_BOTA = "/hojasObjetos/armaduras/Botas.png";
     public static String RUTA_HOJA_HABILIDADES = "/habilidades/skills.png";
-    public static String RUTA_HOJA_CONTENEDORES = "/hojasObjetos/armaduras/cofre1.png";
+    public static String RUTA_HOJA_CONTENEDORES = "/hojasObjetos/individuales/chest2.png";
     public static String RUTA_HOJA_HUD = "/personajes/enemigos/skeletonhud.png";
 
     public static final Font FUENTE_POR_DEFECTO = CargadorRecursos.cargarFuente("fuentes/EXEPixelPerfectNoVenta.ttf", 12f);

@@ -14,6 +14,7 @@ import principal.entes.enemigo.Enemigo;
 import principal.entes.jugador.Jugador;
 import principal.inventario.Objeto;
 import principal.inventario.TipoObjeto;
+import principal.sonido.ReproductorSonido;
 import principal.sonido.SoundThread;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -99,8 +100,6 @@ public abstract class Arma extends Objeto {
                 return;
             }
             actualizacionesParaSgteAtaque = (int) (ataqueXSegundo * 60);
-            ElementosPrincipales.reproductor.sonidoArma.cambiarArchivo(rutaDisparo);
-            ElementosPrincipales.reproductor.sonidoArma.reproducir(0.7f);
 
             ElementosPrincipales.jugador.getCronometro().reiniciar();
             ElementosPrincipales.jugador.getAccionesJugador().setPreparado(true);
@@ -120,6 +119,12 @@ public abstract class Arma extends Objeto {
 
             for (Enemigo enemigo : enemigos) {
                 enemigo.perderVida(danioTotal, esCritico);
+            }
+
+            if (this.tipoObjeto == TipoObjeto.ESPADA_LIGERA) {
+                ReproductorSonido.sonidoEspada.reproducir(0.8f);
+            } else if (this.tipoObjeto == TipoObjeto.ARCO) {
+                ReproductorSonido.sonidoArco.reproducir(0.9f);
             }
         }
     }
