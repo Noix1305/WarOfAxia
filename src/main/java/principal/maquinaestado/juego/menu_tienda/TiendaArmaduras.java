@@ -30,7 +30,7 @@ public class TiendaArmaduras extends SeccionTienda {
     @Override
     public void actualizar() {
         if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 1) {
-            objetosTienda = ElementosPrincipales.mapa.objetosTiendaActual;
+            objetosTienda = ElementosPrincipales.mapa.getObjetosTiendaActual();
             super.actualizarPosicionesMenu(actualizaListaArmaduras(objetosTienda), ElementosPrincipales.inventario.getArmaduras(0));
             super.actualizarPosicionesCompraVenta();
             super.actualizarSeleccionRaton(actualizaListaArmaduras(objetosTienda), ElementosPrincipales.inventario.getArmaduras(0));

@@ -30,6 +30,7 @@ import principal.maquinaestado.menujuego.MenuEquipo;
  */
 public class Teclado implements KeyListener {
 
+    private static Teclado instance;
     // Teclas para controlar el movimiento y otras acciones
     public Tecla arriba = new Tecla();
     public Tecla abajo = new Tecla();
@@ -38,6 +39,8 @@ public class Teclado implements KeyListener {
     public Tecla enter = new Tecla();
     public Tecla teclaArriba = new Tecla();
     public Tecla teclaAbajo = new Tecla();
+    public Tecla spaceBar = new Tecla();
+    public Tecla pausar = new Tecla();
     public GestorHabilidades gh = new GestorHabilidades();
 
     // Variables para controlar el estado del juego y otras acciones
@@ -123,6 +126,10 @@ public class Teclado implements KeyListener {
             case KeyEvent.VK_F1:
                 debug = !debug;
                 break;
+            case KeyEvent.VK_P:
+                pausar.teclaPulsada();
+                System.out.println("Tecla P Pulsada");
+                break;
             case KeyEvent.VK_I:
                 if (GestorPrincipal.juegoActivo && !GestorPrincipal.pantallaTitulo && !GestorPrincipal.tiendaActiva) {
                     GestorPrincipal.inventarioActivo = !GestorPrincipal.inventarioActivo;
@@ -136,13 +143,14 @@ public class Teclado implements KeyListener {
 //                GestorPrincipal.tiendaActiva = !GestorPrincipal.tiendaActiva;
 //                break;
             case KeyEvent.VK_SPACE:
-                ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
+                spaceBar.teclaPulsada();
                 break;
             case KeyEvent.VK_F12:
                 MenuEquipo.mostrarTooltip = !MenuEquipo.mostrarTooltip;
                 break;
             case KeyEvent.VK_1:
                 ElementosPrincipales.jugador.habilidadSlot(0);
+
                 break;
             case KeyEvent.VK_2:
                 ElementosPrincipales.jugador.habilidadSlot(1);
@@ -213,11 +221,15 @@ public class Teclado implements KeyListener {
             case KeyEvent.VK_ESCAPE:
                 System.exit(0);
                 break;
+            case KeyEvent.VK_P:
+                pausar.teclaLiberada();
+                System.out.println("Tecla P Liberada");
+                break;
             case KeyEvent.VK_SHIFT:
                 corriendo = false;
                 break;
             case KeyEvent.VK_SPACE:
-                ElementosPrincipales.jugador.getAccionesJugador().setAtacando(true);
+                spaceBar.teclaLiberada();
                 break;
             case KeyEvent.VK_UP:
                 teclaArriba.teclaLiberada();
@@ -246,4 +258,11 @@ public class Teclado implements KeyListener {
         return ultimaTeclaPulsada;
     }
 
+
+    public static Teclado getInstance() {
+        if (instance == null) {
+            instance = new Teclado();
+        }
+        return instance;
+    }
 }

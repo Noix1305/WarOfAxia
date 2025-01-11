@@ -20,6 +20,7 @@ public class ObjetoUnicoTiled {
         this.posicion = posicion;
         this.objeto = objeto;
         this.cantidad = cantidad;
+        this.area = new Rectangle(posicion.x, posicion.y, 32, 32);
     }
 
     // Métodos getter y setter para los atributos

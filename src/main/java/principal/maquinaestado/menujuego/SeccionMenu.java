@@ -11,6 +11,8 @@ import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.graficos.SuperficieDibujo;
 import principal.herramientas.DibujoDebug;
+import principal.herramientas.EscaladorElementos;
+import principal.herramientas.GeneradorTooltip;
 import principal.inventario.Objeto;
 
 /**
@@ -128,6 +130,16 @@ public abstract class SeccionMenu {
         DibujoDebug.dibujarRectanguloRelleno(g, barraPeso, Color.gray);
 
         DibujoDebug.dibujarRectanguloRelleno(g, contenidoBarra, color);
+    }
+
+    protected void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
+        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
+        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
+        String textoFinal = textoCarga + "/" + textoCargaTotal;
+        if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
+            GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
+        }
+
     }
 
     public Rectangle getEtiquetaMenu() {

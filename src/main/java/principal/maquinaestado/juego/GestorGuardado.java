@@ -28,11 +28,23 @@ public class GestorGuardado {
 
     public void guardarJuego() {
         EstadoJuegoGuardar estadoJuego = getEstadoJuegoGuardar();
-        // Directorio donde se guardan los archivos
-        String carpetaGuardados = "juegosGuardados";
+
+        // Obtener el directorio de "Documents" del sistema
+        String carpetaGuardados = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "juegosGuardados";
+        System.out.println("Directorio de guardado: " + carpetaGuardados);
 
         // Crear un objeto File para el directorio
         File directorio = new File(carpetaGuardados);
+
+        // Verificar si el directorio existe, si no, crearlo
+        if (!directorio.exists()) {
+            if (directorio.mkdirs()) {
+                System.out.println("Directorio creado: " + carpetaGuardados);
+            } else {
+                System.out.println("No se pudo crear el directorio: " + carpetaGuardados);
+                return; // Salir del método si no se puede crear el directorio
+            }
+        }
 
         // Obtener todos los archivos con extensión ".save"
         File[] archivosGuardados = directorio.listFiles((dir, name) -> name.endsWith(".save"));
@@ -58,6 +70,7 @@ public class GestorGuardado {
         JuegoGuardado.guardarEstadoJuego(estadoJuego, carpetaGuardados, "guardado." + fechaFormateada);
         System.out.println("Juego guardado como: guardado." + fechaFormateada);
     }
+
 
 
     private static EstadoJuegoGuardar getEstadoJuegoGuardar() {

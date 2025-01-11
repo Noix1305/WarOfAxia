@@ -79,13 +79,9 @@ public class MenuInventario extends SeccionMenu {
 
         ArrayList<Objeto> objetos = new ArrayList<>();
 
-        for (Objeto objetoActual : ElementosPrincipales.inventario.getConsumibles()) {
-            objetos.add(objetoActual);
-        }
+        objetos.addAll(ElementosPrincipales.inventario.getConsumibles());
 
-        for (Objeto objetoActual : ElementosPrincipales.inventario.getClaves()) {
-            objetos.add(objetoActual);
-        }
+        objetos.addAll(ElementosPrincipales.inventario.getClaves());
 
         for (Objeto objetoActual : objetos) {
             if (objetoActual instanceof Consumible) {
@@ -152,7 +148,7 @@ public class MenuInventario extends SeccionMenu {
         //dibujarElementosInventario(g, em);
         //dibujarSpritesInventario(g, em);
         if (MenuEquipo.mostrarTooltip) {
-            dibujarTooltipPeso(g, sd);
+            super.dibujarTooltipPeso(g, sd);
             dibujarTooltipConsumibles(g, sd);
             dibujarTooltipClaves(g, sd);
             dibujarTooltipAccRapido(g, sd);
@@ -168,7 +164,6 @@ public class MenuInventario extends SeccionMenu {
         dibujarPanelConsumibles(g, panelConsumibles, titularPanelConsumibles, "CONSUMIBLES");
         dibujarPanelAccesoRapido(g, panelAccesoRapido, titularPanelAccesoRapido, "ACCESO RAPIDO");
         dibujarPanelClave(g, panelClave, titularPanelClave, "OBJETOS CLAVE");
-
         // Otros paneles que puedas tener...
     }
 
@@ -324,15 +319,6 @@ public class MenuInventario extends SeccionMenu {
      * @param g Objeto Graphics para dibujar en el contexto gráfico.
      * @param sd SuperficieDibujo que contiene información sobre la posición del ratón.
      */
-    public void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
-        String textoFinal = textoCarga + "/" + textoCargaTotal;
-        if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
-            GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
-        }
-
-    }
 
     private void dibujarTooltipConsumibles(final Graphics g, final SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();

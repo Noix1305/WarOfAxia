@@ -293,16 +293,6 @@ public class MenuCrecimiento extends SeccionMenu{
 
     }
 
-    private void dibujarTooltipPeso(final Graphics g, SuperficieDibujo sd) {
-        String textoCarga = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getPesoActual());
-        String textoCargaTotal = String.format("%.1f", ElementosPrincipales.jugador.getGestorAt().getLimitePeso());
-        String textoFinal = textoCarga + "/" + textoCargaTotal;
-        if (sd.getRaton().getPosicionRectangle().intersects(EscaladorElementos.escalarRectangleArriba(barraPeso))) {
-            GeneradorTooltip.dibujarTooltip(g, sd, textoFinal);
-        }
-
-    }
-
     private void dibujarTooltipHabilidades(final Graphics g, final SuperficieDibujo sd) {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
@@ -315,7 +305,7 @@ public class MenuCrecimiento extends SeccionMenu{
                         // Dibuja el tooltip solo si objetoSeleccionado no es null
                         dibujarTooltipHabilidad(g, sd, habilidadActual);
                     }
-                    else if (habilidadSeleccionada != null) {
+                    else {
                         dibujarTooltipHabilidad(g, sd, habilidadSeleccionada);
                     }
                 }

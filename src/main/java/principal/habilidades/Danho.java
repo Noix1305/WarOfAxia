@@ -41,7 +41,7 @@ public class Danho extends Habilidad implements Serializable {
         danhar(object, tipoHabilidad);
     }*/
 
-    private void danhar(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad) {
+    private void danhar(Entidad atacante, Entidad objetivo) {
 
         if (cronometro.obtenerTiempoTranscurrido() / 1000 >= getTiempoReutilizacion()) {
             if (objetivo instanceof Enemigo enemigo && atacante instanceof Jugador jugador) {
@@ -54,7 +54,7 @@ public class Danho extends Habilidad implements Serializable {
                     int cantidadTotalDanho = danhoBase + calcularMontoAdicionalPorInteligencia(jugador);
                     super.setMontoTotal(cantidadTotalDanho);
 
-                    enemigo.recibirDanho(cantidadTotalDanho, tipoHabilidad);
+                    enemigo.recibirDanho(cantidadTotalDanho);
 
                     ElementosPrincipales.jugador.gestorAtributos.setMana(jugador.gestorAtributos.getMana() - getManaUtilizado());
                     setTiempoReutilizacion(super.getTiempoReutilizacion());
@@ -76,8 +76,8 @@ public class Danho extends Habilidad implements Serializable {
 
 
     @Override
-    public void aplicarEfecto(Entidad atacante, Entidad objetivo, TipoObjeto tipoHabilidad) {
-        danhar(atacante, objetivo, tipoHabilidad);
+    public void aplicarEfecto(Entidad atacante, Entidad objetivo) {
+        danhar(atacante, objetivo);
     }
 
     public double getMontoAdicionalPorInteligencia() {

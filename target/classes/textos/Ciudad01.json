@@ -2570,7 +2570,6 @@
     "width": 40,
     "contenedores": [
         {
-            "idContenedor": 0,
             "x": 280,
             "y": 400,
             "objetos": [
@@ -2778,6 +2777,12 @@
             "id": 8,
             "x": 720,
             "y": 480
+        }
+    ],
+    "puntoGuardado": [
+        {
+            "x": 380,
+            "y": 430
         }
     ]
 }

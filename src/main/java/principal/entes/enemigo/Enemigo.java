@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
 
 import principal.Constantes;
 import principal.ElementosPrincipales;
@@ -20,7 +21,9 @@ import principal.entes.jugador.Jugador;
 import principal.herramientas.CalculadoraDistancia;
 import principal.herramientas.DibujoDebug;
 import principal.inventario.ContenedorObjetos;
+import principal.inventario.Objeto;
 import principal.inventario.TipoObjeto;
+import principal.sonido.ReproductorSonido;
 import principal.sonido.SoundThread;
 import principal.sprites.HojaSprites;
 import principal.sprites.Sprite;
@@ -33,8 +36,8 @@ public class Enemigo extends Entidad {
     private final int indiceContenedor; // Índice del contenedor de objetos al que pertenece el enemigo
     protected double posicionInicialX; // Coordenada X inicial del enemigo
     protected double posicionInicialY; // Coordenada Y inicial del enemigo
-    protected double posicionX; // Coordenada X actual del enemigo
-    protected double posicionY; // Coordenada Y actual del enemigo
+    protected int posicionX; // Coordenada X actual del enemigo
+    protected int posicionY; // Coordenada Y actual del enemigo
     protected Rectangle posicionMenu; // Área de la pantalla donde se muestra el menú del enemigo
     protected double distanciaParaMov; // Distancia mínima para que el enemigo comience a moverse
     protected boolean mostrarDanho; // Indica si se debe mostrar daño recibido
@@ -50,7 +53,8 @@ public class Enemigo extends Entidad {
     private int direccion; // Dirección de movimiento del enemigo (ajustar según necesidades)
     protected boolean enMovimiento = false; // Indica si el enemigo está en movimiento
 
-    private HojaSprites hs; // Hoja de sprites del enemigo
+    private HojaSprites hs;
+    private HojaSprites hojaHud;// Hoja de sprites del enemigo
     private transient BufferedImage imagenActual; // Imagen actual del enemigo
 
     protected String nombre; // Nombre del enemigo
@@ -68,6 +72,7 @@ public class Enemigo extends Entidad {
     private int montoRecuperado; // Monto de vida recuperado por curación
     private boolean mostrarCuracion; // Indica si se debe mostrar la curación recibida
 
+
     /**
      * Constructor de la clase Enemigo.
      *
@@ -81,8 +86,8 @@ public class Enemigo extends Entidad {
      * @param idxContenedor    Índice del contenedor de objetos al que pertenece el enemigo.
      */
     public Enemigo(int idEnemigo, String nombre, int vidaMaxima, int ataque, HojaSprites hs,
-                   double distanciaParaMov, ContenedorObjetos contenedor, int idxContenedor, int experiencia) {
-        super(new GestorAtributos(idEnemigo, nombre, vidaMaxima, ataque, experiencia));
+                   double distanciaParaMov, ContenedorObjetos contenedor, int idxContenedor, int experiencia, double probDrop, HojaSprites hojaHud) {
+        super(new GestorAtributos(idEnemigo, nombre, vidaMaxima, ataque, experiencia, probDrop));
 
         this.animacion = 0;
         this.estado = 0;
@@ -95,8 +100,28 @@ public class Enemigo extends Entidad {
         this.co = contenedor;
         this.indiceContenedor = idxContenedor;
         this.posicionMenu = new Rectangle();
-
+        this.hojaHud = hojaHud;
     }
+
+    public boolean comprobarSueltaObjeto() {
+        // Crear un generador de números aleatorios
+        Random random = new Random();
+
+        // Generar un número aleatorio entre 0 y 1
+        double aleatorio = random.nextDouble();
+
+        // Comparar si el número aleatorio es menor o igual a la probabilidad
+        if (aleatorio <= gestorAtributos.getProbabilidadSueltaObjeto()) {
+            // El enemigo suelta un objeto
+            System.out.println("¡El enemigo ha soltado un objeto!");
+            return true;
+        } else {
+            // El enemigo no suelta un objeto
+            System.out.println("El enemigo no ha soltado un objeto.");
+        }
+        return false;
+    }
+
 
     /**
      * Actualiza el estado del enemigo en el juego.
@@ -118,8 +143,8 @@ public class Enemigo extends Entidad {
     // Método para calcular la distancia entre el enemigo y el jugador
     private double calcularDistanciaAlJugador() {
         Point puntoJugador = new Point(
-                (int) ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(),
-                (int) ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
+                ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt(),
+                ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt());
 
         Point puntoEnemigo = new Point((int) posicionX, (int) posicionY);
         return CalculadoraDistancia.getDistanciaEntrePuntos(puntoEnemigo, puntoJugador);
@@ -262,7 +287,7 @@ public class Enemigo extends Entidad {
      * @param puntoY Coordenada Y de la pantalla.
      */
     public void dibujar(final Graphics g, final int puntoX, final int puntoY) {
-        dibujarBarraVida(g, puntoX, puntoY);
+        dibujarBarraVida(g, puntoX, puntoY, 4, Constantes.LADO_SPRITE);
         //DibujoDebug.dibujarRectanguloContorno(g, getArea());
         dibujarVidaActual(g, puntoX, puntoY);
         // DibujoDebug.dibujarRectanguloContorno(GestorPrincipal.sd.getGraphics(), ElementosPrincipales.jugador.areaPosicional);
@@ -321,13 +346,31 @@ public class Enemigo extends Entidad {
     }
 
     // Método para dibujar la barra de vida del enemigo en la posición especificada
-    private void dibujarBarraVida(final Graphics g, final int puntoX, final int puntoY) {
-        g.setColor(Color.green); // Establece el color verde para la barra de vida
+    public void dibujarBarraVida(final Graphics g, final int puntoX, final int puntoY, int alto, int ancho) {
+        // Calcula el porcentaje de vida
+        int vidaActual = gestorAtributos.getVidaEnemigo();
+        int vidaMaxima = gestorAtributos.getVidaMaximaEnemigo();
+        int porcentajeVida = (vidaActual * 100) / vidaMaxima;
+
+        // Cambia el color según el porcentaje de vida
+        if (porcentajeVida <= 20) {
+            g.setColor(Color.red); // Color rojo si la vida es igual o menor al 20%
+        } else if (porcentajeVida < 50) {
+            g.setColor(Color.yellow); // Color amarillo si la vida es menor al 50% pero mayor al 20%
+        } else {
+            g.setColor(Color.green); // Color verde si la vida es 50% o más
+        }
+
         // Dibuja un rectángulo relleno que representa la cantidad de vida actual del enemigo
-        DibujoDebug.dibujarRectanguloRelleno(g, puntoX, puntoY - 5,
-                Constantes.LADO_SPRITE * (int) gestorAtributos.getVidaEnemigo() /
-                        gestorAtributos.getVidaMaximaEnemigo(), 2);
+        DibujoDebug.dibujarRectanguloRelleno(
+                g,
+                puntoX,
+                puntoY - 5,
+                ancho * vidaActual / vidaMaxima,
+                alto
+        );
     }
+
 
     // Método para dibujar el daño recibido en la posición especificada
     public void dibujarDanhoRecibido(Graphics g, int puntoX, int puntoY) {
@@ -394,7 +437,7 @@ public class Enemigo extends Entidad {
 
     // Método para reducir la vida del enemigo y mostrar el daño recibido
     public void perderVida(float danhoRecibido, boolean critico) {
-        ElementosPrincipales.reproductor.lamentoEnemigo.reproducir(0.8f); // Reproduce un sonido de lamento
+        ReproductorSonido.lamentoEnemigo.reproducir(0.8f); // Reproduce un sonido de lamento
 
         // Establece el daño recibido y si fue un golpe crítico
         danhoPorGolpe = (int) danhoRecibido;
@@ -414,10 +457,40 @@ public class Enemigo extends Entidad {
         }
     }
 
+    // Método para curar la vida del enemigo
+    @Override
+    public void curarVida(int montoCuracion) {
+        // Registra el tiempo de inicio de mostrar curación
+        tiempoInicioMostrarCuracion = System.currentTimeMillis();
+
+        // Verifica si la vida actual es menor que la vida máxima
+        if (gestorAtributos.getVidaEnemigo() < gestorAtributos.getVidaMaximaEnemigo()) {
+            gestorAtributos.setVidaEnemigo(+montoCuracion); // Aumenta la vida actual con el monto de curación
+
+            // Si la vida actual supera la vida máxima, la ajusta a la máxima
+            if (gestorAtributos.getVidaEnemigo() > gestorAtributos.getVidaMaximaEnemigo()) {
+                gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaMaximaEnemigo());
+            }
+
+            montoRecuperado = montoCuracion; // Establece el monto recuperado
+            mostrarCuracion = true; // Habilita la visualización de la curación recibida
+        }
+    }
+
     // Método para establecer la posición del enemigo
-    public void setPosicion(final double posicionX, final double posicionY) {
+    public void setPosicion(final int posicionX, final int posicionY) {
         this.posicionX = posicionX;
         this.posicionY = posicionY;
+    }
+
+    // Método para obtener el área del enemigo relativa a la posición del jugador
+    public Rectangle getArea() {
+        final int puntoX =  posicionX - ElementosPrincipales.jugador.
+                getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+        final int puntoY =  posicionY - ElementosPrincipales.jugador.
+                getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+
+        return new Rectangle(puntoX, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
     }
 
     // Método para obtener la coordenada X del enemigo
@@ -428,16 +501,6 @@ public class Enemigo extends Entidad {
     // Método para obtener la coordenada Y del enemigo
     public double getPosicionY() {
         return posicionY;
-    }
-
-    // Método para obtener el área del enemigo relativa a la posición del jugador
-    public Rectangle getArea() {
-        final int puntoX = (int) posicionX - ElementosPrincipales.jugador.
-                getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-        final int puntoY = (int) posicionY - (int) ElementosPrincipales.jugador.
-                getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
-
-        return new Rectangle(puntoX, puntoY, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
     }
 
     // Método para obtener el área posicional del enemigo
@@ -458,27 +521,6 @@ public class Enemigo extends Entidad {
     // Método para establecer el siguiente nodo de movimiento del enemigo
     public void setSiguienteNodo(Nodo siguienteNodo) {
         this.siguienteNodo = siguienteNodo;
-    }
-
-
-    // Método para curar la vida del enemigo
-    @Override
-    public void curarVida(int montoCuracion) {
-        // Registra el tiempo de inicio de mostrar curación
-        tiempoInicioMostrarCuracion = System.currentTimeMillis();
-
-        // Verifica si la vida actual es menor que la vida máxima
-        if (gestorAtributos.getVidaEnemigo() < gestorAtributos.getVidaMaximaEnemigo()) {
-            gestorAtributos.setVidaEnemigo(+montoCuracion); // Aumenta la vida actual con el monto de curación
-
-            // Si la vida actual supera la vida máxima, la ajusta a la máxima
-            if (gestorAtributos.getVidaEnemigo() > gestorAtributos.getVidaMaximaEnemigo()) {
-                gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaMaximaEnemigo());
-            }
-
-            montoRecuperado = montoCuracion; // Establece el monto recuperado
-            mostrarCuracion = true; // Habilita la visualización de la curación recibida
-        }
     }
 
     // Método para obtener el contenedor de objetos del enemigo
@@ -518,9 +560,15 @@ public class Enemigo extends Entidad {
     }
 
     // Método para recibir daño del jugador
-    @Override
-    public void recibirDanho(int danho, TipoObjeto tipoDeHabilidad) {
+    public void recibirDanho(int danho) {
         gestorAtributos.setVidaEnemigo(gestorAtributos.getVidaEnemigo() - danho);
     }
 
+    public HojaSprites getHojaHud() {
+        return hojaHud;
+    }
+
+    public void setHojaHud(HojaSprites hojaHud) {
+        this.hojaHud = hojaHud;
+    }
 }

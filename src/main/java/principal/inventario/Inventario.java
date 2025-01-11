@@ -40,7 +40,7 @@ public class Inventario implements Serializable {
 
         objetos = new ArrayList<>();
         habilidades = new ArrayList<>();
-        objetosTienda = ElementosPrincipales.mapa.objetosTienda;
+        objetosTienda = ElementosPrincipales.mapa.getObjetosTienda();
         dinero = 20000;
         Enemigo enemigo1 = RegistroEnemigos.obtenerEnemigo(1);
         Enemigo enemigo2 = RegistroEnemigos.obtenerEnemigo(2);

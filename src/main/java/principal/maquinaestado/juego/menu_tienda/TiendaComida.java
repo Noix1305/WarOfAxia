@@ -123,7 +123,7 @@ public class TiendaComida extends SeccionTienda {
     @Override
     public void actualizar() {
         if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 4) {
-            objetosTienda = ElementosPrincipales.mapa.objetosTiendaActual;
+            objetosTienda = ElementosPrincipales.mapa.getObjetosTiendaActual();
             super.actualizarPosicionesMenu(actualizarListaConsumibles(objetosTienda), ElementosPrincipales.inventario.getConsumibles());
             super.actualizarPosicionesCompraVenta();
             super.actualizarSeleccionRaton(actualizarListaConsumibles(objetosTienda), ElementosPrincipales.inventario.getConsumibles());
