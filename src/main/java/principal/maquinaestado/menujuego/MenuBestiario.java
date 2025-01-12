@@ -8,10 +8,13 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.util.ArrayList;
 import java.util.List;
+
 import principal.entes.enemigo.Enemigo;
+
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.GestorPrincipal;
@@ -21,7 +24,6 @@ import principal.herramientas.EscaladorElementos;
 import principal.herramientas.MedidorString;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class MenuBestiario extends SeccionMenu {
@@ -40,6 +42,8 @@ public class MenuBestiario extends SeccionMenu {
 
     final Rectangle titularPanelDescripcion = new Rectangle(panelDescripcion.x, panelDescripcion.y,
             panelDescripcion.width, 24);
+    private long tiempoInicio = -1; // Indica que no se ha inicializado
+
 
     /*final Rectangle panelAtributos = new Rectangle(panelDescripcion.x + panelDescripcion.width + margenGeneral,
             panelBestiario.y, 132, panelDescripcion.height);
@@ -70,20 +74,20 @@ public class MenuBestiario extends SeccionMenu {
     }
 
     private void dibujarPanelBestiario(Graphics g, final Rectangle panel, final Rectangle titularPanel,
-            final String nombrePanel) {
+                                       final String nombrePanel) {
         dibujarPanel(g, panel, titularPanel, nombrePanel);
         dibujarElementosBestiario(g, panel);
 
     }
 
     private void dibujarPanelDescripcion(Graphics g, final Rectangle panel, final Rectangle titularPanel,
-            final String nombrePanel) {
+                                         final String nombrePanel) {
         dibujarPanel(g, panel, titularPanel, nombrePanel);
         mostrarDescripcion(g);
     }
 
     private void dibujarPanel(final Graphics g, final Rectangle panel, final Rectangle titularPanel,
-            final String nombrePanel) {
+                              final String nombrePanel) {
         g.setColor(Color.DARK_GRAY);
         DibujoDebug.dibujarRectanguloContorno(g, panel);
         DibujoDebug.dibujarRectanguloRelleno(g, titularPanel);
@@ -163,14 +167,11 @@ public class MenuBestiario extends SeccionMenu {
 
         if (porcentajePeso < 25) {
             color = Color.green;
-        }
-        else if (porcentajePeso >= 25 && porcentajePeso < 50) {
+        } else if (porcentajePeso >= 25 && porcentajePeso < 50) {
             color = Color.yellow;
-        }
-        else if (porcentajePeso >= 50 && porcentajePeso < 75) {
+        } else if (porcentajePeso >= 50 && porcentajePeso < 75) {
             color = Constantes.COLOR_NARANJA;
-        }
-        else if (porcentajePeso >= 100) {
+        } else if (porcentajePeso >= 100) {
             color = Color.red;
             carga = "SOBREPESO";
             x = barraPeso.x - 60;
@@ -195,30 +196,27 @@ public class MenuBestiario extends SeccionMenu {
             int y = yNombre + MedidorString.calcularAlturaTexto(g, nombreEnemigo) + margenGeneral;
             int anchoRectangulo = panelDescripcion.width - 2 * margenGeneral;
 
-            dibujarDescripcion(g, lineas, anchoRectangulo, y);
+            // Inicializar tiempoInicio solo la primera vez
+            if (tiempoInicio == -1) {
+                tiempoInicio = System.currentTimeMillis();
+            }
+            dibujarDescripcion(g, lineas, anchoRectangulo, y, tiempoInicio);
         }
     }
 
-    private void dibujarDescripcion(Graphics g, String[] lineas, int anchoRectangulo, int yInicial) {
+
+    private void dibujarDescripcion(Graphics g, String[] lineas, int anchoRectangulo, int yInicial, long tiempoInicio) {
         FontMetrics metrics = g.getFontMetrics();
 
         for (String linea : lineas) {
-            StringBuilder lineaActual = new StringBuilder();
-            String[] palabras = linea.split(" ");
-            for (String palabra : palabras) {
-                if (metrics.stringWidth(lineaActual.toString() + palabra) > anchoRectangulo) {
-                    DibujoDebug.dibujarString(g, lineaActual.toString(), panelDescripcion.x + margenGeneral, yInicial, Color.BLACK);
-                    yInicial += metrics.getHeight();
-                    lineaActual = new StringBuilder(palabra + " ");
-                }
-                else {
-                    lineaActual.append(palabra).append(" ");
-                }
-            }
-            DibujoDebug.dibujarString(g, lineaActual.toString(), panelDescripcion.x + margenGeneral, yInicial, Color.BLACK);
+            // Usar el nuevo método para cada línea
+            DibujoDebug.escribirTextoLetraPorLetra(g, linea, panelDescripcion.x + margenGeneral, yInicial, anchoRectangulo, 20, tiempoInicio);
+
+            // Incrementar la posición vertical para la próxima línea
             yInicial += metrics.getHeight();
         }
     }
+
 
     private void actualizarPosicionesMenu() {
         if (ElementosPrincipales.inventario.enemigosEliminados.isEmpty()) {
@@ -265,7 +263,7 @@ public class MenuBestiario extends SeccionMenu {
                 for (Enemigo enemigo : ElementosPrincipales.inventario.enemigosEliminados) {
                     if (GestorPrincipal.sd.getRaton().isClick() && posicionRaton
                             .intersects(EscaladorElementos.escalarRectangleArriba(enemigo.getPosicionMenu()))) {
-                        enemigoSeleccionado = enemigo;
+                        setEnemigoSeleccionado(enemigo);
                         break; // Salir del bucle una vez que se selecciona un enemigo
                     }
                 }
@@ -276,6 +274,11 @@ public class MenuBestiario extends SeccionMenu {
             enemigoSeleccionado = null; // Deseleccionar el enemigo si se hace clic fuera de su área
 
         }
+    }
+
+    public void setEnemigoSeleccionado(Enemigo nuevoEnemigo) {
+        this.enemigoSeleccionado = nuevoEnemigo;
+        this.tiempoInicio = -1; // Reiniciar el tiempo para la nueva descripción
     }
 
 }

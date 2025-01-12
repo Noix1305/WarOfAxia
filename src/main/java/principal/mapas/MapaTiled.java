@@ -237,8 +237,6 @@ public class MapaTiled implements Serializable {
         dibujarcontenedores(g);
         dibujarPuntosGuardado(g);
         dibujarNPCs(g);
-
-
     }
 
     private void dibujarObjetoTiled(Graphics g) {
@@ -251,18 +249,13 @@ public class MapaTiled implements Serializable {
 
     private void dibujarcontenedores(Graphics g) {
         for (ContenedorObjetos contenedorAct : listaContenedores) {
-            int puntoX = retornarX(contenedorAct.getPosicion().x);
-            int puntoY = retornarY(contenedorAct.getPosicion().y);
-
-            contenedorAct.dibujar(g, puntoX, puntoY);
+            contenedorAct.dibujar(g, retornarX(contenedorAct.getPosicion().x), retornarY(contenedorAct.getPosicion().y));
         }
     }
 
     public void dibujarEnemigos(Graphics g) {
         for (Enemigo enemigo : enemigosMapa) {
-            int puntoX = retornarX((int) enemigo.getPosicionX());
-            int puntoY = retornarY((int) enemigo.getPosicionY());
-            enemigo.dibujar(g, puntoX, puntoY);
+            enemigo.dibujar(g, retornarX((int) enemigo.getPosicionX()), retornarY((int) enemigo.getPosicionY()));
 
         }
     }
@@ -276,9 +269,7 @@ public class MapaTiled implements Serializable {
     private void dibujarPuntosGuardado(Graphics g) {
 
         for (PuntoGuardado puntoGuardado : puntosguardado) {
-            int puntoX = retornarX(puntoGuardado.getX());
-            int puntoY = retornarY(puntoGuardado.getY());
-            puntoGuardado.dibujar(g, puntoX, puntoY);
+            puntoGuardado.dibujar(g, retornarX(puntoGuardado.getX()), retornarY(puntoGuardado.getY()));
         }
     }
 

@@ -4,10 +4,7 @@
  */
 package principal.herramientas;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -101,6 +98,41 @@ public class DibujoDebug {
         objetosDibujados++;
         g.drawRect(x, y, ancho, alto);
     }
+
+    public static void escribirTextoLetraPorLetra(Graphics g, String textoCompleto, int xInicial, int yInicial, int anchoMaximo, int velocidadEscritura, long tiempoInicio) {
+        FontMetrics metrics = g.getFontMetrics();
+        long tiempoActual = System.currentTimeMillis();
+        int letrasMostradas = (int) ((tiempoActual - tiempoInicio) / velocidadEscritura); // Letras a mostrar en total
+
+        StringBuilder lineaActual = new StringBuilder();
+        int letrasProcesadas = 0;
+
+        String[] palabras = textoCompleto.split(" ");
+        for (String palabra : palabras) {
+            if (metrics.stringWidth(lineaActual.toString() + palabra) > anchoMaximo) {
+                // Dibujar línea acumulada
+                String textoADibujar = lineaActual.toString();
+                int letrasParaEstaLinea = Math.min(textoADibujar.length(), Math.max(0, letrasMostradas - letrasProcesadas));
+                if (letrasParaEstaLinea > 0) {
+                    DibujoDebug.dibujarString(g, textoADibujar.substring(0, letrasParaEstaLinea), xInicial, yInicial, Color.BLACK);
+                }
+
+                letrasProcesadas += textoADibujar.length();
+                yInicial += metrics.getHeight();
+                lineaActual = new StringBuilder(palabra + " ");
+            } else {
+                lineaActual.append(palabra).append(" ");
+            }
+        }
+
+        // Dibujar la última línea acumulada
+        String textoADibujar = lineaActual.toString();
+        int letrasParaEstaLinea = Math.min(textoADibujar.length(), Math.max(0, letrasMostradas - letrasProcesadas));
+        if (letrasParaEstaLinea > 0) {
+            DibujoDebug.dibujarString(g, textoADibujar.substring(0, letrasParaEstaLinea), xInicial, yInicial, Color.BLACK);
+        }
+    }
+
 
     public static void reiniciarContadorObjetos() {
         objetosDibujados = 0;
