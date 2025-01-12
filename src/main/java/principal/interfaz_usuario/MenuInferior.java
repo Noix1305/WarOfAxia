@@ -4,12 +4,10 @@
  */
 package principal.interfaz_usuario;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
 import principal.Constantes;
 import principal.ElementosPrincipales;
 import principal.habilidades.Habilidad;
@@ -18,7 +16,6 @@ import principal.inventario.consumibles.Consumible;
 import principal.sprites.HojaSprites;
 
 /**
- *
  * @author GAMER ARRAX
  */
 public class MenuInferior {
@@ -33,6 +30,10 @@ public class MenuInferior {
     public static long tiempoReutilizacionCuracion;
     int altoMenu;
     Rectangle ranura1;
+    private HojaSprites barraVida;
+    private HojaSprites barraMana;
+    private HojaSprites barraResistencia;
+    private HojaSprites barraExp;
 
     private Color negroDesaturado;
     private Color rojoclaro;
@@ -43,6 +44,8 @@ public class MenuInferior {
     private Color azulOscuro;
     private Color rosaOscuro;
     private Color rosaClaro;
+    private Color amarilloClaro;
+    private Color amarilloOscuro;
 
     public MenuInferior() {
         altoMenu = Constantes.LADO_SPRITE * 2;
@@ -55,11 +58,18 @@ public class MenuInferior {
         azulOscuro = new Color(0, 132, 168);
         rosaClaro = new Color(255, 0, 150);
         rosaOscuro = new Color(150, 0, 50);
+        amarilloClaro = new Color(249, 239, 13);
+        amarilloOscuro = new Color(181, 173, 4);
+
 
         areaInventario = new Rectangle(0, Constantes.ALTO_JUEGO/*360*/ - altoMenu/*64*/,
                 Constantes.ANCHO_JUEGO/*720*/, altoMenu/*64*/);
         hojaMenuInferior = new HojaSprites("/fondos/bordeMenuInferior.png", 720, 64, true);
         bordesRanuras = new HojaSprites("/fondos/BordeSkills.png", 39, true);
+        barraVida = new HojaSprites("/fondos/barraVida.png", 110, 10, true);
+        barraMana = new HojaSprites("/fondos/barraMana.png", 110, 10, true);
+        barraResistencia = new HojaSprites("/fondos/barraResistencia.png", 110, 10, true);
+        barraExp = new HojaSprites("/fondos/barraExp.png", 110, 10, true);
         areaInvent = hojaMenuInferior.getSprites(0).getImagen();
         bordeAreaInventario = new Rectangle(areaInventario.x, areaInventario.y - 1, areaInventario.width, 1);
         tiempoReutilizacionCuracion = 0;
@@ -88,16 +98,31 @@ public class MenuInferior {
     }
 
     private void dibujarBarraVitalidad(final Graphics g) {
+
         final int medidadVertical = 4;
         final int anchoTotal = 100;
         final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.gestorAtributos.getVida()
                 / ElementosPrincipales.jugador.gestorAtributos.getVidaMaxima();
+        Color color1;
+        Color color2;
 
-        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidadVertical * 3,
-                anchoInteractivo, medidadVertical, rojoclaro);
+        if (anchoInteractivo < 80 && anchoInteractivo > 30) {
+            color1 = amarilloOscuro;
+            color2 = amarilloClaro;
+        } else if (anchoInteractivo < 30) {
+            color1 = rojoOscuro;
+            color2 = rojoclaro;
+        } else {
+            color1 = verdeOscuro;
+            color2 = verdeClaro;
+        }
+
+        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidadVertical * 3 + 1,
+                anchoInteractivo, medidadVertical, color1);
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidadVertical * 4,
-                anchoInteractivo, medidadVertical, rojoclaro);
+                anchoInteractivo, medidadVertical, color2);
         g.setColor(Color.WHITE);
+        DibujoDebug.dibujarImagen(g, barraVida.getSprites(0).imagen, new Point(areaInventario.x + 26, areaInventario.y + medidadVertical * 3));
 
         DibujoDebug.dibujarString(g, "VIT: ", areaInventario.x + 10, areaInventario.y + medidadVertical * 5 - 1);
         DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.gestorAtributos.getVida(),
@@ -109,11 +134,12 @@ public class MenuInferior {
         final int anchoTotal = 100;
         final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.gestorAtributos.getMana() / ElementosPrincipales.jugador.getGestorAt().getManaMaximo();
 
-        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 6,
+        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 6 + 1,
                 anchoInteractivo, medidaVertical, azulClaro);
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 7,
                 anchoInteractivo, medidaVertical, azulOscuro);
         g.setColor(Color.WHITE);
+        DibujoDebug.dibujarImagen(g, barraMana.getSprites(0).imagen, new Point(areaInventario.x + 26, areaInventario.y + medidaVertical * 6));
         DibujoDebug.dibujarString(g, "MNA: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 8 - 1);
         DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.gestorAtributos.getMana(), anchoTotal + 45, areaInventario.y + medidaVertical * 8 - 1);
     }
@@ -124,11 +150,12 @@ public class MenuInferior {
         final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGestorAt().getResistencia()
                 / ElementosPrincipales.jugador.getGestorAt().getResistenciaMaxima();
 
-        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 9,
-                anchoInteractivo, medidaVertical, verdeClaro);
+        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 9 + 1,
+                anchoInteractivo, medidaVertical, negroDesaturado);
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 10,
-                anchoInteractivo, medidaVertical, verdeOscuro);
+                anchoInteractivo, medidaVertical, Color.DARK_GRAY);
         g.setColor(Color.WHITE);
+        DibujoDebug.dibujarImagen(g, barraResistencia.getSprites(0).imagen, new Point(areaInventario.x + 26, areaInventario.y + medidaVertical * 9));
         DibujoDebug.dibujarString(g, "RES: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 11 - 1);
         DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGestorAt().getResistencia(), anchoTotal + 45, areaInventario.y + medidaVertical * 11 - 1);
     }
@@ -144,13 +171,14 @@ public class MenuInferior {
         final int anchoInteractivo = anchoTotal * ElementosPrincipales.jugador.getGestorAt().getExperiencia() / experienciaMaxima;
 
         // Dibujar la barra de experiencia
-        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 12,
+        DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 12 + 1,
                 anchoInteractivo, medidaVertical, rosaClaro);
         DibujoDebug.dibujarRectanguloRelleno(g, areaInventario.x + 35, areaInventario.y + medidaVertical * 13,
                 anchoInteractivo, medidaVertical, rosaOscuro);
-
         // Dibujar etiquetas y porcentaje
         g.setColor(Color.WHITE);
+        DibujoDebug.dibujarImagen(g, barraExp.getSprites(0).imagen, new Point(areaInventario.x + 26, areaInventario.y + medidaVertical * 12));
+
         DibujoDebug.dibujarString(g, "EXP: ", areaInventario.x + 10, areaInventario.y + medidaVertical * 14 - 1);
         DibujoDebug.dibujarString(g, "" + ElementosPrincipales.jugador.getGestorAt().getExperiencia() * 100
                 / ElementosPrincipales.jugador.getGestorAt().getExperienciaMaxima()
@@ -166,8 +194,7 @@ public class MenuInferior {
             DibujoDebug.dibujarImagen(g, bordesRanuras.getSprites(0).getImagen(), ranura.x - 3, ranura.y - 4);
             if (i > 9) {
                 DibujoDebug.dibujarString(g, "0", ranuraObjetos.get(i - 1).x + 13, areaInventario.height + areaInventario.y - 8, Color.BLACK);
-            }
-            else {
+            } else {
                 DibujoDebug.dibujarString(g, "" + i, ranuraObjetos.get(i - 1).x + 13, areaInventario.height + areaInventario.y - 8, Color.BLACK);
             }
             i++;
@@ -186,8 +213,7 @@ public class MenuInferior {
                 }
                 DibujoDebug.dibujarString(g, "" + consumible.getCantidad(), ranura.x + ranura.width - 5,
                         ranura.y + ranura.height - 1, colorTexto);
-            }
-            else if (objeto != null && (objeto instanceof Habilidad)) {
+            } else if (objeto != null && (objeto instanceof Habilidad)) {
                 Habilidad habilidad = (Habilidad) objeto;
                 Rectangle ranura = ranuraObjetos.get(j); // Obtener la ranura correspondiente
 
@@ -198,8 +224,7 @@ public class MenuInferior {
                 if (tiempoRestante > 0) {
                     if (tiempoRestante < 10) {
                         DibujoDebug.dibujarString(g, "0" + tiempoRestante, ranura.x + 9, ranura.y + 20, colorTexto);
-                    }
-                    else {
+                    } else {
                         DibujoDebug.dibujarString(g, "" + tiempoRestante, ranura.x + 10, ranura.y + 20, colorTexto);
                     }
 

@@ -28,6 +28,7 @@ import principal.inventario.armas.Arma;
 import principal.inventario.armas.ArmaDosManos;
 import principal.inventario.armas.SinArma;
 import principal.inventario.joyas.Joya;
+import principal.sonido.ReproductorSonido;
 import principal.sprites.Sprite;
 
 /**
@@ -182,7 +183,7 @@ public class Jugador extends Entidad implements Serializable {
         actualizarAtaque();
         cambiarHojaSprites();
         if (accionesJugador.isEnMovimiento()) {
-            ElementosPrincipales.reproductor.sonidoCaminar2.reproducir(0.8f);
+            ReproductorSonido.sonidoCaminar2.reproducir(0.8f);
         }
     }
 
