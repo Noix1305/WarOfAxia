@@ -28,6 +28,22 @@ public class TiendaAccesorios extends SeccionTienda {
         super(nombreSeccion, etiquetaMenu, et);
     }
 
+    // Método para actualizar la lógica de la tienda
+    @Override
+    public void actualizar() {
+        if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 3) {
+            objetosTienda = ElementosPrincipales.mapa.getObjetosTiendaActual();
+            super.actualizarPosicionesMenu(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));
+            super.actualizarPosicionesCompraVenta();
+            super.actualizarSeleccionRaton(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));
+            super.actualizarObjetoSeleccionadoCompra();
+            super.actualizarObjetoSeleccionadoVenta();
+            super.calcularPesoFuturo();
+            super.actualizarCanastaCompra(ElementosPrincipales.inventario.getJoyas(0));
+            super.actualizarCanastaVenta();
+        }
+    }
+
     // Método para dibujar la interfaz de la tienda
     @Override
     public void dibujar(Graphics g, SuperficieDibujo sd) {
@@ -49,22 +65,6 @@ public class TiendaAccesorios extends SeccionTienda {
             }
         }
 
-    }
-
-    // Método para actualizar la lógica de la tienda
-    @Override
-    public void actualizar() {
-        if (ElementosPrincipales.mapa.tiendaActiva.getTipo() == 3) {
-            objetosTienda = ElementosPrincipales.mapa.getObjetosTiendaActual();
-            super.actualizarPosicionesMenu(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));
-            super.actualizarPosicionesCompraVenta();
-            super.actualizarSeleccionRaton(actualizaListaJoyas(objetosTienda), ElementosPrincipales.inventario.getJoyas(0));
-            super.actualizarObjetoSeleccionadoCompra();
-            super.actualizarObjetoSeleccionadoVenta();
-            super.calcularPesoFuturo();
-            super.actualizarCanastaCompra(ElementosPrincipales.inventario.getJoyas(0));
-            super.actualizarCanastaVenta();
-        }
     }
 
     private ArrayList<Objeto> actualizaListaJoyas(ArrayList<Objeto> objetosTienda) {

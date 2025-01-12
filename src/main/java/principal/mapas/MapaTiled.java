@@ -10,11 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,6 +24,7 @@ import principal.dijkstra.Dijkstra;
 import principal.dijkstra.Nodo;
 import principal.entes.enemigo.Enemigo;
 import principal.entes.enemigo.RegistroEnemigos;
+import principal.entes.npc.NPC;
 import principal.graficos.SuperficieDibujo;
 import principal.habilidades.Habilidad;
 import principal.herramientas.CalculadoraDistancia;
@@ -63,6 +60,8 @@ public class MapaTiled implements Serializable {
     private String siguienteMapa;
     private final String nombreMapaActual;
     public Tienda tiendaActiva;
+    private boolean dibujarR = false;
+    private Rectangle areaTiendaActual;
 
     long ultimoTiempoRecogida = 0;
     long tiempoDebouncing = 50; // 50 milisegundos de tiempo de debouncing
@@ -86,9 +85,11 @@ public class MapaTiled implements Serializable {
     private ArrayList<ContenedorObjetos> listaContenedores;
     private final ArrayList<ContenedorObjetos> contenedoresAbiertos;
     private ArrayList<Tienda> tiendas;
+    private ArrayList<NPC> npcs;
 
     private Sprite[] paletaSprites1;
     private Sprite[] paletaSprites2;
+    private HojaSprites clickDerecho;
 
     private HudEnemigos hudEnemigos;
     private Dijkstra dijkstra;
@@ -109,6 +110,7 @@ public class MapaTiled implements Serializable {
         contenedoresAbiertos = new ArrayList<>();
         tiendaActiva = new Tienda();
         this.musicaIniciada = false;
+        clickDerecho = new HojaSprites(Constantes.RUTA_CLICK_DERECHO,32,true);
         inicializarMapa(ruta);
     }
 
@@ -121,6 +123,9 @@ public class MapaTiled implements Serializable {
         actualizarAtaques();
         actualizarZonaSalida();
         actualizarTiendas();
+        actualizarTiendaActual();
+        actualizarNpcs();
+
 
         Point puntoCoincidente = dijkstra.getCoordenadasNodoCoincidente(punto);
         dijkstra.reiniciarYEvaluar(puntoCoincidente);
@@ -169,6 +174,39 @@ public class MapaTiled implements Serializable {
         obtenerPuntosGuardado(globalJSON);
 
         obtenerTiendas(globalJSON);
+
+        obtenerNPCs(globalJSON);
+    }
+
+    private void obtenerNPCs(JsonObject globalJSON) {
+        npcs = new ArrayList<>();
+        String ruta = "";
+
+        JsonArray coleccionNpcs = globalJSON.getAsJsonArray("npcs");
+        if (coleccionNpcs != null) {
+            for (JsonElement npcElement : coleccionNpcs) {
+                JsonObject npcNode = npcElement.getAsJsonObject();
+                int idNpc = getIntJson(npcNode, "id");
+                int xNpc = getIntJson(npcNode, "x");
+                int yNpc = getIntJson(npcNode, "y");
+                Point posicion = new Point(xNpc, yNpc);
+
+
+                ruta = switch (idNpc) {
+                    case 1 -> Constantes.RUTA_NPC_ARMADURAS;
+                    case 2 -> Constantes.RUTA_NPC_ARMAS;
+                    case 3 -> Constantes.RUTA_NPC_ACCESORIOS;
+                    case 4 -> Constantes.RUTA_NPC_CONSUMIBLES;
+                    default -> ruta;
+                };
+                NPC npc = new NPC(idNpc, posicion, ruta, 0);
+                Rectangle area = new Rectangle(posicion.x, posicion.y - 32, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
+                areaColisionOriginales.add(area);
+                npcs.add(npc);
+            }
+        } else {
+            System.err.println("La clave 'npcs' no está presente o no es un array en el JSON.");
+        }
     }
 
     public void dibujarPrimeraCapa(Graphics2D g) {
@@ -198,7 +236,7 @@ public class MapaTiled implements Serializable {
         dibujarObjetoTiled(g);
         dibujarcontenedores(g);
         dibujarPuntosGuardado(g);
-
+        dibujarNPCs(g);
     }
 
     private void dibujarObjetoTiled(Graphics g) {
@@ -211,28 +249,27 @@ public class MapaTiled implements Serializable {
 
     private void dibujarcontenedores(Graphics g) {
         for (ContenedorObjetos contenedorAct : listaContenedores) {
-            int puntoX = retornarX(contenedorAct.getPosicion().x);
-            int puntoY = retornarY(contenedorAct.getPosicion().y);
-
-            contenedorAct.dibujar(g, puntoX, puntoY);
+            contenedorAct.dibujar(g, retornarX(contenedorAct.getPosicion().x), retornarY(contenedorAct.getPosicion().y));
         }
     }
 
     public void dibujarEnemigos(Graphics g) {
         for (Enemigo enemigo : enemigosMapa) {
-            int puntoX = retornarX((int) enemigo.getPosicionX());
-            int puntoY = retornarY((int) enemigo.getPosicionY());
-            enemigo.dibujar(g, puntoX, puntoY);
+            enemigo.dibujar(g, retornarX((int) enemigo.getPosicionX()), retornarY((int) enemigo.getPosicionY()));
 
+        }
+    }
+
+    public void dibujarNPCs(Graphics g) {
+        for (NPC npc : npcs) {
+            npc.dibujar(g);
         }
     }
 
     private void dibujarPuntosGuardado(Graphics g) {
 
         for (PuntoGuardado puntoGuardado : puntosguardado) {
-            int puntoX = retornarX(puntoGuardado.getX());
-            int puntoY = retornarY(puntoGuardado.getY());
-            puntoGuardado.dibujar(g, puntoX, puntoY);
+            puntoGuardado.dibujar(g, retornarX(puntoGuardado.getX()), retornarY(puntoGuardado.getY()));
         }
     }
 
@@ -268,15 +305,17 @@ public class MapaTiled implements Serializable {
             }
         }
 
+        dibujarClickDerecho(g);
+
 //        for (Rectangle zonaSalida : zonasSalidaActualizadas) {
 //
 //            DibujoDebug.dibujarRectanguloContorno(g, zonaSalida, Color.RED);
 //        }
 //
-        for (Tienda tiendaActual : tiendas) {
-            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
-
-        }
+//        for (Tienda tiendaActual : tiendas) {
+//            DibujoDebug.dibujarRectanguloContorno(g, tiendaActual.getAreaTienda());
+//
+//        }
 //        if (habilidad != null) {
 //            DibujoDebug.dibujarRectanguloRelleno(g, jugador.getAccionesJugador().getPosicionXInt() + (int) (habilidad.getAlcance() * 32), jugador.getAccionesJugador().getPosicionYInt() + (int) (habilidad.getAlcance() * 32), 32, 32);
 //        }
@@ -890,7 +929,7 @@ public class MapaTiled implements Serializable {
         }
 
         for (ContenedorObjetos contenedor : listaContenedores) {
-            if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick()) {
+            if (areaJugador.intersects(contenedor.getArea()) && GestorPrincipal.sd.getRaton().isClick() && !contenedor.isAbierto()) {
                 contenedor.setAbierto(true);
                 contenedoresAbiertos.add(contenedor);
             }
@@ -974,23 +1013,85 @@ public class MapaTiled implements Serializable {
     }
 
     private void actualizarTiendas() {
-        for (Tienda tiendaActual : tiendas) {
+        if (!tiendas.isEmpty()) {
+            for (Tienda tiendaActual : tiendas) {
+                int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+                int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
 
-            int puntoX = tiendaActual.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = tiendaActual.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+                Rectangle nuevaAreaTienda = new Rectangle(puntoX, puntoY, tiendaActual.getAreaTienda().width, tiendaActual.getAreaTienda().height);
+                tiendaActual.setAreaTienda(nuevaAreaTienda);
+            }
+        }
+    }
 
-            Rectangle nuevaAreaTienda = new Rectangle(puntoX - 18, puntoY, tiendaActual.getAreaTienda().width, tiendaActual.getAreaTienda().height);
-            tiendaActual.setAreaTienda(nuevaAreaTienda);
+    private void actualizarTiendaActual() {
+        boolean algunaTiendaCumple = false; // Indicador para dibujar la región
 
-            if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) && GestorPrincipal.sd.getRaton().isClick2()) {
-                tiendaActiva = tiendaActual;
-                obtenerObjetosMapa(tiendaActual.getIdTienda());
-                objetosTiendaActual = verificarTipoTienda(tiendaActiva);
+        if (!tiendas.isEmpty()) {
+            for (Tienda tiendaActual : tiendas) {
+                // Verifica si el jugador está en el área de la tienda
+                if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda())) {
+                    areaTiendaActual = tiendaActual.getAreaTienda();
+                    algunaTiendaCumple = true; // Marca que al menos una tienda cumple
+                }
 
-                GestorPrincipal.tiendaActiva = true;
-                GestorPrincipal.juegoActivo = false;
-                GestorPrincipal.inventarioActivo = false;
-                GestorPrincipal.pantallaTitulo = false;
+                // Verifica si se hace clic en una tienda
+                if (ElementosPrincipales.jugador.getAreaPosicional().intersects(tiendaActual.getAreaTienda()) &&
+                        GestorPrincipal.sd.getRaton().isClick2()) {
+                    tiendaActiva = tiendaActual;
+                    obtenerObjetosMapa(tiendaActual.getIdTienda());
+                    objetosTiendaActual = verificarTipoTienda(tiendaActiva);
+
+                    GestorPrincipal.tiendaActiva = true;
+                    GestorPrincipal.juegoActivo = false;
+                    GestorPrincipal.inventarioActivo = false;
+                    GestorPrincipal.pantallaTitulo = false;
+                }
+            }
+        }
+
+        // Asigna el valor final a `dibujarR`
+        dibujarR = algunaTiendaCumple;
+    }
+
+    private void dibujarClickDerecho(Graphics g) {
+        if (dibujarR) {
+            // Calcula la posición
+            Point posicion = new Point(
+                    ElementosPrincipales.jugador.getAreaPosicional().x,
+                    ElementosPrincipales.jugador.getAreaPosicional().y + 32
+            );
+
+            // Obtiene la imagen
+            Image imagen = clickDerecho.getSprites(0).imagen;
+
+            // Crea un Graphics2D para poder modificar las propiedades de la imagen
+            Graphics2D g2d = (Graphics2D) g;
+
+            // Establece la transparencia (0.0f es completamente transparente, 1.0f es completamente opaco)
+            float alpha = 0.5f;  // Ajusta este valor entre 0.0f y 1.0f para modificar la transparencia
+            AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+
+            // Aplica la transparencia al Graphics2D
+            g2d.setComposite(alphaComposite);
+
+            // Dibuja la imagen con transparencia
+            g2d.drawImage(imagen, posicion.x, posicion.y, null);
+
+            // Vuelve al estado normal del Graphics2D (sin transparencia)
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));  // 1.0f es opaco
+        }
+    }
+
+
+    private void actualizarNpcs() {
+        if (!npcs.isEmpty()) {
+            for (NPC npc : npcs) {
+                for (Tienda tienda : tiendas) {
+                    if (npc.getId() == tienda.getTipo()) {
+                        npc.setPosicion(new Point(tienda.getAreaTienda().x, tienda.getAreaTienda().y - 32));
+                    }
+                }
             }
         }
     }
@@ -1023,8 +1124,8 @@ public class MapaTiled implements Serializable {
         Rectangle posicionRaton = sd.getRaton().getPosicionRectangle();
 
         for (ObjetoUnicoTiled objeto : objetosMapa) {
-            int puntoX = (int) objeto.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
-            int puntoY = (int) objeto.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
+            int puntoX = objeto.getPosicion().x - ElementosPrincipales.jugador.getAccionesJugador().getPosicionXInt() + Constantes.MARGEN_X;
+            int puntoY = objeto.getPosicion().y - ElementosPrincipales.jugador.getAccionesJugador().getPosicionYInt() + Constantes.MARGEN_Y;
             Rectangle nuevaArea = new Rectangle(puntoX, puntoY, 32, 32);
 
             if (posicionRaton.intersects(EscaladorElementos.escalarRectangleArriba(nuevaArea))) {
