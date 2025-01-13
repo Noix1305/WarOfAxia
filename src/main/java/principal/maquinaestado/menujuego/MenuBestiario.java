@@ -184,22 +184,18 @@ public class MenuBestiario extends SeccionMenu {
 
     private void mostrarDescripcion(Graphics g) {
         if (enemigoSeleccionado != null) {
+            if (tiempoInicio == -1) {
+                tiempoInicio = System.currentTimeMillis();
+            }
             String nombreEnemigo = enemigoSeleccionado.gestorAtributos.getNombre();
             String descripcion = enemigoSeleccionado.getDescripcion();
             String[] lineas = descripcion.split("\n");
 
             int xNombre = MedidorString.medirAnchoTextoCentrado(g, nombreEnemigo, panelDescripcion.x, panelDescripcion.width);
             int yNombre = titularPanelDescripcion.y + titularPanelDescripcion.height + 8;
-
-            DibujoDebug.dibujarString(g, nombreEnemigo, xNombre, yNombre, Color.BLACK);
-
             int y = yNombre + MedidorString.calcularAlturaTexto(g, nombreEnemigo) + margenGeneral;
             int anchoRectangulo = panelDescripcion.width - 2 * margenGeneral;
-
-            // Inicializar tiempoInicio solo la primera vez
-            if (tiempoInicio == -1) {
-                tiempoInicio = System.currentTimeMillis();
-            }
+            DibujoDebug.escribirTextoLetraPorLetra(g, nombreEnemigo, xNombre, yNombre, anchoRectangulo, 50, tiempoInicio);
             dibujarDescripcion(g, lineas, anchoRectangulo, y, tiempoInicio);
         }
     }

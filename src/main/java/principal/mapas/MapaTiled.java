@@ -110,7 +110,7 @@ public class MapaTiled implements Serializable {
         contenedoresAbiertos = new ArrayList<>();
         tiendaActiva = new Tienda();
         this.musicaIniciada = false;
-        clickDerecho = new HojaSprites(Constantes.RUTA_CLICK_DERECHO,32,true);
+        clickDerecho = new HojaSprites(Constantes.RUTA_CLICK_DERECHO, 32, true);
         inicializarMapa(ruta);
     }
 
@@ -189,6 +189,7 @@ public class MapaTiled implements Serializable {
                 int idNpc = getIntJson(npcNode, "id");
                 int xNpc = getIntJson(npcNode, "x");
                 int yNpc = getIntJson(npcNode, "y");
+                String dialogo = npcNode.get("dialogo").getAsString();
                 Point posicion = new Point(xNpc, yNpc);
 
 
@@ -199,7 +200,7 @@ public class MapaTiled implements Serializable {
                     case 4 -> Constantes.RUTA_NPC_CONSUMIBLES;
                     default -> ruta;
                 };
-                NPC npc = new NPC(idNpc, posicion, ruta, 0);
+                NPC npc = new NPC(idNpc, posicion, ruta, 0, dialogo);
                 Rectangle area = new Rectangle(posicion.x, posicion.y - 32, Constantes.LADO_SPRITE, Constantes.LADO_SPRITE);
                 areaColisionOriginales.add(area);
                 npcs.add(npc);

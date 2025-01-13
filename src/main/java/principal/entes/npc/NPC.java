@@ -17,15 +17,26 @@ public class NPC {
     private static final int INTERVALO_CAMBIO = 2000;// Intervalo en milisegundos
     private final Random random = new Random();
     private boolean activo = false;
+    private final String dialogo;
+    private long tiempoInicio;
+    private final HojaSprites cuadroDialogo;
 
     private HojaSprites hojaSprites;
 
-    public NPC(int id, Point posicion, String ruta, int indiceSprite) {
+    public NPC(int id, Point posicion, String ruta, int indiceSprite, String dialogo) {
         this.id = id;
         this.posicion = posicion;
         this.hojaSprites = new HojaSprites(ruta, Constantes.LADO_SPRITE, true);
         this.indiceSpriteOriginal = indiceSprite;
         this.indiceSprite = indiceSpriteOriginal;
+        this.dialogo = dialogo;
+        cuadroDialogo = new HojaSprites(Constantes.RUTA_CUADRO_DIALOGO, 64, 38, true);
+        iniciarDialogo();
+
+    }
+
+    public void iniciarDialogo() {
+        tiempoInicio = System.currentTimeMillis(); // Iniciar el temporizador cuando comience el diálogo
     }
 
     public void dibujar(Graphics g) {
@@ -44,6 +55,13 @@ public class NPC {
 
         // Dibuja el sprite actual
         DibujoDebug.dibujarImagen(g, hojaSprites.getSprites(indiceSprite).imagen, posicion);
+        dibujarDialogos(g);
+    }
+
+    private void dibujarDialogos(Graphics g) {
+        g.setColor(Color.white);
+        DibujoDebug.dibujarImagen(g,cuadroDialogo.getSprites(0).imagen,posicion.x,posicion.y-28);
+        DibujoDebug.escribirTextoLetraPorLetra(g, dialogo, posicion.x+4, posicion.y-18, 64, 50, tiempoInicio);
     }
 
 

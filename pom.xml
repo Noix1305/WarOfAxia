@@ -24,7 +24,6 @@
             <type>jar</type>
         </dependency>
 
-
     </dependencies>
     
     <!-- Configure Maven JAR plugin -->

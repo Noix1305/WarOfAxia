@@ -19,6 +19,7 @@ public class Constantes {
     public static final String RUTA_NPC_ARMAS = "/personajes/personajesNoJugables/NpcArmas.png";
     public static final String RUTA_NPC_ARMADURAS = "/personajes/personajesNoJugables/NpcArmaduras.png";
     public static final String RUTA_NPC_ACCESORIOS = "/personajes/personajesNoJugables/NpcAccesorios.png";
+    public static final String RUTA_CUADRO_DIALOGO = "/fondos/cuadroDialogo.png";
 
     public static int ANCHO_JUEGO = 640; // Define el ancho del juego como 1280 píxeles
     public static int ALTO_JUEGO = 360; // Define el alto del juego como 720 píxeles

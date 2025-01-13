@@ -1243,22 +1243,26 @@
     {
       "id": "1",
       "x": "700",
-      "y": "200"
+      "y": "200",
+      "dialogo": "En qué te puedo ayudar?"
     },
     {
       "id": "2",
       "x": "80",
-      "y": "250"
+      "y": "250",
+      "dialogo": "En qué te puedo ayudar?"
     },
     {
       "id": "3",
       "x": "140",
-      "y": "250"
+      "y": "250",
+      "dialogo": "En qué te puedo ayudar?"
     },
     {
       "id": "4",
       "x": "140",
-      "y": "200"
+      "y": "200",
+      "dialogo": "En qué te puedo ayudar?"
     }
   ],
 
